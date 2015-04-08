@@ -1,0 +1,21 @@
+{
+  "name": "integrator-connector",
+  "version": "0.1.0",
+  "description": "Integrator Connector",
+  "main": "server.js",
+  "engines": {
+    "node": "0.10.x"
+  },
+  "private": true,
+  "dependencies": {
+    "hapi": "8.4.0",
+    "lodash": "2.4.1",
+    "request": "2.38.0",
+    "nconf": "0.6.9"
+  },
+  "devDependencies": {
+    "mocha": "1.18.2",
+    "should": "3.0.1",
+    "longjohn":"0.2.4"
+  }
+}

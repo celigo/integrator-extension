@@ -1,2 +1,5 @@
 /.project
 /node_modules
+/scratch
+/server.log.*
+npm-debug.log

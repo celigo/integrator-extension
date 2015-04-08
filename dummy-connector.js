@@ -5,8 +5,8 @@ var setup = {
   },
 
   runSetupSuccessStep: function(userBearerToken, payload, callback) {
-    console.log('running runSetupErrorStep!');
-    callback(null, {success: true});
+    console.log('running runSetupSuccessStep!');
+    callback(null, {userBearerToken: userBearerToken, payload: payload});
   }
 }
 

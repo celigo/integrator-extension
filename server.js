@@ -10,17 +10,13 @@ var express = require('express');
 var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
+var bodyParser = require('body-parser');
+
+var connectors = {
+  'dummy-connector': require('./dummy-connector')
+}
 
 var port = nconf.get('IC_PORT') || 80;
-
-//routes
-app.get('/', function (req, res) {
-  res.send('I am doing good!');
-});
-
-app.post('/v1/setup', function (req, res) {
-  res.send('I am doing good!');
-});
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -73,8 +69,34 @@ console.log = function hijacked_log(level) {
   }
 }
 
+app.use(bodyParser.json());
 app.use(expressWinstonLogger);
 app.use(expressWinstonErrorLogger);
+
+//routes
+app.get('/', function (req, res) {
+  res.send('I am doing good!');
+});
+
+app.post('/v1/setup', function (req, res) {
+  // TODO validate bearer token
+
+  var functionName = req.body.function;
+  var userBearerToken = req.body.userBearerToken;
+  var repoName = req.body.repository.name;
+
+  var func = connectors[repoName].setup[functionName];
+
+  func(userBearerToken, req.body.postBody, function(err, resp) {
+    if (err) {
+      var errors = [{code: err.name, message: err.message}];
+      return res.status(422).json({errors: errors});
+    }
+
+    res.json(resp);
+  });
+});
+
 
 var server = app.listen(port, function () {
   logger.info('Express server listening on port ' + app.get('port'));

@@ -79,15 +79,14 @@ app.get('/', function (req, res) {
 });
 
 app.post('/v1/setup', function (req, res) {
-  // TODO validate bearer token
+  // TODO validate bearer bearerToken
 
   var functionName = req.body.function;
-  var userBearerToken = req.body.userBearerToken;
+  var bearerToken = req.body.bearerToken;
   var repoName = req.body.repository.name;
-
   var func = connectors[repoName].setup[functionName];
 
-  func(userBearerToken, req.body.postBody, function(err, resp) {
+  func(bearerToken, req.body.postBody, function(err, resp) {
     if (err) {
       var errors = [{code: err.name, message: err.message}];
       return res.status(422).json({errors: errors});
@@ -98,14 +97,14 @@ app.post('/v1/setup', function (req, res) {
 });
 
 app.post('/v1/settings', function (req, res) {
-  // TODO validate bearer token
+  // TODO validate bearer bearerToken
 
-  var userBearerToken = req.body.userBearerToken;
+  var bearerToken = req.body.bearerToken;
   var repoName = req.body.repository.name;
 
   var func = connectors[repoName]['updateSettings'];
 
-  func(userBearerToken, req.body.postBody, function(err, resp) {
+  func(bearerToken, req.body.postBody, function(err, resp) {
     if (err) {
       var errors = [{code: err.name, message: err.message}];
       return res.status(422).json({errors: errors});

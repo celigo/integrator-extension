@@ -5,16 +5,15 @@ var nconf = require('nconf');
 var logger = require('winston');
 
 var baseURL = 'http://localhost:' + nconf.get('IC_PORT')
-var userBearerToken = nconf.get('USER_BEARER_TOKEN');
-var connectorBearerToken = nconf.get('CONNECTOR_BEARER_TOKEN');
-var userBearerToken = nconf.get('USER_BEARER_TOKEN');
+var bearerToken = nconf.get('BEARER_TOKEN');
+var connectorBearerToken = nconf.get('SYSTEM_TOKEN');
 
 describe('Dummy connector tests', function() {
   describe('Setup tests', function() {
     it('should fail with 422 for setup error', function(done) {
       var setupStepUrl = baseURL + '/v1/setup'
       var postBody = {
-        userBearerToken: userBearerToken,
+        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'runSetupErrorStep',
         postBody: {key: 'value'}
@@ -32,7 +31,7 @@ describe('Dummy connector tests', function() {
     it('should pass after successfully executing setup step', function(done) {
       var setupStepUrl = baseURL + '/v1/setup'
       var postBody = {
-        userBearerToken: userBearerToken,
+        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'runSetupSuccessStep',
         postBody: {key: 'value'}
@@ -42,8 +41,8 @@ describe('Dummy connector tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.userBearerToken.should.equal(userBearerToken);
-        assert.deepEqual(body.payload, postBody.postBody);
+        body.bearerToken.should.equal(bearerToken);
+        assert.deepEqual(body.opts, postBody.postBody);
         done();
       });
     });
@@ -55,7 +54,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for settings error', function(done) {
       var setupStepUrl = baseURL + '/v1/settings'
       var postBody = {
-        userBearerToken: userBearerToken,
+        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         postBody: {error: true}
       };
@@ -72,7 +71,7 @@ describe('Dummy connector tests', function() {
     it('should pass after successfully executing settings step', function(done) {
       var setupStepUrl = baseURL + '/v1/settings'
       var postBody = {
-        userBearerToken: userBearerToken,
+        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         postBody: {
           persisted: {key1: 'value1', key2: 'value21'},
@@ -85,8 +84,8 @@ describe('Dummy connector tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.userBearerToken.should.equal(userBearerToken);
-        assert.deepEqual(body.payload, postBody.postBody);
+        body.bearerToken.should.equal(bearerToken);
+        assert.deepEqual(body.settings, postBody.postBody);
         done();
       });
     });

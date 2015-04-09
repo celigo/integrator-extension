@@ -1,25 +1,25 @@
 var logger = require('winston');
 
 var setup = {
-  runSetupErrorStep: function(userBearerToken, payload, callback) {
+  runSetupErrorStep: function(bearerToken, opts, callback) {
     logger.info('running runSetupErrorStep!');
     callback(new Error('runSetupErrorStep'));
   },
 
-  runSetupSuccessStep: function(userBearerToken, payload, callback) {
+  runSetupSuccessStep: function(bearerToken, opts, callback) {
     logger.info('running runSetupSuccessStep!');
-    callback(null, {userBearerToken: userBearerToken, payload: payload});
+    callback(null, {bearerToken: bearerToken, opts: opts});
   }
 }
 
 exports.setup = setup;
 
-exports.updateSettings = function(userBearerToken, payload, callback) {
+exports.updateSettings = function(bearerToken, settings, callback) {
   logger.info('running updateSettings!');
 
-  if (payload.error) {
+  if (settings.error) {
     return callback(new Error('updateSettings'));
   }
 
-  callback(null, {userBearerToken: userBearerToken, payload: payload});
+  callback(null, {bearerToken: bearerToken, settings: settings});
 };

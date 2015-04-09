@@ -9,42 +9,89 @@ var userBearerToken = nconf.get('USER_BEARER_TOKEN');
 var connectorBearerToken = nconf.get('CONNECTOR_BEARER_TOKEN');
 var userBearerToken = nconf.get('USER_BEARER_TOKEN');
 
-describe('Setup tests', function() {
-  it('should fail with 422 for setup error', function(done) {
-    var setupStepUrl = baseURL + '/v1/setup'
-    var postBody = {
-      userBearerToken: userBearerToken,
-      repository: {name: 'dummy-connector'},
-      function: 'runSetupErrorStep',
-      postBody: {key: 'value'}
-    };
+describe('Dummy connector tests', function() {
+  describe('Setup tests', function() {
+    it('should fail with 422 for setup error', function(done) {
+      var setupStepUrl = baseURL + '/v1/setup'
+      var postBody = {
+        userBearerToken: userBearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'runSetupErrorStep',
+        postBody: {key: 'value'}
+      };
 
-    postRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(422);
-      var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep' } ] };
+      postRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(422);
+        var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep' } ] };
 
-      assert.deepEqual(body, expected);
-      done();
+        assert.deepEqual(body, expected);
+        done();
+      });
     });
+
+    it('should pass after successfully executing setup step', function(done) {
+      var setupStepUrl = baseURL + '/v1/setup'
+      var postBody = {
+        userBearerToken: userBearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'runSetupSuccessStep',
+        postBody: {key: 'value'}
+      };
+
+      postRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(200);
+        logger.info(body);
+
+        body.userBearerToken.should.equal(userBearerToken);
+        assert.deepEqual(body.payload, postBody.postBody);
+        done();
+      });
+    });
+
+    // TODO invalid token
   });
 
-  it('should pass after successfully executing setup step', function(done) {
-    var setupStepUrl = baseURL + '/v1/setup'
-    var postBody = {
-      userBearerToken: userBearerToken,
-      repository: {name: 'dummy-connector'},
-      function: 'runSetupSuccessStep',
-      postBody: {key: 'value'}
-    };
+  describe('Setting tests', function() {
+    it('should fail with 422 for settings error', function(done) {
+      var setupStepUrl = baseURL + '/v1/settings'
+      var postBody = {
+        userBearerToken: userBearerToken,
+        repository: {name: 'dummy-connector'},
+        postBody: {error: true}
+      };
 
-    postRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(200);
-      logger.info(body);
+      postRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(422);
+        var expected = { errors: [ { code: 'Error', message: 'updateSettings' } ] };
 
-      body.userBearerToken.should.equal(userBearerToken);
-      assert.deepEqual(body.payload, postBody.postBody);
-      done();
+        assert.deepEqual(body, expected);
+        done();
+      });
     });
+
+    it('should pass after successfully executing settings step', function(done) {
+      var setupStepUrl = baseURL + '/v1/settings'
+      var postBody = {
+        userBearerToken: userBearerToken,
+        repository: {name: 'dummy-connector'},
+        postBody: {
+          persisted: {key1: 'value1', key2: 'value21'},
+          pending: {key1: 'value2', key2: 'value22'},
+          delta: {key1: 'value2'}
+        }
+      };
+
+      postRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(200);
+        logger.info(body);
+
+        body.userBearerToken.should.equal(userBearerToken);
+        assert.deepEqual(body.payload, postBody.postBody);
+        done();
+      });
+    });
+
+    // TODO invalid token
   });
 });
 

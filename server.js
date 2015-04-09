@@ -97,6 +97,23 @@ app.post('/v1/setup', function (req, res) {
   });
 });
 
+app.post('/v1/settings', function (req, res) {
+  // TODO validate bearer token
+
+  var userBearerToken = req.body.userBearerToken;
+  var repoName = req.body.repository.name;
+
+  var func = connectors[repoName]['updateSettings'];
+
+  func(userBearerToken, req.body.postBody, function(err, resp) {
+    if (err) {
+      var errors = [{code: err.name, message: err.message}];
+      return res.status(422).json({errors: errors});
+    }
+
+    res.json(resp);
+  });
+});
 
 var server = app.listen(port, function () {
   logger.info('Express server listening on port ' + app.get('port'));

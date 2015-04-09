@@ -14,11 +14,11 @@ var setup = {
 
 exports.setup = setup;
 
-exports.updateSettings = function(bearerToken, settings, callback) {
-  logger.info('running updateSettings!');
+exports.processSettings = function(bearerToken, settings, callback) {
+  logger.info('running processSettings!');
 
   if (settings.error) {
-    return callback(new Error('updateSettings'));
+    return callback(new Error('processSettings'));
   }
 
   callback(null, {bearerToken: bearerToken, settings: settings});

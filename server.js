@@ -102,7 +102,7 @@ app.post('/v1/settings', function (req, res) {
   var bearerToken = req.body.bearerToken;
   var repoName = req.body.repository.name;
 
-  var func = connectors[repoName]['updateSettings'];
+  var func = connectors[repoName]['processSettings'];
 
   func(bearerToken, req.body.postBody, function(err, resp) {
     if (err) {

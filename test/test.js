@@ -61,7 +61,7 @@ describe('Dummy connector tests', function() {
 
       postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'Error', message: 'updateSettings' } ] };
+        var expected = { errors: [ { code: 'Error', message: 'processSettings' } ] };
 
         assert.deepEqual(body, expected);
         done();

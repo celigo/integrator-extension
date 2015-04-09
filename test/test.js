@@ -6,12 +6,12 @@ var logger = require('winston');
 
 var baseURL = 'http://localhost:' + nconf.get('IC_PORT')
 var bearerToken = nconf.get('BEARER_TOKEN');
-var connectorBearerToken = nconf.get('SYSTEM_TOKEN');
+var systemToken = nconf.get('SYSTEM_TOKEN');
 
 describe('Dummy connector tests', function() {
   describe('Setup tests', function() {
     it('should fail with 422 for setup error', function(done) {
-      var setupStepUrl = baseURL + '/v1/setup'
+      var setupStepUrl = baseURL + '/setup'
       var postBody = {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
@@ -19,7 +19,7 @@ describe('Dummy connector tests', function() {
         postBody: {key: 'value'}
       };
 
-      postRequest(setupStepUrl, postBody, function(error, res, body) {
+      putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
         var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep' } ] };
 
@@ -29,7 +29,7 @@ describe('Dummy connector tests', function() {
     });
 
     it('should pass after successfully executing setup step', function(done) {
-      var setupStepUrl = baseURL + '/v1/setup'
+      var setupStepUrl = baseURL + '/setup'
       var postBody = {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
@@ -37,7 +37,7 @@ describe('Dummy connector tests', function() {
         postBody: {key: 'value'}
       };
 
-      postRequest(setupStepUrl, postBody, function(error, res, body) {
+      putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(200);
         logger.info(body);
 
@@ -52,14 +52,14 @@ describe('Dummy connector tests', function() {
 
   describe('Setting tests', function() {
     it('should fail with 422 for settings error', function(done) {
-      var setupStepUrl = baseURL + '/v1/settings'
+      var setupStepUrl = baseURL + '/settings'
       var postBody = {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         postBody: {error: true}
       };
 
-      postRequest(setupStepUrl, postBody, function(error, res, body) {
+      putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
         var expected = { errors: [ { code: 'Error', message: 'processSettings' } ] };
 
@@ -69,7 +69,7 @@ describe('Dummy connector tests', function() {
     });
 
     it('should pass after successfully executing settings step', function(done) {
-      var setupStepUrl = baseURL + '/v1/settings'
+      var setupStepUrl = baseURL + '/settings'
       var postBody = {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
@@ -80,7 +80,7 @@ describe('Dummy connector tests', function() {
         }
       };
 
-      postRequest(setupStepUrl, postBody, function(error, res, body) {
+      putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(200);
         logger.info(body);
 
@@ -100,7 +100,7 @@ function postRequest(uri, json, callback, bearerToken) {
     json : json,
     method : 'POST',
     auth: {
-      bearer: bearerToken || connectorBearerToken
+      bearer: bearerToken || systemToken
     }
   };
 
@@ -109,13 +109,13 @@ function postRequest(uri, json, callback, bearerToken) {
   });
 }
 
-function putRequest(uri, json, callback) {
+function putRequest(uri, json, callback, bearerToken) {
   var requestOptions = {
     uri: uri,
     json : json,
     method : 'PUT',
     auth: {
-      bearer: connectorBearerToken
+      bearer: bearerToken || systemToken
     }
   };
 
@@ -130,7 +130,7 @@ function getRequest(uri, callback) {
     method : 'GET',
     json : true,
     auth: {
-      bearer: connectorBearerToken
+      bearer: systemToken
     }
   };
 
@@ -145,7 +145,7 @@ function deleteRequest(uri, callback) {
     method : 'DELETE',
     json: true,
     auth: {
-      bearer: connectorBearerToken
+      bearer: systemToken
     }
   };
 

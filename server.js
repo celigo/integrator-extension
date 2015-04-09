@@ -92,8 +92,7 @@ app.put('/setup', function (req, res) {
     errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
-  var repoName = req.body.repository.name;
-  if (!repoName) {
+  if (!req.body.repository || !req.body.repository.name) {
     errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
@@ -101,6 +100,7 @@ app.put('/setup', function (req, res) {
     return res.status(422).json({errors: errors});
   }
 
+  var repoName = req.body.repository.name;
   if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
     errors.push({code: 'missing_function', message: functionName + ' function not found'});
     return res.status(422).json({errors: errors});
@@ -126,8 +126,7 @@ app.put('/settings', function (req, res) {
     errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
-  var repoName = req.body.repository.name;
-  if (!repoName) {
+  if (!req.body.repository || !req.body.repository.name) {
     errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
@@ -135,6 +134,7 @@ app.put('/settings', function (req, res) {
     return res.status(422).json({errors: errors});
   }
 
+  var repoName = req.body.repository.name;
   if (!connectors[repoName] || !connectors[repoName]['processSettings']) {
     errors.push({code: 'missing_function', message: 'processSettings function not found'});
     return res.status(422).json({errors: errors});

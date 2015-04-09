@@ -50,6 +50,38 @@ describe('Dummy connector tests', function() {
       }, systemToken);
     });
 
+    it('should fail with 422 for missing bearer token error', function(done) {
+      var setupStepUrl = baseURL + '/settings'
+      var postBody = {
+        repository: {name: 'dummy-connector'},
+        postBody: {key: 'value'}
+      };
+
+      testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request"}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
+    });
+
+    it('should fail with 422 for missing repository name error', function(done) {
+      var setupStepUrl = baseURL + '/settings'
+      var postBody = {
+        bearerToken: bearerToken,
+        postBody: {key: 'value'}
+      };
+
+      testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request"}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
+    });
+
     // TODO invalid token
   });
 });

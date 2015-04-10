@@ -4,7 +4,7 @@ var nconf = require('nconf');
 var logger = require('winston');
 var testUtil = require('./util');
 
-var baseURL = 'http://localhost:' + nconf.get('IC_PORT')
+var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT')
 var bearerToken = nconf.get('BEARER_TOKEN');
 var systemToken = nconf.get('SYSTEM_TOKEN');
 

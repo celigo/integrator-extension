@@ -2,7 +2,8 @@ var nconf = require('nconf').argv().env();
 if (process.env.NODE_ENV !== 'production') {
   nconf.file('env/development.json');
   nconf.defaults({
-    'NODE_ENV': 'development'
+    'NODE_ENV': 'development',
+    'TEST_INTEGRATOR_CONNECTOR_PORT': 7000
   });
 }
 
@@ -164,7 +165,7 @@ app.put('/settings', function (req, res) {
 });
 
 var server = app.listen(port, function () {
-  logger.info('Express server listening on port ' + app.get('port'));
+  logger.info('integrator-connector server listening on port ' + port);
   logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
 

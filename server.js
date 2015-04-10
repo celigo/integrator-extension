@@ -80,7 +80,13 @@ app.get('/', function (req, res) {
 
 app.put('/setup', function (req, res) {
   var errors = [];
-  // TODO validate bearer bearerToken
+
+  var systemToken = findToken(req);
+  if (systemToken !== nconf.get('SYSTEM_TOKEN')) {
+    errors.push({code: 'unauthorized', message: 'invalid system token'});
+    res.set('WWW-Authenticate', 'invalid system token');
+    return res.status(401).json({errors: errors});
+  }
 
   var functionName = req.body.function;
   if (!functionName) {
@@ -119,7 +125,13 @@ app.put('/setup', function (req, res) {
 
 app.put('/settings', function (req, res) {
   var errors = [];
-  // TODO validate bearer bearerToken
+
+  var systemToken = findToken(req);
+  if (systemToken !== nconf.get('SYSTEM_TOKEN')) {
+    errors.push({code: 'unauthorized', message: 'invalid system token'});
+    res.set('WWW-Authenticate', 'invalid system token');
+    return res.status(401).json({errors: errors});
+  }
 
   var bearerToken = req.body.bearerToken;
   if (!bearerToken) {
@@ -155,3 +167,23 @@ var server = app.listen(port, function () {
   logger.info('Express server listening on port ' + app.get('port'));
   logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
+
+function findToken(req) {
+  var token;
+  if (req.headers && req.headers.authorization) {
+    var parts = req.headers.authorization.split(' ');
+    if (parts.length == 2) {
+      var scheme = parts[0]
+        , credentials = parts[1];
+      if (/^Bearer$/i.test(scheme)) {
+        token = credentials;
+      }
+    }
+  } else if (req.body && req.body.access_token) {
+    token = req.body.access_token;
+  } else if (req.query && req.query.access_token) {
+    token = req.query.access_token;
+  }
+
+  return token;
+}

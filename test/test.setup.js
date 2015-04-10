@@ -117,6 +117,24 @@ describe('Dummy connector tests', function() {
       }, systemToken);
     });
 
-    // TODO invalid token
+    it('should fail with 401 for wrong system token', function(done) {
+      var setupStepUrl = baseURL + '/setup'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'runSetupSuccessStep',
+        postBody: {key: 'value'}
+      };
+
+      testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(401);
+
+        res.headers['WWW-Authenticate'.toLowerCase()].should.equal('invalid system token');
+        var expected = { errors: [{"code":"unauthorized","message":"invalid system token"}] };
+        assert.deepEqual(body, expected);
+
+        done();
+      }, 'BAD_SYSTEM_TOKEN');
+    });
   });
 });

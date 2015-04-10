@@ -1,3 +1,6 @@
+console.log(require.main.filename);
+
+
 var nconf = require('nconf').argv().env();
 if (process.env.NODE_ENV !== 'production') {
   nconf.file('env/development.json');
@@ -18,6 +21,8 @@ var connectors = {
 }
 
 var port = nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT') || 80;
+var filename = require.main.filename;
+var runningAsInstalledModule = (filename.indexOf('integrator-connector') === -1);
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -36,9 +41,13 @@ var consoleTransportOpts = {
 var fileTransport = new logger.transports.DailyRotateFile(fileTransportOpts);
 var consoleTransport = new logger.transports.Console(consoleTransportOpts);
 
-logger.remove(logger.transports.Console)
-.add(logger.transports.Console, consoleTransportOpts)
-.add(logger.transports.DailyRotateFile, fileTransportOpts);
+logger.remove(logger.transports.Console);
+logger.add(logger.transports.Console, consoleTransportOpts);
+
+// Gives an error when module is installed in integrator
+if (!runningAsInstalledModule) {
+  logger.add(logger.transports.DailyRotateFile, fileTransportOpts);
+}
 
 expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length);
 expressWinston.requestWhitelist.push('method');

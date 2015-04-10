@@ -8,10 +8,13 @@
   },
   "private": true,
   "dependencies": {
-    "hapi": "8.4.0",
+    "express": "4.12.3",
     "lodash": "2.4.1",
     "request": "2.38.0",
-    "nconf": "0.6.9"
+    "nconf": "0.6.9",
+    "winston": "0.7.3",
+    "express-winston": "0.2.12",
+    "body-parser": "1.12.2"
   },
   "devDependencies": {
     "mocha": "1.18.2",

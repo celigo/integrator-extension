@@ -16,7 +16,7 @@ var connectors = {
   'dummy-connector': require('./dummy-connector')
 }
 
-var port = nconf.get('IC_PORT') || 80;
+var port = nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT') || 80;
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {

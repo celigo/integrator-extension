@@ -5,8 +5,8 @@ var logger = require('winston');
 var testUtil = require('./util');
 
 var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT')
-var bearerToken = nconf.get('BEARER_TOKEN');
-var systemToken = nconf.get('SYSTEM_TOKEN');
+var bearerToken = nconf.get('TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN');
+var systemToken = nconf.get('TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
 
 describe('Dummy connector tests', function() {
   describe('Setup tests', function() {
@@ -134,7 +134,7 @@ describe('Dummy connector tests', function() {
         assert.deepEqual(body, expected);
 
         done();
-      }, 'BAD_SYSTEM_TOKEN');
+      }, 'BAD_TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
     });
   });
 });

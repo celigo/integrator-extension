@@ -87,7 +87,7 @@ app.put('/setup', function (req, res) {
   var errors = [];
 
   var systemToken = findToken(req);
-  if (systemToken !== nconf.get('SYSTEM_TOKEN')) {
+  if (systemToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
     errors.push({code: 'unauthorized', message: 'invalid system token'});
     res.set('WWW-Authenticate', 'invalid system token');
     return res.status(401).json({errors: errors});
@@ -132,7 +132,7 @@ app.put('/settings', function (req, res) {
   var errors = [];
 
   var systemToken = findToken(req);
-  if (systemToken !== nconf.get('SYSTEM_TOKEN')) {
+  if (systemToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
     errors.push({code: 'unauthorized', message: 'invalid system token'});
     res.set('WWW-Authenticate', 'invalid system token');
     return res.status(401).json({errors: errors});

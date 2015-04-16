@@ -30,6 +30,26 @@ describe('Dummy connector tests', function() {
       }, systemToken);
     });
 
+    it('should call initialize setup', function(done) {
+      var setupStepUrl = baseURL + '/setup'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'initialize',
+        postBody: {key: 'value'}
+      };
+
+      testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+        res.statusCode.should.equal(200);
+        logger.info(body);
+
+        body.bearerToken.should.equal(bearerToken);
+        assert.deepEqual(body.opts, postBody.postBody);
+        body.functionName.should.equal('initialize');
+        done();
+      }, systemToken);
+    });
+
     it('should fail with 422 for setup error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {

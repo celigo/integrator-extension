@@ -1,6 +1,11 @@
 var logger = require('winston');
 
 var setup = {
+  initialize: function(bearerToken, opts, callback) {
+    logger.info('running initialize!');
+    callback(null, {bearerToken: bearerToken, opts: opts, functionName: 'initialize'});
+  },
+
   runSetupErrorStep: function(bearerToken, opts, callback) {
     logger.info('running runSetupErrorStep!');
     callback(new Error('runSetupErrorStep'));
@@ -8,7 +13,7 @@ var setup = {
 
   runSetupSuccessStep: function(bearerToken, opts, callback) {
     logger.info('running runSetupSuccessStep!');
-    callback(null, {bearerToken: bearerToken, opts: opts});
+    callback(null, {bearerToken: bearerToken, opts: opts, functionName: 'runSetupSuccessStep'});
   }
 }
 

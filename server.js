@@ -86,51 +86,14 @@ app.get('/', function (req, res) {
 });
 
 app.put('/setup', function (req, res) {
-  var errors = [];
-
-  var systemToken = findToken(req);
-  if (systemToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
-    errors.push({code: 'unauthorized', message: 'invalid system token'});
-    res.set('WWW-Authenticate', 'invalid system token');
-    return res.status(401).json({errors: errors});
-  }
-
-  var functionName = req.body.function;
-  if (!functionName) {
-    errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
-  var bearerToken = req.body.bearerToken;
-  if (!bearerToken) {
-    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
-  if (!req.body.repository || !req.body.repository.name) {
-    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
-  if (errors.length > 0) {
-    return res.status(422).json({errors: errors});
-  }
-
-  var repoName = req.body.repository.name;
-  if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
-    errors.push({code: 'missing_function', message: functionName + ' function not found'});
-    return res.status(422).json({errors: errors});
-  }
-
-  var func = connectors[repoName].setup[functionName];
-  func(bearerToken, req.body.postBody, function(err, resp) {
-    if (err) {
-      errors.push({code: err.name, message: err.message});
-      return res.status(422).json({errors: errors});
-    }
-
-    res.json(resp);
-  });
+  processIntegrationRequest(req, res, 'setup');
 });
 
 app.put('/settings', function (req, res) {
+  processIntegrationRequest(req, res, 'settings');
+});
+
+function processIntegrationRequest(req, res, endpoint) {
   var errors = [];
 
   var systemToken = findToken(req);
@@ -138,6 +101,19 @@ app.put('/settings', function (req, res) {
     errors.push({code: 'unauthorized', message: 'invalid system token'});
     res.set('WWW-Authenticate', 'invalid system token');
     return res.status(401).json({errors: errors});
+  }
+
+  var functionName = undefined;
+
+  if (endpoint === 'setup') {
+    functionName = req.body.function;
+    if (!functionName) {
+      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
+    }
+  } else if (endpoint === 'settings') {
+    functionName = 'processSettings';
+  } else {
+    errors.push({code: 'Invalid_endpoint', message: endpoint + 'is invalid'});
   }
 
   var bearerToken = req.body.bearerToken;
@@ -149,17 +125,33 @@ app.put('/settings', function (req, res) {
     errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
+  // request errors
   if (errors.length > 0) {
     return res.status(422).json({errors: errors});
   }
 
   var repoName = req.body.repository.name;
-  if (!connectors[repoName] || !connectors[repoName]['processSettings']) {
-    errors.push({code: 'missing_function', message: 'processSettings function not found'});
+  var func = undefined;
+
+  if (endpoint === 'setup') {
+    if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
+      errors.push({code: 'missing_function', message: functionName + ' function not found'});
+    } else {
+      func = connectors[repoName].setup[functionName];
+    }
+  } else if (endpoint === 'settings'){
+    if (!connectors[repoName] || !connectors[repoName]['processSettings']) {
+      errors.push({code: 'missing_function', message: 'processSettings function not found'});
+    } else {
+      func = connectors[repoName]['processSettings'];
+    }
+  }
+
+  // connector repo errors
+  if (errors.length > 0) {
     return res.status(422).json({errors: errors});
   }
 
-  var func = connectors[repoName]['processSettings'];
   func(bearerToken, req.body.postBody, function(err, resp) {
     if (err) {
       errors.push({code: err.name, message: err.message});
@@ -168,7 +160,7 @@ app.put('/settings', function (req, res) {
 
     res.json(resp);
   });
-});
+}
 
 var server = app.listen(port, function () {
   logger.info('integrator-connector server listening on port ' + port);

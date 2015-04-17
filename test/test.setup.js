@@ -26,6 +26,8 @@ describe('Dummy connector tests', function() {
 
         body.bearerToken.should.equal(bearerToken);
         assert.deepEqual(body.opts, postBody.postBody);
+        body.functionName.should.equal('runSetupSuccessStep');
+
         done();
       }, systemToken);
     });
@@ -46,6 +48,7 @@ describe('Dummy connector tests', function() {
         body.bearerToken.should.equal(bearerToken);
         assert.deepEqual(body.opts, postBody.postBody);
         body.functionName.should.equal('initialize');
+
         done();
       }, systemToken);
     });

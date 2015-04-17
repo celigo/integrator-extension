@@ -26,5 +26,5 @@ exports.processSettings = function(bearerToken, settings, callback) {
     return callback(new Error('processSettings'));
   }
 
-  callback(null, {bearerToken: bearerToken, settings: settings});
+  callback(null, {bearerToken: bearerToken, settings: settings, functionName: 'processSettings'});
 };

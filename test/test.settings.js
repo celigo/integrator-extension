@@ -46,6 +46,8 @@ describe('Dummy connector tests', function() {
 
         body.bearerToken.should.equal(bearerToken);
         assert.deepEqual(body.settings, postBody.postBody);
+        body.functionName.should.equal('processSettings');
+
         done();
       }, systemToken);
     });

@@ -4,8 +4,8 @@ if (process.env.NODE_ENV !== 'production') {
   nconf.defaults({
     'NODE_ENV': 'development',
     'TEST_INTEGRATOR_CONNECTOR_PORT': 7000,
-    "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN": "TEST_TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN",
-    "TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN": "TEST_TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN"
+    "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN": "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN",
+    "INTEGRATOR_CONNECTOR_SYSTEM_TOKEN": "TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN"
   });
 }
 
@@ -97,7 +97,7 @@ function processIntegrationRequest(req, res, endpoint) {
   var errors = [];
 
   var systemToken = findToken(req);
-  if (systemToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
+  if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
     errors.push({code: 'unauthorized', message: 'invalid system token'});
     res.set('WWW-Authenticate', 'invalid system token');
     return res.status(401).json({errors: errors});
@@ -119,6 +119,11 @@ function processIntegrationRequest(req, res, endpoint) {
   var bearerToken = req.body.bearerToken;
   if (!bearerToken) {
     errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
+  }
+
+  var _integrationId = req.body._integrationId;
+  if (!_integrationId) {
+    errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
   if (!req.body.repository || !req.body.repository.name) {
@@ -152,7 +157,7 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  func(bearerToken, req.body.postBody, function(err, resp) {
+  func(bearerToken, _integrationId, req.body.postBody, function(err, resp) {
     if (err) {
       errors.push({code: err.name, message: err.message});
       return res.status(422).json({errors: errors});

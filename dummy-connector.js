@@ -13,10 +13,6 @@ var setup = {
   },
 
   runSetupSuccessStep: function(bearerToken, _integrationId, opts, callback) {
-    if (bearerToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN')) {
-      return callback(new Error('invalid bearerToken'));
-    }
-
     logger.info('running runSetupSuccessStep!');
     callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'runSetupSuccessStep'});
   }
@@ -29,10 +25,6 @@ exports.processSettings = function(bearerToken, _integrationId, settings, callba
 
   if (settings.error) {
     return callback(new Error('processSettings'));
-  }
-
-  if (bearerToken !== nconf.get('TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN')) {
-    return callback(new Error('invalid bearerToken'));
   }
 
   callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, settings: settings, functionName: 'processSettings'});

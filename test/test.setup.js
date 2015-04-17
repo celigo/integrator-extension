@@ -95,25 +95,6 @@ describe('Dummy connector tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for invalid bearer token error', function(done) {
-      var setupStepUrl = baseURL + '/setup'
-      var postBody = {
-        bearerToken: 'bad',
-        repository: {name: 'dummy-connector'},
-        function: 'runSetupSuccessStep',
-        _integrationId: _integrationId,
-        postBody: {key: 'value'}
-      };
-
-      testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"Error","message":"invalid bearerToken"}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
     it('should fail with 422 for missing _integrationId', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {

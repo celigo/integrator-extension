@@ -1,8 +1,6 @@
 var nconf = require('nconf').argv().env();
 if (process.env.NODE_ENV !== 'production') {
-  nconf.file('env/development.json');
   nconf.defaults({
-    'NODE_ENV': 'development',
     'TEST_INTEGRATOR_CONNECTOR_PORT': 7000,
     "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN": "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN",
     "INTEGRATOR_CONNECTOR_SYSTEM_TOKEN": "TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN"

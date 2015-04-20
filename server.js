@@ -83,6 +83,10 @@ app.get('/', function (req, res) {
   res.send('I am doing good!');
 });
 
+app.get('/healthCheck', function (req, res) {
+  res.send('I am doing good!');
+});
+
 app.put('/setup', function (req, res) {
   processIntegrationRequest(req, res, 'setup');
 });

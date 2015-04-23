@@ -17,6 +17,10 @@ var connectors = {
   'dummy-connector': require('./dummy-connector')
 }
 
+if (process.env.NODE_ENV === 'production') {
+  connectors['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
+}
+
 var port = nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT') || 80;
 
 // configure logging.  pretty ugly code but dont know better way yet

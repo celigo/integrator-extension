@@ -14,7 +14,8 @@
     "nconf": "0.6.9",
     "winston": "0.7.3",
     "express-winston": "0.2.12",
-    "body-parser": "1.12.2"
+    "body-parser": "1.12.2",
+    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.1.1"
   },
   "devDependencies": {
     "mocha": "1.18.2",

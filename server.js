@@ -17,6 +17,10 @@ var connectors = {
   'dummy-connector': require('./dummy-connector')
 }
 
+if (process.env.NODE_ENV === 'production') {
+  connectors['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
+}
+
 var port = nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT') || 80;
 
 // configure logging.  pretty ugly code but dont know better way yet
@@ -36,11 +40,11 @@ var consoleTransportOpts = {
 var fileTransport = new logger.transports.DailyRotateFile(fileTransportOpts);
 var consoleTransport = new logger.transports.Console(consoleTransportOpts);
 
-logger.remove(logger.transports.Console);
-logger.add(logger.transports.Console, consoleTransportOpts);
-
-// Gives an error when module is installed in integrator
-if (!logger.transports.DailyRotateFile) {
+// Gives an error when module is installed in integrator for testing
+// Add loggers only when not running as a module
+if (__dirname.indexOf('node_modules') === -1) {
+  logger.remove(logger.transports.Console);
+  logger.add(logger.transports.Console, consoleTransportOpts);
   logger.add(logger.transports.DailyRotateFile, fileTransportOpts);
 }
 

@@ -197,3 +197,9 @@ function findToken(req) {
 
   return token;
 }
+
+process.on('uncaughtException', function(err) {
+  logger.error('FATAL - Logging uncaughtException...');
+  logger.error(error);
+  process.exit(1);
+});

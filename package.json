@@ -15,6 +15,7 @@
     "winston": "0.7.3",
     "express-winston": "0.2.12",
     "body-parser": "1.12.2",
+    "death": "1.0.0",
     "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.1.4"
   },
   "devDependencies": {

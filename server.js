@@ -12,6 +12,7 @@ var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
+var DEATH = require('death')({uncaughtException: true, debug: true}) ;
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -198,8 +199,8 @@ function findToken(req) {
   return token;
 }
 
-process.on('uncaughtException', function(err) {
-  logger.error('FATAL - Logging uncaughtException...');
-  logger.error(error);
+DEATH(function(signal, err) {
+  logger.error('FATAL - dying with signal... ' + signal);
+  logger.error(err);
   process.exit(1);
 });

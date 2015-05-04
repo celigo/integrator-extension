@@ -12,7 +12,6 @@ var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
-var DEATH = require('death')({uncaughtException: true, debug: true}) ;
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -29,7 +28,8 @@ var fileTransportOpts = {
   filename: './server.log',
   maxsize: 10000000,
   maxFiles: 2,
-  json: false
+  json: false,
+  handleExceptions: (process.env.NODE_ENV === 'production')
 };
 
 var consoleTransportOpts = {
@@ -198,9 +198,3 @@ function findToken(req) {
 
   return token;
 }
-
-DEATH(function(signal, err) {
-  logger.error('FATAL - dying with signal... ' + signal);
-  logger.error(err);
-  process.exit(1);
-});

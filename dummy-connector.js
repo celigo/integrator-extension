@@ -18,9 +18,8 @@ var setup = {
   }
 }
 
-exports.setup = setup;
 
-exports.processSettings = function(bearerToken, _integrationId, settings, callback) {
+var processSettings = function(bearerToken, _integrationId, settings, callback) {
   logger.info('running processSettings!');
 
   if (settings.error) {
@@ -29,3 +28,32 @@ exports.processSettings = function(bearerToken, _integrationId, settings, callba
 
   callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, settings: settings, functionName: 'processSettings'});
 };
+
+var imp = {
+  doSomethingError: function(bearerToken, _importId, arg1, callback) {
+    logger.info('running doSomethingError!');
+    callback(new Error('doSomethingError'));
+  },
+
+  doSomething: function(bearerToken, _importId, arg1, arg2, callback) {
+    logger.info('running doSomething!');
+    callback(null, {bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+  }
+}
+
+var exp = {
+  doSomethingError: function(bearerToken, _exportId, arg1, callback) {
+    logger.info('running doSomethingError!');
+    callback(new Error('doSomethingError'));
+  },
+
+  doSomething: function(bearerToken, _exportId, arg1, arg2, callback) {
+    logger.info('running doSomething!');
+    callback(null, {bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+  }
+}
+
+exports.setup = setup;
+exports.processSettings = processSettings;
+exports.import = imp;
+exports.export = exp;

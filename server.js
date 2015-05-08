@@ -100,7 +100,7 @@ app.put('/settings', function (req, res) {
   processIntegrationRequest(req, res, 'settings');
 });
 
-app.put('/function', function (req, res) {
+app.post('/function', function (req, res) {
   processIntegrationRequest(req, res, 'function');
 });
 
@@ -159,32 +159,37 @@ function processIntegrationRequest(req, res, endpoint) {
     if (!req.body._exportId && !req.body._importId) {
       errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request'});
     } else if (req.body._exportId && req.body._importId) {
-      errors.push({code: 'invalid_request', message: 'Both _importId and _exportId must not be sent together'});
+      errors.push({code: 'invalid_request', message: 'both _importId and _exportId must not be sent together'});
     } else {
 
       functionName = req.body.function;
-      if (req.body._exportId) {
-        _objectId = req.body._exportId;
-
-        if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
-          errors.push({code: 'missing_function', message: functionName + ' function not found'});
-        } else {
-          func = connectors[repoName].export[functionName];
-        }
-      } else if (req.body._importId) {
-        _objectId = req.body._importId;
-
-        if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
-          errors.push({code: 'missing_function', message: functionName + ' function not found'});
-        } else {
-          func = connectors[repoName].import[functionName];
-        }
-      }
-
-      if (!Array.isArray(req.body.postBody)) {
-        errors.push({code: 'invalid_args', message: 'postBody must be an array'});
+      if (!functionName) {
+        errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
       } else {
-        postBodyArgs = req.body.postBody;
+
+        if (req.body._exportId) {
+          _objectId = req.body._exportId;
+
+          if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
+            errors.push({code: 'missing_function', message: functionName + ' function not found'});
+          } else {
+            func = connectors[repoName].export[functionName];
+          }
+        } else if (req.body._importId) {
+          _objectId = req.body._importId;
+
+          if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
+            errors.push({code: 'missing_function', message: functionName + ' function not found'});
+          } else {
+            func = connectors[repoName].import[functionName];
+          }
+        }
+
+        if (!Array.isArray(req.body.postBody)) {
+          errors.push({code: 'invalid_args', message: 'postBody must be an array'});
+        } else {
+          postBodyArgs = req.body.postBody;
+        }
       }
     }
   } else {

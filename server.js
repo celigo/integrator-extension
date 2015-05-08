@@ -100,7 +100,6 @@ app.put('/settings', function (req, res) {
   processIntegrationRequest(req, res, 'settings');
 });
 
-//TODO PUT for POST?
 app.put('/function', function (req, res) {
   processIntegrationRequest(req, res, 'function');
 });
@@ -121,6 +120,7 @@ function processIntegrationRequest(req, res, endpoint) {
   var _objectId = undefined;
   var repoName = req.body.repository.name;
   var func = undefined;
+  var postBodyArgs = [];
 
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
@@ -139,6 +139,8 @@ function processIntegrationRequest(req, res, endpoint) {
         func = connectors[repoName].setup[functionName];
       }
     }
+
+    postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'settings') {
     _objectId = req.body._integrationId;
     if (!_objectId) {
@@ -146,10 +148,44 @@ function processIntegrationRequest(req, res, endpoint) {
     }
 
     functionName = 'processSettings';
-    if (!connectors[repoName] || !connectors[repoName]['processSettings']) {
-      errors.push({code: 'missing_function', message: 'processSettings function not found'});
+    if (!connectors[repoName] || !connectors[repoName][functionName]) {
+      errors.push({code: 'missing_function', message: functionName + ' function not found'});
     } else {
-      func = connectors[repoName]['processSettings'];
+      func = connectors[repoName][functionName];
+    }
+
+    postBodyArgs.push(req.body.postBody);
+  } else if (endpoint === 'function') {
+    if (!req.body._exportId && !req.body._importId) {
+      errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request'});
+    } else if (req.body._exportId && req.body._importId) {
+      errors.push({code: 'invalid_request', message: 'Both _importId and _exportId must not be sent together'});
+    } else {
+
+      functionName = req.body.function;
+      if (req.body._exportId) {
+        _objectId = req.body._exportId;
+
+        if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
+          errors.push({code: 'missing_function', message: functionName + ' function not found'});
+        } else {
+          func = connectors[repoName].export[functionName];
+        }
+      } else if (req.body._importId) {
+        _objectId = req.body._importId;
+
+        if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
+          errors.push({code: 'missing_function', message: functionName + ' function not found'});
+        } else {
+          func = connectors[repoName].import[functionName];
+        }
+      }
+
+      if (!Array.isArray(req.body.postBody)) {
+        errors.push({code: 'invalid_args', message: 'postBody must be an array'});
+      } else {
+        postBodyArgs = req.body.postBody;
+      }
     }
   } else {
     errors.push({code: 'invalid_endpoint', message: endpoint + 'is invalid'});
@@ -168,7 +204,10 @@ function processIntegrationRequest(req, res, endpoint) {
     res.json(resp);
   };
 
-  var args = [req.body.bearerToken, _objectId, req.body.postBody, callback];
+  var args = [req.body.bearerToken, _objectId];
+  Array.prototype.push.apply(args, postBodyArgs);
+  args.push(callback);
+
   func.apply(null, args);
 }
 

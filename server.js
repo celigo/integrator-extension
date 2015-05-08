@@ -101,11 +101,9 @@ app.put('/settings', function (req, res) {
 });
 
 function processIntegrationRequest(req, res, endpoint) {
-  var errors = [];
+  var errors = validateReq(req);
 
-  var systemToken = findToken(req);
-  if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
-    errors.push({code: 'unauthorized', message: 'invalid system token'});
+  if ((errors.length > 0) && errors[0].code === 'unauthorized') {
     res.set('WWW-Authenticate', 'invalid system token');
     return res.status(401).json({errors: errors});
   }
@@ -123,18 +121,9 @@ function processIntegrationRequest(req, res, endpoint) {
     errors.push({code: 'Invalid_endpoint', message: endpoint + 'is invalid'});
   }
 
-  var bearerToken = req.body.bearerToken;
-  if (!bearerToken) {
-    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
   var _integrationId = req.body._integrationId;
   if (!_integrationId) {
     errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
-  if (!req.body.repository || !req.body.repository.name) {
-    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
   }
 
   // request errors
@@ -164,7 +153,7 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  func(bearerToken, _integrationId, req.body.postBody, function(err, resp) {
+  func(req.body.bearerToken, _integrationId, req.body.postBody, function(err, resp) {
     if (err) {
       errors.push({code: err.name, message: err.message});
       return res.status(422).json({errors: errors});
@@ -172,6 +161,27 @@ function processIntegrationRequest(req, res, endpoint) {
 
     res.json(resp);
   });
+}
+
+function validateReq(req) {
+  var errors = [];
+
+  var systemToken = findToken(req);
+  if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
+    errors.push({code: 'unauthorized', message: 'invalid system token'});
+    return errors;
+  }
+
+  var bearerToken = req.body.bearerToken;
+  if (!bearerToken) {
+    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
+  }
+
+  if (!req.body.repository || !req.body.repository.name) {
+    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
+  }
+
+  return errors;
 }
 
 var server = app.listen(port, function () {

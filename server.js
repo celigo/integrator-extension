@@ -100,67 +100,76 @@ app.put('/settings', function (req, res) {
   processIntegrationRequest(req, res, 'settings');
 });
 
+//TODO PUT for POST?
+app.put('/function', function (req, res) {
+  processIntegrationRequest(req, res, 'function');
+});
+
 function processIntegrationRequest(req, res, endpoint) {
   var errors = validateReq(req);
 
-  if ((errors.length > 0) && errors[0].code === 'unauthorized') {
-    res.set('WWW-Authenticate', 'invalid system token');
-    return res.status(401).json({errors: errors});
-  }
-
-  var functionName = undefined;
-
-  if (endpoint === 'setup') {
-    functionName = req.body.function;
-    if (!functionName) {
-      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
-    }
-  } else if (endpoint === 'settings') {
-    functionName = 'processSettings';
-  } else {
-    errors.push({code: 'Invalid_endpoint', message: endpoint + 'is invalid'});
-  }
-
-  var _integrationId = req.body._integrationId;
-  if (!_integrationId) {
-    errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
-  }
-
-  // request errors
   if (errors.length > 0) {
+    if (errors[0].code === 'unauthorized') {
+      res.set('WWW-Authenticate', 'invalid system token');
+      return res.status(401).json({errors: errors});
+    }
+
     return res.status(422).json({errors: errors});
   }
 
+  var functionName = undefined;
+  var _objectId = undefined;
   var repoName = req.body.repository.name;
   var func = undefined;
 
   if (endpoint === 'setup') {
-    if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
-      errors.push({code: 'missing_function', message: functionName + ' function not found'});
-    } else {
-      func = connectors[repoName].setup[functionName];
+    _objectId = req.body._integrationId;
+    if (!_objectId) {
+      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
     }
-  } else if (endpoint === 'settings'){
+
+    functionName = req.body.function;
+    if (!functionName) {
+      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
+    } else {
+
+      if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
+        errors.push({code: 'missing_function', message: functionName + ' function not found'});
+      } else {
+        func = connectors[repoName].setup[functionName];
+      }
+    }
+  } else if (endpoint === 'settings') {
+    _objectId = req.body._integrationId;
+    if (!_objectId) {
+      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
+    }
+
+    functionName = 'processSettings';
     if (!connectors[repoName] || !connectors[repoName]['processSettings']) {
       errors.push({code: 'missing_function', message: 'processSettings function not found'});
     } else {
       func = connectors[repoName]['processSettings'];
     }
+  } else {
+    errors.push({code: 'invalid_endpoint', message: endpoint + 'is invalid'});
   }
 
-  // connector repo errors
   if (errors.length > 0) {
     return res.status(422).json({errors: errors});
   }
 
-  func(req.body.bearerToken, _integrationId, req.body.postBody, function(err, resp) {
+  var callback = function(err, resp) {
     if (err) {
       errors.push({code: err.name, message: err.message});
       return res.status(422).json({errors: errors});
     }
 
     res.json(resp);
-  });
+  };
+
+  var args = [req.body.bearerToken, _objectId, req.body.postBody, callback];
+  func.apply(null, args);
 }
 
 function validateReq(req) {

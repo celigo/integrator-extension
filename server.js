@@ -12,6 +12,7 @@ var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
+var Promise = require('bluebird');
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -119,8 +120,8 @@ function processIntegrationRequest(req, res, endpoint) {
   var functionName = undefined;
   var _objectId = undefined;
   var repoName = req.body.repository.name;
-  var func = undefined;
   var postBodyArgs = [];
+  var promisifiedFunc = undefined;
 
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
@@ -136,7 +137,8 @@ function processIntegrationRequest(req, res, endpoint) {
       if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
         errors.push({code: 'missing_function', message: functionName + ' function not found'});
       } else {
-        func = connectors[repoName].setup[functionName];
+        var func = connectors[repoName].setup[functionName];
+        promisifiedFunc = Promise.promisify(func);
       }
     }
 
@@ -151,7 +153,8 @@ function processIntegrationRequest(req, res, endpoint) {
     if (!connectors[repoName] || !connectors[repoName][functionName]) {
       errors.push({code: 'missing_function', message: functionName + ' function not found'});
     } else {
-      func = connectors[repoName][functionName];
+      var func = connectors[repoName][functionName];
+      promisifiedFunc = Promise.promisify(func);
     }
 
     postBodyArgs.push(req.body.postBody);
@@ -173,7 +176,7 @@ function processIntegrationRequest(req, res, endpoint) {
           if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found'});
           } else {
-            func = connectors[repoName].export[functionName];
+            promisifiedFunc = connectors[repoName].export[functionName];
           }
         } else if (req.body._importId) {
           _objectId = req.body._importId;
@@ -181,12 +184,14 @@ function processIntegrationRequest(req, res, endpoint) {
           if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found'});
           } else {
-            func = connectors[repoName].import[functionName];
+            promisifiedFunc = connectors[repoName].import[functionName];
           }
         }
 
         if (!Array.isArray(req.body.postBody)) {
           errors.push({code: 'invalid_args', message: 'postBody must be an array'});
+        } else if (req.body.postBody.length === 0 || !Array.isArray(req.body.postBody[0])) {
+          errors.push({code: 'invalid_args', message: 'first argument must be an array'});
         } else {
           postBodyArgs = req.body.postBody;
         }
@@ -200,20 +205,28 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  var callback = function(err, resp) {
-    if (err) {
-      errors.push({code: err.name, message: err.message});
-      return res.status(422).json({errors: errors});
-    }
-
-    res.json(resp);
-  };
+  // var callback = function(err, resp) {
+  //   if (err) {
+  //     errors.push({code: err.name, message: err.message});
+  //     return res.status(422).json({errors: errors});
+  //   }
+  //
+  //   res.json(resp);
+  // };
 
   var args = [req.body.bearerToken, _objectId];
   Array.prototype.push.apply(args, postBodyArgs);
-  args.push(callback);
+  // args.push(callback);
 
-  func.apply(null, args);
+  // func.apply(null, args);
+
+  // var promisified = Promise.promisify(func);
+  promisifiedFunc.apply(null, args).then(function(resp) {
+    res.json(resp);
+  }).catch(function(err) {
+    errors.push({code: err.name, message: err.message});
+    return res.status(422).json({errors: errors});
+  });
 }
 
 function validateReq(req) {

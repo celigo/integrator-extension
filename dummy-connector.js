@@ -1,5 +1,6 @@
 var logger = require('winston');
 var nconf = require('nconf');
+var Promise = require('bluebird');
 
 var setup = {
   initialize: function(bearerToken, _integrationId, opts, callback) {
@@ -30,26 +31,38 @@ var processSettings = function(bearerToken, _integrationId, settings, callback) 
 };
 
 var imp = {
-  doSomethingError: function(bearerToken, _importId, arg1, callback) {
+  doSomethingError: function(bearerToken, _importId, arg1) {
     logger.info('running doSomethingError!');
-    callback(new Error('doSomethingError'));
+
+    return new Promise(function (fulfill, reject) {
+      reject(new Error('doSomethingError'));
+    });
   },
 
-  doSomething: function(bearerToken, _importId, arg1, arg2, callback) {
+  doSomething: function(bearerToken, _importId, arg1, arg2) {
     logger.info('running doSomething!');
-    callback(null, {bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+
+    return new Promise(function (fulfill, reject) {
+      fulfill({bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+    });
   }
 }
 
 var exp = {
   doSomethingError: function(bearerToken, _exportId, arg1, callback) {
     logger.info('running doSomethingError!');
-    callback(new Error('doSomethingError'));
+
+    return new Promise(function (fulfill, reject) {
+      reject(new Error('doSomethingError'));
+    });
   },
 
   doSomething: function(bearerToken, _exportId, arg1, arg2, callback) {
     logger.info('running doSomething!');
-    callback(null, {bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+
+    return new Promise(function (fulfill, reject) {
+      fulfill({bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+    });
   }
 }
 

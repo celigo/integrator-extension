@@ -121,7 +121,7 @@ function processIntegrationRequest(req, res, endpoint) {
   var _objectId = undefined;
   var repoName = req.body.repository.name;
   var postBodyArgs = [];
-  var promisifiedFunc = undefined;
+  var func = undefined;
 
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
@@ -137,8 +137,7 @@ function processIntegrationRequest(req, res, endpoint) {
       if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
         errors.push({code: 'missing_function', message: functionName + ' function not found'});
       } else {
-        var func = connectors[repoName].setup[functionName];
-        promisifiedFunc = Promise.promisify(func);
+        func = connectors[repoName].setup[functionName];
       }
     }
 
@@ -153,8 +152,7 @@ function processIntegrationRequest(req, res, endpoint) {
     if (!connectors[repoName] || !connectors[repoName][functionName]) {
       errors.push({code: 'missing_function', message: functionName + ' function not found'});
     } else {
-      var func = connectors[repoName][functionName];
-      promisifiedFunc = Promise.promisify(func);
+      func = connectors[repoName][functionName];
     }
 
     postBodyArgs.push(req.body.postBody);
@@ -176,7 +174,7 @@ function processIntegrationRequest(req, res, endpoint) {
           if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found'});
           } else {
-            promisifiedFunc = connectors[repoName].export[functionName];
+            func = connectors[repoName].export[functionName];
           }
         } else if (req.body._importId) {
           _objectId = req.body._importId;
@@ -184,7 +182,7 @@ function processIntegrationRequest(req, res, endpoint) {
           if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found'});
           } else {
-            promisifiedFunc = connectors[repoName].import[functionName];
+            func = connectors[repoName].import[functionName];
           }
         }
 
@@ -205,26 +203,13 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  // var callback = function(err, resp) {
-  //   if (err) {
-  //     errors.push({code: err.name, message: err.message});
-  //     return res.status(422).json({errors: errors});
-  //   }
-  //
-  //   res.json(resp);
-  // };
-
   var args = [req.body.bearerToken, _objectId];
   Array.prototype.push.apply(args, postBodyArgs);
-  // args.push(callback);
 
-  // func.apply(null, args);
-
-  // var promisified = Promise.promisify(func);
-  promisifiedFunc.apply(null, args).then(function(resp) {
+  func.apply(null, args).then(function(resp) {
     res.json(resp);
   }).catch(function(err) {
-    errors.push({code: err.name, message: err.message});
+    errors.push({code: err.name, message: err.message, source: err.source});
     return res.status(422).json({errors: errors});
   });
 }

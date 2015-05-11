@@ -3,64 +3,72 @@ var nconf = require('nconf');
 var Promise = require('bluebird');
 
 var setup = {
-  initialize: function(bearerToken, _integrationId, opts, callback) {
-    logger.info('running initialize!');
-    callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'initialize'});
+  initialize: function(bearerToken, _integrationId, opts) {
+    return new Promise(function (fulfill, reject) {
+      logger.info('running initialize!');
+
+      fulfill({bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'initialize'});
+    });
   },
 
-  runSetupErrorStep: function(bearerToken, _integrationId, opts, callback) {
-    logger.info('running runSetupErrorStep!');
-    callback(new Error('runSetupErrorStep'));
+  runSetupErrorStep: function(bearerToken, _integrationId, opts) {
+    return new Promise(function (fulfill, reject) {
+      logger.info('running runSetupErrorStep!');
+
+      reject(new Error('runSetupErrorStep'));
+    });
   },
 
-  runSetupSuccessStep: function(bearerToken, _integrationId, opts, callback) {
-    logger.info('running runSetupSuccessStep!');
-    callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'runSetupSuccessStep'});
+  runSetupSuccessStep: function(bearerToken, _integrationId, opts) {
+    return new Promise(function (fulfill, reject) {
+      logger.info('running runSetupSuccessStep!');
+
+      fulfill({bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'runSetupSuccessStep'});
+    });
   }
 }
 
 
-var processSettings = function(bearerToken, _integrationId, settings, callback) {
-  logger.info('running processSettings!');
+var processSettings = function(bearerToken, _integrationId, settings) {
+  return new Promise(function (fulfill, reject) {
+    logger.info('running processSettings!');
+    if (settings.error) {
+      return reject(new Error('processSettings'));
+    }
 
-  if (settings.error) {
-    return callback(new Error('processSettings'));
-  }
-
-  callback(null, {bearerToken: bearerToken, _integrationId: _integrationId, settings: settings, functionName: 'processSettings'});
+    fulfill({bearerToken: bearerToken, _integrationId: _integrationId, settings: settings, functionName: 'processSettings'});
+  });
 };
 
 var imp = {
   doSomethingError: function(bearerToken, _importId, arg1) {
-    logger.info('running doSomethingError!');
-
     return new Promise(function (fulfill, reject) {
+      logger.info('running doSomethingError!');
+
       reject(new Error('doSomethingError'));
     });
   },
 
   doSomething: function(bearerToken, _importId, arg1, arg2) {
-    logger.info('running doSomething!');
-
     return new Promise(function (fulfill, reject) {
+      logger.info('running doSomething!');
+
       fulfill({bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
     });
   }
 }
 
 var exp = {
-  doSomethingError: function(bearerToken, _exportId, arg1, callback) {
-    logger.info('running doSomethingError!');
-
+  doSomethingError: function(bearerToken, _exportId, arg1) {
     return new Promise(function (fulfill, reject) {
+      logger.info('running doSomethingError!');
       reject(new Error('doSomethingError'));
     });
   },
 
-  doSomething: function(bearerToken, _exportId, arg1, arg2, callback) {
-    logger.info('running doSomething!');
-
+  doSomething: function(bearerToken, _exportId, arg1, arg2) {
     return new Promise(function (fulfill, reject) {
+      logger.info('running doSomething!');
       fulfill({bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
     });
   }

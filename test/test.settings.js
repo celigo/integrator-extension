@@ -23,7 +23,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'Error', message: 'processSettings' } ] };
+        var expected = { errors: [ { code: 'Error', message: 'processSettings', source:'connector' } ] };
 
         assert.deepEqual(body, expected);
         done();
@@ -66,7 +66,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request"}] };
+        var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -83,7 +83,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"_integrationId","code":"missing_required_field","message":"missing required field in request"}] };
+        var expected = { errors: [{"field":"_integrationId","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -100,7 +100,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request"}] };
+        var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -120,7 +120,7 @@ describe('Dummy connector tests', function() {
         res.statusCode.should.equal(401);
 
         res.headers['WWW-Authenticate'.toLowerCase()].should.equal('invalid system token');
-        var expected = { errors: [{"code":"unauthorized","message":"invalid system token"}] };
+        var expected = { errors: [{"code":"unauthorized","message":"invalid system token", source: 'adaptor'}] };
         assert.deepEqual(body, expected);
 
         done();

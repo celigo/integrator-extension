@@ -45,7 +45,11 @@ var imp = {
     return new Promise(function (fulfill, reject) {
       logger.info('running doSomethingError!');
 
-      reject(new Error('doSomethingError'));
+      var error = new Error('doSomethingError');
+      error.source = 'connector';
+      error.name = 'my_error';
+
+      reject(error);
     });
   },
 
@@ -62,7 +66,12 @@ var exp = {
   doSomethingError: function(bearerToken, _exportId, arg1) {
     return new Promise(function (fulfill, reject) {
       logger.info('running doSomethingError!');
-      reject(new Error('doSomethingError'));
+
+      var error = new Error('doSomethingError');
+      error.source = 'connector';
+      error.name = 'my_error';
+
+      reject(error);
     });
   },
 

@@ -46,7 +46,7 @@ var imp = {
       logger.info('running doSomethingError!');
 
       var error = new Error('doSomethingError');
-      error.source = 'connector';
+      error.source = 'myConnector';
       error.name = 'my_error';
 
       reject(error);

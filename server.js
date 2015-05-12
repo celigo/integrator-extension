@@ -126,16 +126,16 @@ function processIntegrationRequest(req, res, endpoint) {
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
     if (!_objectId) {
-      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
+      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     }
 
     functionName = req.body.function;
     if (!functionName) {
-      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
+      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     } else {
 
       if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
-        errors.push({code: 'missing_function', message: functionName + ' function not found'});
+        errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
       } else {
         func = connectors[repoName].setup[functionName];
       }
@@ -145,12 +145,12 @@ function processIntegrationRequest(req, res, endpoint) {
   } else if (endpoint === 'settings') {
     _objectId = req.body._integrationId;
     if (!_objectId) {
-      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request'});
+      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     }
 
     functionName = 'processSettings';
     if (!connectors[repoName] || !connectors[repoName][functionName]) {
-      errors.push({code: 'missing_function', message: functionName + ' function not found'});
+      errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
     } else {
       func = connectors[repoName][functionName];
     }
@@ -158,21 +158,21 @@ function processIntegrationRequest(req, res, endpoint) {
     postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'function') {
     if (!req.body._exportId && !req.body._importId) {
-      errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request'});
+      errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
     } else if (req.body._exportId && req.body._importId) {
-      errors.push({code: 'invalid_request', message: 'both _importId and _exportId must not be sent together'});
+      errors.push({code: 'invalid_request', message: 'both _importId and _exportId must not be sent together', source: 'adaptor'});
     } else {
 
       functionName = req.body.function;
       if (!functionName) {
-        errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request'});
+        errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
       } else {
 
         if (req.body._exportId) {
           _objectId = req.body._exportId;
 
           if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
-            errors.push({code: 'missing_function', message: functionName + ' function not found'});
+            errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
             func = connectors[repoName].export[functionName];
           }
@@ -180,23 +180,23 @@ function processIntegrationRequest(req, res, endpoint) {
           _objectId = req.body._importId;
 
           if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
-            errors.push({code: 'missing_function', message: functionName + ' function not found'});
+            errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
             func = connectors[repoName].import[functionName];
           }
         }
 
         if (!Array.isArray(req.body.postBody)) {
-          errors.push({code: 'invalid_args', message: 'postBody must be an array'});
+          errors.push({code: 'invalid_args', message: 'postBody must be an array', source: 'adaptor'});
         } else if (req.body.postBody.length === 0 || !Array.isArray(req.body.postBody[0])) {
-          errors.push({code: 'invalid_args', message: 'first argument must be an array'});
+          errors.push({code: 'invalid_args', message: 'first argument must be an array', source: 'adaptor'});
         } else {
           postBodyArgs = req.body.postBody;
         }
       }
     }
   } else {
-    errors.push({code: 'invalid_endpoint', message: endpoint + 'is invalid'});
+    errors.push({code: 'invalid_endpoint', message: endpoint + 'is invalid', source: 'adaptor'});
   }
 
   if (errors.length > 0) {
@@ -209,7 +209,7 @@ function processIntegrationRequest(req, res, endpoint) {
   func.apply(null, args).then(function(resp) {
     res.json(resp);
   }).catch(function(err) {
-    errors.push({code: err.name, message: err.message, source: err.source});
+    errors.push({code: err.name, message: err.message, source: err.source || 'connector'});
     return res.status(422).json({errors: errors});
   });
 }
@@ -219,17 +219,17 @@ function validateReq(req) {
 
   var systemToken = findToken(req);
   if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
-    errors.push({code: 'unauthorized', message: 'invalid system token'});
+    errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
     return errors;
   }
 
   var bearerToken = req.body.bearerToken;
   if (!bearerToken) {
-    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request'});
+    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
   }
 
   if (!req.body.repository || !req.body.repository.name) {
-    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request'});
+    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
   }
 
   return errors;

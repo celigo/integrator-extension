@@ -13,6 +13,7 @@ var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var Promise = require('bluebird');
+var sizeof = require('object-sizeof');
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -160,6 +161,10 @@ function processIntegrationRequest(req, res, endpoint) {
   } else if (endpoint === 'function') {
     isFunction = true;
 
+    if (!req.body.maxPageSize) {
+      errors.push({code: 'missing_required_field', message: 'maxPageSize must be sent in the request', source: 'adaptor'});
+    }
+
     if (!req.body._exportId && !req.body._importId) {
       errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
     } else if (req.body._exportId && req.body._importId) {
@@ -211,7 +216,9 @@ function processIntegrationRequest(req, res, endpoint) {
 
   func.apply(null, args).then(function(result) {
 
-    // function checks
+    if (isFunction) {
+      validateConnectorFunctionResponse(req.body, result);
+    }
 
     res.json(result);
   }).catch(function(err) {
@@ -220,32 +227,14 @@ function processIntegrationRequest(req, res, endpoint) {
   });
 }
 
-// function validateConnectorFunctionResponseData(reqBody, result) {
-//   var errors = [];
-//
-//   if (!reqBody.maxPageSize) {
-//     errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
-//     return errors;
-//   }
-//
-//
-//   var systemToken = findToken(req);
-//   if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
-//     errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
-//     return errors;
-//   }
-//
-//   var bearerToken = req.body.bearerToken;
-//   if (!bearerToken) {
-//     errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-//   }
-//
-//   if (!req.body.repository || !req.body.repository.name) {
-//     errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-//   }
-//
-//   return errors;
-// }
+function validateConnectorFunctionResponse(reqBody, result) {
+  if (sizeof(result) > reqBody.maxPageSize) {
+    var error = new Error('hook response size exceeds max page size ' + reqBody.maxPageSize);
+    error.name = 'invalid_hook_response';
+
+    throw error;
+  }
+}
 
 
 function validateReq(req) {

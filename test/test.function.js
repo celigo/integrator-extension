@@ -226,6 +226,7 @@ describe('Dummy connector function tests', function() {
     });
 
     it('should fail when response is greater than max page size', generateMaxPageSizeTest(true));
+    it('should fail when response is not searializable', generateNonStringifiableResponseTest(true));
   });
 
   describe('Export function tests', function() {
@@ -441,6 +442,7 @@ describe('Dummy connector function tests', function() {
     });
 
     it('should fail when response is greater than max page size', generateMaxPageSizeTest(false));
+    it('should fail when response is not searializable', generateNonStringifiableResponseTest(false));
   });
 
   describe('Misc function tests', function() {
@@ -487,33 +489,60 @@ describe('Dummy connector function tests', function() {
     });
   });
 
+  function generateMaxPageSizeTest(isImport) {
+    return function(done) {
+      var setupStepUrl = baseURL + '/function'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'echoResponse',
+        maxPageSize: 2,
+        postBody: [['abc'], [{k: 'v'}]]
+      };
 
-function generateMaxPageSizeTest(isImport) {
-  return function(done) {
-    var setupStepUrl = baseURL + '/function'
-    var postBody = {
-      bearerToken: bearerToken,
-      repository: {name: 'dummy-connector'},
-      function: 'echoResponse',
-      maxPageSize: 2,
-      postBody: [['abc'], [{k: 'v'}]]
-    };
+      if (isImport) {
+        postBody._importId = _importId;
+      } else {
+        postBody._exportId = _exportId;
+      }
 
-    if (isImport) {
-      postBody._importId = _importId;
-    } else {
-      postBody._exportId = _exportId;
+      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+        logger.info(body);
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object size exceeds max page size 2", source: '_connector'}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
     }
-
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-      logger.info(body);
-      res.statusCode.should.equal(422);
-      var expected = { errors: [{"code":"invalid_hook_response","message":"hook response size exceeds max page size 2", source: '_connector'}] };
-
-      assert.deepEqual(body, expected);
-      done();
-    }, systemToken);
   }
-}
+
+  function generateNonStringifiableResponseTest(isImport) {
+    return function(done) {
+      var setupStepUrl = baseURL + '/function'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'respondWithNonSearializableObject',
+        maxPageSize: 2000,
+        postBody: [['abc']]
+      };
+
+      if (isImport) {
+        postBody._importId = _importId;
+      } else {
+        postBody._exportId = _exportId;
+      }
+
+      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+        logger.info(body);
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object not serializable [stringified/parsed object not same as original]", source: '_connector'}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
+    }
+  }
 
 });

@@ -14,6 +14,7 @@ var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var Promise = require('bluebird');
 var sizeof = require('object-sizeof');
+var deepIs = require('deep-is');
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -229,8 +230,25 @@ function processIntegrationRequest(req, res, endpoint) {
 
 function validateConnectorFunctionResponse(reqBody, result) {
   if (sizeof(result) > reqBody.maxPageSize) {
-    var error = new Error('hook response size exceeds max page size ' + reqBody.maxPageSize);
+    var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
     error.name = 'invalid_hook_response';
+
+    throw error;
+  }
+
+  try {
+    var stringifiedResult = JSON.stringify(result);
+    var reconstructedResult = JSON.parse(stringifiedResult);
+
+    if (!deepIs(result, reconstructedResult)) {
+      var error = new Error('stringified/parsed object not same as original');
+      error.name = 'invalid_hook_response';
+      throw error;
+    }
+
+  } catch (e) {
+    var error = new Error('hook response object not serializable [' + e.message + ']');
+    error.name = e.name;
 
     throw error;
   }

@@ -65,6 +65,17 @@ var imp = {
       logger.info('running import echoResponse!');
       fulfill(resp);
     });
+  },
+
+  respondWithNonSearializableObject: function(bearerToken, _importId) {
+    return new Promise(function (fulfill, reject) {
+      logger.info('running import respondWithNonStringifiableObject!');
+
+      fulfill({
+        a: 'b',
+        date: new Date()
+      });
+    });
   }
 }
 
@@ -91,6 +102,17 @@ var exp = {
     return new Promise(function (fulfill, reject) {
       logger.info('running export echoResponse!');
       fulfill(resp);
+    });
+  },
+
+  respondWithNonSearializableObject: function(bearerToken, _exportId) {
+    return new Promise(function (fulfill, reject) {
+      logger.info('running export respondWithNonStringifiableObject!');
+
+      fulfill({
+        a: 'b',
+        date: new Date()
+      });
     });
   }
 }

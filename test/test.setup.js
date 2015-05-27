@@ -70,7 +70,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep', source: 'connector' } ] };
+        var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep', source: '_connector' } ] };
 
         assert.deepEqual(body, expected);
         done();

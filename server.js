@@ -122,6 +122,7 @@ function processIntegrationRequest(req, res, endpoint) {
   var repoName = req.body.repository.name;
   var postBodyArgs = [];
   var func = undefined;
+  var isFunction = false;
 
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
@@ -157,6 +158,8 @@ function processIntegrationRequest(req, res, endpoint) {
 
     postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'function') {
+    isFunction = true;
+
     if (!req.body._exportId && !req.body._importId) {
       errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
     } else if (req.body._exportId && req.body._importId) {
@@ -206,13 +209,44 @@ function processIntegrationRequest(req, res, endpoint) {
   var args = [req.body.bearerToken, _objectId];
   Array.prototype.push.apply(args, postBodyArgs);
 
-  func.apply(null, args).then(function(resp) {
-    res.json(resp);
+  func.apply(null, args).then(function(result) {
+
+    // function checks
+
+    res.json(result);
   }).catch(function(err) {
-    errors.push({code: err.name, message: err.message, source: err.source || 'connector'});
+    errors.push({code: err.name, message: err.message, source: '_connector'});
     return res.status(422).json({errors: errors});
   });
 }
+
+// function validateConnectorFunctionResponseData(reqBody, result) {
+//   var errors = [];
+//
+//   if (!reqBody.maxPageSize) {
+//     errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
+//     return errors;
+//   }
+//
+//
+//   var systemToken = findToken(req);
+//   if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
+//     errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
+//     return errors;
+//   }
+//
+//   var bearerToken = req.body.bearerToken;
+//   if (!bearerToken) {
+//     errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+//   }
+//
+//   if (!req.body.repository || !req.body.repository.name) {
+//     errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+//   }
+//
+//   return errors;
+// }
+
 
 function validateReq(req) {
   var errors = [];

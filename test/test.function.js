@@ -77,7 +77,7 @@ describe('Dummy connector function tests', function() {
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"myConnector" } ] };
+        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"_connector" } ] };
 
         assert.deepEqual(body, expected);
         done();
@@ -280,7 +280,7 @@ describe('Dummy connector function tests', function() {
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"connector" } ] };
+        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"_connector" } ] };
 
         assert.deepEqual(body, expected);
         done();

@@ -22,19 +22,20 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [['abc'], {k: 'v'}]
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(200);
         logger.info(body);
+        res.statusCode.should.equal(200);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._importId.should.equal(_importId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._importId.should.equal(_importId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -47,6 +48,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [['abc'], {k: 'v'}]
       };
 
@@ -54,12 +56,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._importId.should.equal(_importId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._importId.should.equal(_importId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -72,12 +74,13 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"myConnector" } ] };
+        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"_connector" } ] };
 
         assert.deepEqual(body, expected);
         done();
@@ -90,6 +93,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [{key: 'value'}]
       };
 
@@ -108,6 +112,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -126,6 +131,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
@@ -144,6 +150,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         function: 'doSomethingError',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -163,6 +170,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'badFunction',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
@@ -182,6 +190,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -201,6 +210,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -214,6 +224,9 @@ describe('Dummy connector function tests', function() {
         done();
       }, 'BAD_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
     });
+
+    it('should fail when response is greater than max page size', generateMaxPageSizeTest(true));
+    it('should fail when response is not searializable', generateNonStringifiableResponseTest(true));
   });
 
   describe('Export function tests', function() {
@@ -225,6 +238,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [['abc'], {k: 'v'}]
       };
 
@@ -232,12 +246,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._exportId.should.equal(_exportId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._exportId.should.equal(_exportId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -250,6 +264,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [['abc'], {k: 'v'}, 'aa']
       };
 
@@ -257,12 +272,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._exportId.should.equal(_exportId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._exportId.should.equal(_exportId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -275,12 +290,13 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"connector" } ] };
+        var expected = { errors: [ { code: 'my_error', message: 'doSomethingError', "source":"_connector" } ] };
 
         assert.deepEqual(body, expected);
         done();
@@ -293,6 +309,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [{key: 'value'}]
       };
 
@@ -311,6 +328,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -329,6 +347,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
@@ -347,6 +366,7 @@ describe('Dummy connector function tests', function() {
         bearerToken: bearerToken,
         function: 'doSomethingError',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -366,6 +386,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'badFunction',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: [[{key: 'value'}]]
       };
 
@@ -385,6 +406,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -404,6 +426,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: {key: 'value'}
       };
 
@@ -417,6 +440,9 @@ describe('Dummy connector function tests', function() {
         done();
       }, 'BAD_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
     });
+
+    it('should fail when response is greater than max page size', generateMaxPageSizeTest(false));
+    it('should fail when response is not searializable', generateNonStringifiableResponseTest(false));
   });
 
   describe('Misc function tests', function() {
@@ -429,6 +455,7 @@ describe('Dummy connector function tests', function() {
         function: 'doSomething',
         _importId: _importId,
         _exportId: _exportId,
+        maxPageSize: 2000,
         postBody: ['abc', {k: 'v'}]
       };
 
@@ -448,6 +475,7 @@ describe('Dummy connector function tests', function() {
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
         _importId: _importId,
+        maxPageSize: 2000,
         postBody: ['abc', {k: 'v'}]
       };
 
@@ -460,5 +488,61 @@ describe('Dummy connector function tests', function() {
       }, systemToken);
     });
   });
+
+  function generateMaxPageSizeTest(isImport) {
+    return function(done) {
+      var setupStepUrl = baseURL + '/function'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'echoResponse',
+        maxPageSize: 2,
+        postBody: [['abc'], [{k: 'v'}]]
+      };
+
+      if (isImport) {
+        postBody._importId = _importId;
+      } else {
+        postBody._exportId = _exportId;
+      }
+
+      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+        logger.info(body);
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object size exceeds max page size 2", source: '_connector'}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
+    }
+  }
+
+  function generateNonStringifiableResponseTest(isImport) {
+    return function(done) {
+      var setupStepUrl = baseURL + '/function'
+      var postBody = {
+        bearerToken: bearerToken,
+        repository: {name: 'dummy-connector'},
+        function: 'respondWithNonSearializableObject',
+        maxPageSize: 2000,
+        postBody: [['abc']]
+      };
+
+      if (isImport) {
+        postBody._importId = _importId;
+      } else {
+        postBody._exportId = _exportId;
+      }
+
+      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+        logger.info(body);
+        res.statusCode.should.equal(422);
+        var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object not serializable [stringified/parsed object not same as original]", source: '_connector'}] };
+
+        assert.deepEqual(body, expected);
+        done();
+      }, systemToken);
+    }
+  }
 
 });

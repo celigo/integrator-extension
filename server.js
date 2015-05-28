@@ -13,6 +13,8 @@ var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var Promise = require('bluebird');
+var sizeof = require('object-sizeof');
+var deepIs = require('deep-is');
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -122,6 +124,7 @@ function processIntegrationRequest(req, res, endpoint) {
   var repoName = req.body.repository.name;
   var postBodyArgs = [];
   var func = undefined;
+  var isFunction = false;
 
   if (endpoint === 'setup') {
     _objectId = req.body._integrationId;
@@ -157,6 +160,12 @@ function processIntegrationRequest(req, res, endpoint) {
 
     postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'function') {
+    isFunction = true;
+
+    if (!req.body.maxPageSize) {
+      errors.push({code: 'missing_required_field', message: 'maxPageSize must be sent in the request', source: 'adaptor'});
+    }
+
     if (!req.body._exportId && !req.body._importId) {
       errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
     } else if (req.body._exportId && req.body._importId) {
@@ -206,13 +215,45 @@ function processIntegrationRequest(req, res, endpoint) {
   var args = [req.body.bearerToken, _objectId];
   Array.prototype.push.apply(args, postBodyArgs);
 
-  func.apply(null, args).then(function(resp) {
-    res.json(resp);
+  func.apply(null, args).then(function(result) {
+
+    if (isFunction) {
+      validateConnectorFunctionResponse(req.body, result);
+    }
+
+    res.json(result);
   }).catch(function(err) {
-    errors.push({code: err.name, message: err.message, source: err.source || 'connector'});
+    errors.push({code: err.name, message: err.message, source: '_connector'});
     return res.status(422).json({errors: errors});
   });
 }
+
+function validateConnectorFunctionResponse(reqBody, result) {
+  if (sizeof(result) > reqBody.maxPageSize) {
+    var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
+    error.name = 'invalid_hook_response';
+
+    throw error;
+  }
+
+  try {
+    var stringifiedResult = JSON.stringify(result);
+    var reconstructedResult = JSON.parse(stringifiedResult);
+
+    if (!deepIs(result, reconstructedResult)) {
+      var error = new Error('stringified/parsed object not same as original');
+      error.name = 'invalid_hook_response';
+      throw error;
+    }
+
+  } catch (e) {
+    var error = new Error('hook response object not serializable [' + e.message + ']');
+    error.name = e.name;
+
+    throw error;
+  }
+}
+
 
 function validateReq(req) {
   var errors = [];

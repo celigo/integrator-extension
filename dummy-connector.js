@@ -56,7 +56,7 @@ var imp = {
     return new Promise(function (fulfill, reject) {
       logger.info('running import doSomething!');
 
-      fulfill({bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+      fulfill([{bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'}]);
     });
   },
 
@@ -94,7 +94,7 @@ var exp = {
   doSomething: function(bearerToken, _exportId, arg1, arg2) {
     return new Promise(function (fulfill, reject) {
       logger.info('running export doSomething!');
-      fulfill({bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+      fulfill([{bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'}]);
     });
   },
 

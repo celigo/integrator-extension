@@ -30,12 +30,12 @@ describe('Dummy connector function tests', function() {
         logger.info(body);
         res.statusCode.should.equal(200);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._importId.should.equal(_importId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._importId.should.equal(_importId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -56,12 +56,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._importId.should.equal(_importId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._importId.should.equal(_importId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -246,12 +246,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._exportId.should.equal(_exportId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._exportId.should.equal(_exportId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);
@@ -272,12 +272,12 @@ describe('Dummy connector function tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        body.functionName.should.equal('doSomething');
-        body._exportId.should.equal(_exportId);
+        body[0].bearerToken.should.equal(bearerToken);
+        body[0].functionName.should.equal('doSomething');
+        body[0]._exportId.should.equal(_exportId);
 
-        assert.deepEqual(body.arg1, ['abc']);
-        assert.deepEqual(body.arg2, {k: 'v'});
+        assert.deepEqual(body[0].arg1, ['abc']);
+        assert.deepEqual(body[0].arg2, {k: 'v'});
 
         done();
       }, systemToken);

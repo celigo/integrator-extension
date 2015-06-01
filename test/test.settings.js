@@ -37,9 +37,9 @@ describe('Dummy connector tests', function() {
         repository: {name: 'dummy-connector'},
         _integrationId: _integrationId,
         postBody: {
-          persisted: {key1: 'value1', key2: 'value21'},
-          pending: {key1: 'value2', key2: 'value22'},
-          delta: {key1: 'value2'}
+          persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
+          pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
+          delta: {fieldTwo: 'newValue'}
         }
       };
 

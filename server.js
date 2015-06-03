@@ -12,7 +12,6 @@ var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
-var Promise = require('bluebird');
 var sizeof = require('object-sizeof');
 var deepIs = require('deep-is');
 
@@ -215,17 +214,26 @@ function processIntegrationRequest(req, res, endpoint) {
   var args = [req.body.bearerToken, _objectId];
   Array.prototype.push.apply(args, postBodyArgs);
 
-  func.apply(null, args).then(function(result) {
+  var callback = function(err, result) {
+    if (err) {
+      errors.push({code: err.name, message: err.message, source: '_connector'});
+      return res.status(422).json({errors: errors});
+    }
 
     if (isFunction) {
-      validateConnectorFunctionResponse(req.body, result);
+      var validationError = validateConnectorFunctionResponse(req.body, result);
+
+      if (validationError) {
+        errors.push({code: validationError.name, message: validationError.message, source: '_connector'});
+        return res.status(422).json({errors: errors});
+      }
     }
 
     res.json(result);
-  }).catch(function(err) {
-    errors.push({code: err.name, message: err.message, source: '_connector'});
-    return res.status(422).json({errors: errors});
-  });
+  }
+
+  args.push(callback);
+  func.apply(null, args);
 }
 
 function validateConnectorFunctionResponse(reqBody, result) {
@@ -233,7 +241,7 @@ function validateConnectorFunctionResponse(reqBody, result) {
     var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
     error.name = 'invalid_hook_response';
 
-    throw error;
+    return error;
   }
 
   try {
@@ -250,8 +258,10 @@ function validateConnectorFunctionResponse(reqBody, result) {
     var error = new Error('hook response object not serializable [' + e.message + ']');
     error.name = e.name;
 
-    throw error;
+    return error;
   }
+
+  return null;
 }
 
 

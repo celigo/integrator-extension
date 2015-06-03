@@ -41,7 +41,7 @@ describe('Dummy connector function tests', function() {
       }, systemToken);
     });
 
-    it('should pass after successfully calling import function with more args than declared - future backward compatibility', function(done) {
+    it.skip('should pass after successfully calling import function with more args than declared - future backward compatibility', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         bearerToken: bearerToken,
@@ -49,7 +49,7 @@ describe('Dummy connector function tests', function() {
         function: 'doSomething',
         _importId: _importId,
         maxPageSize: 2000,
-        postBody: [['abc'], {k: 'v'}]
+        postBody: [['abc'], {k: 'v'}, {k2: 'v'}]
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -257,7 +257,7 @@ describe('Dummy connector function tests', function() {
       }, systemToken);
     });
 
-    it('should pass after successfully calling export function with more args than declared - future backward compatibility', function(done) {
+    it.skip('should pass after successfully calling export function with more args than declared - future backward compatibility', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         bearerToken: bearerToken,

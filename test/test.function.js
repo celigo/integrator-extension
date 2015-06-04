@@ -18,50 +18,23 @@ describe('Dummy connector function tests', function() {
     it('should pass after successfully calling import function', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: [['abc'], {k: 'v'}]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         logger.info(body);
         res.statusCode.should.equal(200);
 
-        body[0].bearerToken.should.equal(bearerToken);
-        body[0].functionName.should.equal('doSomething');
-        body[0]._importId.should.equal(_importId);
-
-        assert.deepEqual(body[0].arg1, ['abc']);
-        assert.deepEqual(body[0].arg2, {k: 'v'});
-
-        done();
-      }, systemToken);
-    });
-
-    it('should pass after successfully calling import function with more args than declared - future backward compatibility', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        bearerToken: bearerToken,
-        repository: {name: 'dummy-connector'},
-        function: 'doSomething',
-        _importId: _importId,
-        maxPageSize: 2000,
-        postBody: [['abc'], {k: 'v'}]
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(200);
-        logger.info(body);
-
-        body[0].bearerToken.should.equal(bearerToken);
-        body[0].functionName.should.equal('doSomething');
-        body[0]._importId.should.equal(_importId);
-
-        assert.deepEqual(body[0].arg1, ['abc']);
-        assert.deepEqual(body[0].arg2, {k: 'v'});
+        postBody.postBody.functionName = 'doSomething';
+        assert.deepEqual(body, [postBody.postBody]);
 
         done();
       }, systemToken);
@@ -70,12 +43,14 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -92,9 +67,11 @@ describe('Dummy connector function tests', function() {
       var postBody = {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: [{key: 'value'}]
+        postBody: {
+          key1: ['abc'],
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -109,11 +86,13 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing _importId', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -128,11 +107,13 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing function name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -147,11 +128,13 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing repository name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         function: 'doSomethingError',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -166,12 +149,14 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing function error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'badFunction',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -183,35 +168,17 @@ describe('Dummy connector function tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for non array post body', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        bearerToken: bearerToken,
-        repository: {name: 'dummy-connector'},
-        function: 'doSomethingError',
-        _importId: _importId,
-        maxPageSize: 2000,
-        postBody: {key: 'value'}
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"invalid_args","message":"postBody must be an array", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _importId: _importId,
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -234,50 +201,23 @@ describe('Dummy connector function tests', function() {
     it('should pass after successfully calling export function', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: [['abc'], {k: 'v'}]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body[0].bearerToken.should.equal(bearerToken);
-        body[0].functionName.should.equal('doSomething');
-        body[0]._exportId.should.equal(_exportId);
-
-        assert.deepEqual(body[0].arg1, ['abc']);
-        assert.deepEqual(body[0].arg2, {k: 'v'});
-
-        done();
-      }, systemToken);
-    });
-
-    it('should pass after successfully calling export function with more args than declared - future backward compatibility', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        bearerToken: bearerToken,
-        repository: {name: 'dummy-connector'},
-        function: 'doSomething',
-        _exportId: _exportId,
-        maxPageSize: 2000,
-        postBody: [['abc'], {k: 'v'}, 'aa']
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(200);
-        logger.info(body);
-
-        body[0].bearerToken.should.equal(bearerToken);
-        body[0].functionName.should.equal('doSomething');
-        body[0]._exportId.should.equal(_exportId);
-
-        assert.deepEqual(body[0].arg1, ['abc']);
-        assert.deepEqual(body[0].arg2, {k: 'v'});
+        postBody.postBody.functionName = 'doSomething';
+        assert.deepEqual(body, [postBody.postBody]);
 
         done();
       }, systemToken);
@@ -286,12 +226,15 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -308,9 +251,12 @@ describe('Dummy connector function tests', function() {
       var postBody = {
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: [{key: 'value'}]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -325,11 +271,14 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing _exportId', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -344,11 +293,14 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing function name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -363,11 +315,14 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing repository name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         function: 'doSomethingError',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -382,12 +337,15 @@ describe('Dummy connector function tests', function() {
     it('should fail with 422 for missing function error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'badFunction',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: [[{key: 'value'}]]
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -399,35 +357,18 @@ describe('Dummy connector function tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for non array post body', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        bearerToken: bearerToken,
-        repository: {name: 'dummy-connector'},
-        function: 'doSomethingError',
-        _exportId: _exportId,
-        maxPageSize: 2000,
-        postBody: {key: 'value'}
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"invalid_args","message":"postBody must be an array", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomethingError',
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: {key: 'value'}
+        postBody: {
+          key1: ['abc'],
+          key2: {k: 'v'},
+          bearerToken: bearerToken,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -450,38 +391,20 @@ describe('Dummy connector function tests', function() {
     it('should fail when both _importId and exportId are sent', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'doSomething',
-        _importId: _importId,
-        _exportId: _exportId,
         maxPageSize: 2000,
-        postBody: ['abc', {k: 'v'}]
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken,
+          _importId: _importId,
+          _exportId: _exportId
+        }
       };
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
         var expected = { errors: [{"code":"invalid_request","message":"both _importId and _exportId must not be sent together", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail when first argument is not an array', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        bearerToken: bearerToken,
-        repository: {name: 'dummy-connector'},
-        function: 'doSomething',
-        _importId: _importId,
-        maxPageSize: 2000,
-        postBody: ['abc', {k: 'v'}]
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"invalid_args","message":"first argument must be an array", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -493,17 +416,19 @@ describe('Dummy connector function tests', function() {
     return function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'echoResponse',
         maxPageSize: 2,
-        postBody: [['abc'], [{k: 'v'}]]
+        postBody: {
+          resp: ['abc', 'abc'],
+          bearerToken: bearerToken
+        }
       };
 
       if (isImport) {
-        postBody._importId = _importId;
+        postBody.postBody._importId = _importId;
       } else {
-        postBody._exportId = _exportId;
+        postBody.postBody._exportId = _exportId;
       }
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -521,17 +446,19 @@ describe('Dummy connector function tests', function() {
     return function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
         function: 'respondWithNonSearializableObject',
         maxPageSize: 2000,
-        postBody: [['abc']]
+        postBody: {
+          key1: ['abc'],
+          bearerToken: bearerToken
+        }
       };
 
       if (isImport) {
-        postBody._importId = _importId;
+        postBody.postBody._importId = _importId;
       } else {
-        postBody._exportId = _exportId;
+        postBody.postBody._exportId = _exportId;
       }
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {

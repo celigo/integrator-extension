@@ -15,10 +15,12 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for settings error', function(done) {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
-        _integrationId: _integrationId,
-        postBody: {error: true}
+        postBody: {
+          error: true,
+          bearerToken: bearerToken,
+          _integrationId: _integrationId
+        }
       };
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -33,13 +35,13 @@ describe('Dummy connector tests', function() {
     it('should pass after successfully executing settings step', function(done) {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
-        _integrationId: _integrationId,
         postBody: {
           persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
           pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
-          delta: {fieldTwo: 'newValue'}
+          delta: {fieldTwo: 'newValue'},
+          bearerToken: bearerToken,
+          _integrationId: _integrationId
         }
       };
 
@@ -47,10 +49,8 @@ describe('Dummy connector tests', function() {
         res.statusCode.should.equal(200);
         logger.info(body);
 
-        body.bearerToken.should.equal(bearerToken);
-        assert.deepEqual(body.settings, postBody.postBody);
-        body.functionName.should.equal('processSettings');
-        body._integrationId.should.equal(_integrationId);
+        postBody.postBody.functionName = 'processSettings';
+        assert.deepEqual(body, postBody.postBody);
 
         done();
       }, systemToken);
@@ -60,8 +60,12 @@ describe('Dummy connector tests', function() {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
         repository: {name: 'dummy-connector'},
-        _integrationId: _integrationId,
-        postBody: {key: 'value'}
+        postBody: {
+          persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
+          pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
+          delta: {fieldTwo: 'newValue'},
+          _integrationId: _integrationId
+        }
       };
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -76,9 +80,13 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing _integrationId error', function(done) {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
-        bearerToken: bearerToken,
         repository: {name: 'dummy-connector'},
-        postBody: {key: 'value'}
+        postBody: {
+          persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
+          pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
+          delta: {fieldTwo: 'newValue'},
+          bearerToken: bearerToken
+        }
       };
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -93,9 +101,13 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing repository name error', function(done) {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
-        bearerToken: bearerToken,
-        _integrationId: _integrationId,
-        postBody: {key: 'value'}
+        postBody: {
+          persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
+          pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
+          delta: {fieldTwo: 'newValue'},
+          bearerToken: bearerToken,
+          _integrationId: _integrationId
+        }
       };
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
@@ -110,10 +122,14 @@ describe('Dummy connector tests', function() {
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/settings'
       var postBody = {
-        bearerToken: bearerToken,
-        _integrationId: _integrationId,
         repository: {name: 'dummy-connector'},
-        postBody: {key: 'value'}
+        postBody: {
+          persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
+          pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
+          delta: {fieldTwo: 'newValue'},
+          bearerToken: bearerToken,
+          _integrationId: _integrationId
+        }
       };
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {

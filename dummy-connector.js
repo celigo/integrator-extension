@@ -1,89 +1,69 @@
 var logger = require('winston');
-var nconf = require('nconf');
-var Promise = require('bluebird');
 
 var setup = {
-  initialize: function(bearerToken, _integrationId, opts) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running initialize!');
+  initialize: function(options, callback) {
+    logger.info('running setup initialize!');
 
-      fulfill({bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'initialize'});
-    });
+    options.functionName = 'initialize';
+    return callback(null, options);
   },
 
-  runSetupErrorStep: function(bearerToken, _integrationId, opts) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running runSetupErrorStep!');
-
-      reject(new Error('runSetupErrorStep'));
-    });
+  runSetupErrorStep: function(options, callback) {
+    logger.info('running runSetupErrorStep!');
+    return callback(new Error('runSetupErrorStep'));
   },
 
-  runSetupSuccessStep: function(bearerToken, _integrationId, opts) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running runSetupSuccessStep!');
+  runSetupSuccessStep: function(options, callback) {
+    logger.info('running runSetupSuccessStep!');
 
-      fulfill({bearerToken: bearerToken, _integrationId: _integrationId, opts: opts, functionName: 'runSetupSuccessStep'});
-    });
+    options.functionName = 'runSetupSuccessStep';
+    return callback(null, options);
   }
 }
 
+var processSettings = function(options, callback) {
+  logger.info('running processSettings!');
+  if (options.error) {
+    return callback(new Error('processSettings'));
+  }
 
-var processSettings = function(bearerToken, _integrationId, settings) {
-  return new Promise(function (fulfill, reject) {
-    logger.info('running processSettings!');
-    if (settings.error) {
-      return reject(new Error('processSettings'));
-    }
-
-    fulfill({bearerToken: bearerToken, _integrationId: _integrationId, settings: settings, functionName: 'processSettings'});
-  });
+  options.functionName = 'processSettings';
+  return callback(null, options);
 };
 
-var imp = {
-  doSomethingError: function(bearerToken, _importId, arg1) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running doSomethingError!');
+var hooks = {
+  doSomethingError: function(options, callback) {
+    logger.info('running import doSomethingError!');
 
-      var error = new Error('doSomethingError');
-      error.source = 'myConnector';
-      error.name = 'my_error';
+    var error = new Error('doSomethingError');
+    error.name = 'my_error';
 
-      reject(error);
-    });
+    return callback(error);
   },
 
-  doSomething: function(bearerToken, _importId, arg1, arg2) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running doSomething!');
+  doSomething: function(options, callback) {
+    logger.info('running import doSomething!');
 
-      fulfill({bearerToken: bearerToken, _importId: _importId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
-    });
-  }
-}
-
-var exp = {
-  doSomethingError: function(bearerToken, _exportId, arg1) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running doSomethingError!');
-
-      var error = new Error('doSomethingError');
-      error.source = 'connector';
-      error.name = 'my_error';
-
-      reject(error);
-    });
+    options.functionName = 'doSomething';
+    return callback(null, [options]);
   },
 
-  doSomething: function(bearerToken, _exportId, arg1, arg2) {
-    return new Promise(function (fulfill, reject) {
-      logger.info('running doSomething!');
-      fulfill({bearerToken: bearerToken, _exportId: _exportId, arg1: arg1, arg2: arg2, functionName: 'doSomething'});
+  echoResponse: function(options, callback) {
+    logger.info('running import echoResponse!');
+    return callback(null, options.resp);
+  },
+
+  respondWithNonSearializableObject: function(options, callback) {
+    logger.info('running import respondWithNonStringifiableObject!');
+
+    return callback(null, {
+      a: 'b',
+      date: new Date()
     });
   }
 }
 
 exports.setup = setup;
 exports.processSettings = processSettings;
-exports.import = imp;
-exports.export = exp;
+exports.import = hooks;
+exports.export = hooks;

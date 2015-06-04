@@ -12,7 +12,8 @@ var app = express();
 var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
-var Promise = require('bluebird');
+var sizeof = require('object-sizeof');
+var deepIs = require('deep-is');
 
 var connectors = {
   'dummy-connector': require('./dummy-connector')
@@ -118,14 +119,12 @@ function processIntegrationRequest(req, res, endpoint) {
   }
 
   var functionName = undefined;
-  var _objectId = undefined;
   var repoName = req.body.repository.name;
-  var postBodyArgs = [];
   var func = undefined;
+  var isFunction = false;
 
   if (endpoint === 'setup') {
-    _objectId = req.body._integrationId;
-    if (!_objectId) {
+    if (!req.body.postBody._integrationId) {
       errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     }
 
@@ -141,10 +140,8 @@ function processIntegrationRequest(req, res, endpoint) {
       }
     }
 
-    postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'settings') {
-    _objectId = req.body._integrationId;
-    if (!_objectId) {
+    if (!req.body.postBody._integrationId) {
       errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     }
 
@@ -155,11 +152,16 @@ function processIntegrationRequest(req, res, endpoint) {
       func = connectors[repoName][functionName];
     }
 
-    postBodyArgs.push(req.body.postBody);
   } else if (endpoint === 'function') {
-    if (!req.body._exportId && !req.body._importId) {
+    isFunction = true;
+
+    if (!req.body.maxPageSize) {
+      errors.push({code: 'missing_required_field', message: 'maxPageSize must be sent in the request', source: 'adaptor'});
+    }
+
+    if (!req.body.postBody._exportId && !req.body.postBody._importId) {
       errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
-    } else if (req.body._exportId && req.body._importId) {
+    } else if (req.body.postBody._exportId && req.body.postBody._importId) {
       errors.push({code: 'invalid_request', message: 'both _importId and _exportId must not be sent together', source: 'adaptor'});
     } else {
 
@@ -168,16 +170,14 @@ function processIntegrationRequest(req, res, endpoint) {
         errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
       } else {
 
-        if (req.body._exportId) {
-          _objectId = req.body._exportId;
+        if (req.body.postBody._exportId) {
 
           if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
             func = connectors[repoName].export[functionName];
           }
-        } else if (req.body._importId) {
-          _objectId = req.body._importId;
+        } else if (req.body.postBody._importId) {
 
           if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
@@ -186,13 +186,6 @@ function processIntegrationRequest(req, res, endpoint) {
           }
         }
 
-        if (!Array.isArray(req.body.postBody)) {
-          errors.push({code: 'invalid_args', message: 'postBody must be an array', source: 'adaptor'});
-        } else if (req.body.postBody.length === 0 || !Array.isArray(req.body.postBody[0])) {
-          errors.push({code: 'invalid_args', message: 'first argument must be an array', source: 'adaptor'});
-        } else {
-          postBodyArgs = req.body.postBody;
-        }
       }
     }
   } else {
@@ -203,16 +196,53 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  var args = [req.body.bearerToken, _objectId];
-  Array.prototype.push.apply(args, postBodyArgs);
+  func(req.body.postBody, function(err, result) {
+    if (err) {
+      errors.push({code: err.name, message: err.message, source: '_connector'});
+      return res.status(422).json({errors: errors});
+    }
 
-  func.apply(null, args).then(function(resp) {
-    res.json(resp);
-  }).catch(function(err) {
-    errors.push({code: err.name, message: err.message, source: err.source || 'connector'});
-    return res.status(422).json({errors: errors});
+    if (isFunction) {
+      var validationError = validateConnectorFunctionResponse(req.body, result);
+
+      if (validationError) {
+        errors.push({code: validationError.name, message: validationError.message, source: '_connector'});
+        return res.status(422).json({errors: errors});
+      }
+    }
+
+    res.json(result);
   });
 }
+
+function validateConnectorFunctionResponse(reqBody, result) {
+  if (sizeof(result) > reqBody.maxPageSize) {
+    var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
+    error.name = 'invalid_hook_response';
+
+    return error;
+  }
+
+  try {
+    var stringifiedResult = JSON.stringify(result);
+    var reconstructedResult = JSON.parse(stringifiedResult);
+
+    if (!deepIs(result, reconstructedResult)) {
+      var error = new Error('stringified/parsed object not same as original');
+      error.name = 'invalid_hook_response';
+      throw error;
+    }
+
+  } catch (e) {
+    var error = new Error('hook response object not serializable [' + e.message + ']');
+    error.name = e.name;
+
+    return error;
+  }
+
+  return null;
+}
+
 
 function validateReq(req) {
   var errors = [];
@@ -223,9 +253,13 @@ function validateReq(req) {
     return errors;
   }
 
-  var bearerToken = req.body.bearerToken;
-  if (!bearerToken) {
-    errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+  if (!req.body.postBody) {
+    errors.push({field: 'postBody', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+  } else {
+
+    if (!req.body.postBody.bearerToken) {
+      errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+    }
   }
 
   if (!req.body.repository || !req.body.repository.name) {

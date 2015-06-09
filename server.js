@@ -7,6 +7,12 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// Important: Remove default limit of 5
+var http = require('http')
+http.globalAgent.maxSockets = Infinity
+var https = require('https')
+https.globalAgent.maxSockets = Infinity
+
 var express = require('express');
 var app = express();
 var logger = require('winston');

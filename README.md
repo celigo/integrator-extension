@@ -1,2 +1,2 @@
-# integrator-connector
-Integrator connector
+# integrator-extension
+Integrator extension

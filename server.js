@@ -1,9 +1,9 @@
 var nconf = require('nconf').argv().env();
 if (process.env.NODE_ENV !== 'production') {
   nconf.defaults({
-    'TEST_INTEGRATOR_CONNECTOR_PORT': 7000,
-    "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN": "TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN",
-    "INTEGRATOR_CONNECTOR_SYSTEM_TOKEN": "TEST_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN"
+    'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+    "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN": "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN",
+    "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
   });
 }
 
@@ -21,15 +21,15 @@ var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
 var deepIs = require('deep-is');
 
-var connectors = {
-  'dummy-connector': require('./dummy-connector')
+var modules = {
+  'dummy-module': require('./dummy-module')
 }
 
 if (process.env.NODE_ENV === 'production') {
-  connectors['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
+  modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
 }
 
-var port = nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT') || 80;
+var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -139,10 +139,10 @@ function processIntegrationRequest(req, res, endpoint) {
       errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     } else {
 
-      if (!connectors[repoName] || !connectors[repoName].setup || !connectors[repoName].setup[functionName]) {
+      if (!modules[repoName] || !modules[repoName].setup || !modules[repoName].setup[functionName]) {
         errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
       } else {
-        func = connectors[repoName].setup[functionName];
+        func = modules[repoName].setup[functionName];
       }
     }
 
@@ -152,10 +152,10 @@ function processIntegrationRequest(req, res, endpoint) {
     }
 
     functionName = 'processSettings';
-    if (!connectors[repoName] || !connectors[repoName][functionName]) {
+    if (!modules[repoName] || !modules[repoName][functionName]) {
       errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
     } else {
-      func = connectors[repoName][functionName];
+      func = modules[repoName][functionName];
     }
 
   } else if (endpoint === 'function') {
@@ -178,17 +178,17 @@ function processIntegrationRequest(req, res, endpoint) {
 
         if (req.body.postBody._exportId) {
 
-          if (!connectors[repoName] || !connectors[repoName].export || !connectors[repoName].export[functionName]) {
+          if (!modules[repoName] || !modules[repoName].export || !modules[repoName].export[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
-            func = connectors[repoName].export[functionName];
+            func = modules[repoName].export[functionName];
           }
         } else if (req.body.postBody._importId) {
 
-          if (!connectors[repoName] || !connectors[repoName].import || !connectors[repoName].import[functionName]) {
+          if (!modules[repoName] || !modules[repoName].import || !modules[repoName].import[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
-            func = connectors[repoName].import[functionName];
+            func = modules[repoName].import[functionName];
           }
         }
 
@@ -204,15 +204,15 @@ function processIntegrationRequest(req, res, endpoint) {
 
   func(req.body.postBody, function(err, result) {
     if (err) {
-      errors.push({code: err.name, message: err.message, source: '_connector'});
+      errors.push({code: err.name, message: err.message});
       return res.status(422).json({errors: errors});
     }
 
     if (isFunction) {
-      var validationError = validateConnectorFunctionResponse(req.body, result);
+      var validationError = validateModuleFunctionResponse(req.body, result);
 
       if (validationError) {
-        errors.push({code: validationError.name, message: validationError.message, source: '_connector'});
+        errors.push({code: validationError.name, message: validationError.message});
         return res.status(422).json({errors: errors});
       }
     }
@@ -221,7 +221,8 @@ function processIntegrationRequest(req, res, endpoint) {
   });
 }
 
-function validateConnectorFunctionResponse(reqBody, result) {
+//TODO -revisit name
+function validateModuleFunctionResponse(reqBody, result) {
   if (sizeof(result) > reqBody.maxPageSize) {
     var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
     error.name = 'invalid_hook_response';
@@ -254,7 +255,7 @@ function validateReq(req) {
   var errors = [];
 
   var systemToken = findToken(req);
-  if (systemToken !== nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN')) {
+  if (systemToken !== nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN')) {
     errors.push({code: 'unauthorized', message: 'invalid system token', source: 'adaptor'});
     return errors;
   }
@@ -276,7 +277,7 @@ function validateReq(req) {
 }
 
 var server = app.listen(port, function () {
-  logger.info('integrator-connector server listening on port ' + port);
+  logger.info('integrator-extension server listening on port ' + port);
   logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
 

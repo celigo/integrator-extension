@@ -4,18 +4,18 @@ var nconf = require('nconf');
 var logger = require('winston');
 var testUtil = require('./util');
 
-var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_CONNECTOR_PORT')
-var bearerToken = nconf.get('TEST_INTEGRATOR_CONNECTOR_BEARER_TOKEN');
-var systemToken = nconf.get('INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
+var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_EXTENSION_PORT')
+var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
+var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 var _integrationId = '_integrationId';
 
-describe('Dummy connector tests', function() {
+describe('Connector setup tests', function() {
   describe('Setup tests', function() {
 
     it('should pass after successfully executing setup step', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: { name: 'dummy-connector' },
+        repository: { name: 'dummy-module' },
         function: 'runSetupSuccessStep',
         postBody: {
           key1: 'value1',
@@ -39,7 +39,7 @@ describe('Dummy connector tests', function() {
     it('should call initialize setup', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: { name: 'dummy-connector' },
+        repository: { name: 'dummy-module' },
         function: 'initialize',
         postBody: {
           key: 'value',
@@ -62,7 +62,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for setup error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'runSetupErrorStep',
         postBody: {
           key: 'value',
@@ -73,7 +73,7 @@ describe('Dummy connector tests', function() {
 
       testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep', source: '_connector' } ] };
+        var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep'} ] };
 
         assert.deepEqual(body, expected);
         done();
@@ -83,7 +83,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing postbody error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'runSetupSuccessStep'
       };
 
@@ -99,7 +99,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing bearer token error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'runSetupErrorStep',
         postBody: {
           key: 'value',
@@ -119,7 +119,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing _integrationId', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'runSetupErrorStep',
         postBody: {
           key: 'value',
@@ -139,7 +139,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing function name error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         postBody: {
           key: 'value',
           bearerToken: bearerToken,
@@ -179,7 +179,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 422 for missing function error', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'badFunction',
         postBody: {
           key: 'value',
@@ -200,7 +200,7 @@ describe('Dummy connector tests', function() {
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/setup'
       var postBody = {
-        repository: {name: 'dummy-connector'},
+        repository: {name: 'dummy-module'},
         function: 'runSetupSuccessStep',
         postBody: {
           key: 'value',
@@ -217,7 +217,7 @@ describe('Dummy connector tests', function() {
         assert.deepEqual(body, expected);
 
         done();
-      }, 'BAD_INTEGRATOR_CONNECTOR_SYSTEM_TOKEN');
+      }, 'BAD_INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
     });
   });
 });

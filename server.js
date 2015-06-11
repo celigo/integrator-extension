@@ -130,10 +130,6 @@ function processIntegrationRequest(req, res, endpoint) {
   var isFunction = false;
 
   if (endpoint === 'setup') {
-    if (!req.body.postBody._integrationId) {
-      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-    }
-
     functionName = req.body.function;
     if (!functionName) {
       errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
@@ -147,10 +143,6 @@ function processIntegrationRequest(req, res, endpoint) {
     }
 
   } else if (endpoint === 'settings') {
-    if (!req.body.postBody._integrationId) {
-      errors.push({field: '_integrationId', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-    }
-
     functionName = 'processSettings';
     if (!modules[moduleName] || !modules[moduleName][functionName]) {
       errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});

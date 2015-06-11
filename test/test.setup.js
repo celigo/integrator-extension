@@ -114,26 +114,6 @@ describe('Connector setup tests', function() {
     }, systemToken);
   });
 
-  it('should fail with 422 for missing _integrationId', function(done) {
-    var setupStepUrl = baseURL + '/setup'
-    var postBody = {
-      module: 'dummy-module',
-      function: 'runSetupErrorStep',
-      postBody: {
-        key: 'value',
-        bearerToken: bearerToken
-      }
-    };
-
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(422);
-      var expected = { errors: [{"field":"_integrationId","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-      assert.deepEqual(body, expected);
-      done();
-    }, systemToken);
-  });
-
   it('should fail with 422 for missing function name error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {

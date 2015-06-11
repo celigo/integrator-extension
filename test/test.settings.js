@@ -75,49 +75,4 @@ describe('Connector settings tests', function() {
       done();
     }, systemToken);
   });
-
-  it('should fail with 422 for missing module name error', function(done) {
-    var setupStepUrl = baseURL + '/settings'
-    var postBody = {
-      postBody: {
-        persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
-        pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
-        delta: {fieldTwo: 'newValue'},
-        bearerToken: bearerToken,
-        _integrationId: _integrationId
-      }
-    };
-
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(422);
-      var expected = { errors: [{"field":"module","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-      assert.deepEqual(body, expected);
-      done();
-    }, systemToken);
-  });
-
-  it('should fail with 401 for wrong system token', function(done) {
-    var setupStepUrl = baseURL + '/settings'
-    var postBody = {
-      module: 'dummy-module',
-      postBody: {
-        persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
-        pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
-        delta: {fieldTwo: 'newValue'},
-        bearerToken: bearerToken,
-        _integrationId: _integrationId
-      }
-    };
-
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(401);
-
-      res.headers['WWW-Authenticate'.toLowerCase()].should.equal('invalid system token');
-      var expected = { errors: [{"code":"unauthorized","message":"invalid system token", source: 'adaptor'}] };
-      assert.deepEqual(body, expected);
-
-      done();
-    }, 'BAD_INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
-  });
 });

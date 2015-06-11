@@ -13,7 +13,7 @@ describe('Connector setup tests', function() {
   it('should pass after successfully executing setup step', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: { name: 'dummy-module' },
+      module: 'dummy-module',
       function: 'runSetupSuccessStep',
       postBody: {
         key1: 'value1',
@@ -37,7 +37,7 @@ describe('Connector setup tests', function() {
   it('should call initialize setup', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: { name: 'dummy-module' },
+      module: 'dummy-module',
       function: 'initialize',
       postBody: {
         key: 'value',
@@ -60,7 +60,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for setup error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'runSetupErrorStep',
       postBody: {
         key: 'value',
@@ -81,7 +81,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for missing postbody error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'runSetupSuccessStep'
     };
 
@@ -97,7 +97,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for missing bearer token error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'runSetupErrorStep',
       postBody: {
         key: 'value',
@@ -117,7 +117,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for missing _integrationId', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'runSetupErrorStep',
       postBody: {
         key: 'value',
@@ -137,7 +137,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for missing function name error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         key: 'value',
         bearerToken: bearerToken,
@@ -154,7 +154,7 @@ describe('Connector setup tests', function() {
     }, systemToken);
   });
 
-  it('should fail with 422 for missing repository name error', function(done) {
+  it('should fail with 422 for missing module name error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
       function: 'runSetupErrorStep',
@@ -167,7 +167,7 @@ describe('Connector setup tests', function() {
 
     testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
-      var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
+      var expected = { errors: [{"field":"module","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
       assert.deepEqual(body, expected);
       done();
@@ -177,7 +177,7 @@ describe('Connector setup tests', function() {
   it('should fail with 422 for missing function error', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'badFunction',
       postBody: {
         key: 'value',
@@ -198,7 +198,7 @@ describe('Connector setup tests', function() {
   it('should fail with 401 for wrong system token', function(done) {
     var setupStepUrl = baseURL + '/setup'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       function: 'runSetupSuccessStep',
       postBody: {
         key: 'value',

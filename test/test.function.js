@@ -18,7 +18,7 @@ describe('Hook tests', function() {
     it('should pass after successfully calling import function', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomething',
         maxPageSize: 2000,
         postBody: {
@@ -43,7 +43,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -65,7 +65,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing bearer token error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -86,7 +86,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing _importId', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -107,7 +107,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing function name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -125,7 +125,7 @@ describe('Hook tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for missing repository name error', function(done) {
+    it('should fail with 422 for missing module name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         function: 'doSomethingError',
@@ -139,7 +139,7 @@ describe('Hook tests', function() {
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
+        var expected = { errors: [{"field":"module","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -149,7 +149,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing function error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'badFunction',
         maxPageSize: 2000,
         postBody: {
@@ -171,7 +171,7 @@ describe('Hook tests', function() {
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -201,7 +201,7 @@ describe('Hook tests', function() {
     it('should pass after successfully calling export function', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomething',
         maxPageSize: 2000,
         postBody: {
@@ -226,7 +226,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -249,7 +249,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing bearer token error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -271,7 +271,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing _exportId', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -293,7 +293,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing function name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -312,7 +312,7 @@ describe('Hook tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for missing repository name error', function(done) {
+    it('should fail with 422 for missing module name error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         function: 'doSomethingError',
@@ -327,7 +327,7 @@ describe('Hook tests', function() {
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
+        var expected = { errors: [{"field":"module","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -337,7 +337,7 @@ describe('Hook tests', function() {
     it('should fail with 422 for missing function error', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'badFunction',
         maxPageSize: 2000,
         postBody: {
@@ -360,7 +360,7 @@ describe('Hook tests', function() {
     it('should fail with 401 for wrong system token', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomethingError',
         maxPageSize: 2000,
         postBody: {
@@ -391,7 +391,7 @@ describe('Hook tests', function() {
     it('should fail when both _importId and exportId are sent', function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'doSomething',
         maxPageSize: 2000,
         postBody: {
@@ -416,7 +416,7 @@ describe('Hook tests', function() {
     return function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'echoResponse',
         maxPageSize: 2,
         postBody: {
@@ -446,7 +446,7 @@ describe('Hook tests', function() {
     return function(done) {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
-        repository: {name: 'dummy-module'},
+        module: 'dummy-module',
         function: 'respondWithNonSearializableObject',
         maxPageSize: 2000,
         postBody: {

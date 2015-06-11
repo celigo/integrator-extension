@@ -14,7 +14,7 @@ describe('Connector settings tests', function() {
   it('should fail with 422 for settings error', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         error: true,
         bearerToken: bearerToken,
@@ -34,7 +34,7 @@ describe('Connector settings tests', function() {
   it('should pass after successfully executing settings step', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
         pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
@@ -58,7 +58,7 @@ describe('Connector settings tests', function() {
   it('should fail with 422 for missing bearer token error', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
         pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
@@ -79,7 +79,7 @@ describe('Connector settings tests', function() {
   it('should fail with 422 for missing _integrationId error', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
         pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
@@ -97,7 +97,7 @@ describe('Connector settings tests', function() {
     }, systemToken);
   });
 
-  it('should fail with 422 for missing repository name error', function(done) {
+  it('should fail with 422 for missing module name error', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
       postBody: {
@@ -111,7 +111,7 @@ describe('Connector settings tests', function() {
 
     testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
-      var expected = { errors: [{"field":"repository.name","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
+      var expected = { errors: [{"field":"module","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
 
       assert.deepEqual(body, expected);
       done();
@@ -121,7 +121,7 @@ describe('Connector settings tests', function() {
   it('should fail with 401 for wrong system token', function(done) {
     var setupStepUrl = baseURL + '/settings'
     var postBody = {
-      repository: {name: 'dummy-module'},
+      module: 'dummy-module',
       postBody: {
         persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
         pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},

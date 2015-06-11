@@ -125,7 +125,7 @@ function processIntegrationRequest(req, res, endpoint) {
   }
 
   var functionName = undefined;
-  var repoName = req.body.repository.name;
+  var moduleName = req.body.module;
   var func = undefined;
   var isFunction = false;
 
@@ -139,10 +139,10 @@ function processIntegrationRequest(req, res, endpoint) {
       errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
     } else {
 
-      if (!modules[repoName] || !modules[repoName].setup || !modules[repoName].setup[functionName]) {
+      if (!modules[moduleName] || !modules[moduleName].setup || !modules[moduleName].setup[functionName]) {
         errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
       } else {
-        func = modules[repoName].setup[functionName];
+        func = modules[moduleName].setup[functionName];
       }
     }
 
@@ -152,10 +152,10 @@ function processIntegrationRequest(req, res, endpoint) {
     }
 
     functionName = 'processSettings';
-    if (!modules[repoName] || !modules[repoName][functionName]) {
+    if (!modules[moduleName] || !modules[moduleName][functionName]) {
       errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
     } else {
-      func = modules[repoName][functionName];
+      func = modules[moduleName][functionName];
     }
 
   } else if (endpoint === 'function') {
@@ -178,17 +178,17 @@ function processIntegrationRequest(req, res, endpoint) {
 
         if (req.body.postBody._exportId) {
 
-          if (!modules[repoName] || !modules[repoName].export || !modules[repoName].export[functionName]) {
+          if (!modules[moduleName] || !modules[moduleName].export || !modules[moduleName].export[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
-            func = modules[repoName].export[functionName];
+            func = modules[moduleName].export[functionName];
           }
         } else if (req.body.postBody._importId) {
 
-          if (!modules[repoName] || !modules[repoName].import || !modules[repoName].import[functionName]) {
+          if (!modules[moduleName] || !modules[moduleName].import || !modules[moduleName].import[functionName]) {
             errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
           } else {
-            func = modules[repoName].import[functionName];
+            func = modules[moduleName].import[functionName];
           }
         }
 
@@ -269,8 +269,8 @@ function validateReq(req) {
     }
   }
 
-  if (!req.body.repository || !req.body.repository.name) {
-    errors.push({field: 'repository.name', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+  if (!req.body.module) {
+    errors.push({field: 'module', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
   }
 
   return errors;

@@ -13,6 +13,7 @@ http.globalAgent.maxSockets = Infinity
 var https = require('https')
 https.globalAgent.maxSockets = Infinity
 
+var _ = require('lodash');
 var express = require('express');
 var app = express();
 var logger = require('winston');
@@ -113,7 +114,7 @@ app.post('/function', function (req, res) {
 });
 
 function processIntegrationRequest(req, res, endpoint) {
-  var errors = validateReq(req);
+  var errors = validateReq(req, modules);
 
   if (errors.length > 0) {
     if (errors[0].code === 'unauthorized') {
@@ -129,65 +130,37 @@ function processIntegrationRequest(req, res, endpoint) {
   var func = undefined;
   var isFunction = false;
 
-  if (endpoint === 'setup') {
-    functionName = req.body.function;
-    if (!functionName) {
-      errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-    } else {
+  // find function
+  var obj = modules[moduleName];
+  for (var i = 0; i < req.body.function.length; i++) {
+    var prop = req.body.function[i];
 
-      if (!modules[moduleName] || !modules[moduleName].setup || !modules[moduleName].setup[functionName]) {
-        errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
-      } else {
-        func = modules[moduleName].setup[functionName];
+    if (!obj[prop]) {
+      errors.push({code: 'missing_function', message: prop + ' not found', source: 'adaptor'});
+      break;
+    }
+
+    obj = obj[prop];
+
+    if (i === (req.body.function.length-1)) {
+      func = obj;
+      if (!_.isFunction(func) ) {
+        errors.push({code: 'missing_function', message: prop + ' is not a function', source: 'adaptor'});
       }
     }
+  }
 
-  } else if (endpoint === 'settings') {
-    functionName = 'processSettings';
-    if (!modules[moduleName] || !modules[moduleName][functionName]) {
-      errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
-    } else {
-      func = modules[moduleName][functionName];
-    }
+  if (errors.length > 0) {
+    return res.status(422).json({errors: errors});
+  }
 
-  } else if (endpoint === 'function') {
+  if (endpoint === 'function') {
     isFunction = true;
 
     if (!req.body.maxPageSize) {
       errors.push({code: 'missing_required_field', message: 'maxPageSize must be sent in the request', source: 'adaptor'});
     }
 
-    if (!req.body.postBody._exportId && !req.body.postBody._importId) {
-      errors.push({code: 'missing_required_field', message: '_importId or _exportId must be sent in the request', source: 'adaptor'});
-    } else if (req.body.postBody._exportId && req.body.postBody._importId) {
-      errors.push({code: 'invalid_request', message: 'both _importId and _exportId must not be sent together', source: 'adaptor'});
-    } else {
-
-      functionName = req.body.function;
-      if (!functionName) {
-        errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-      } else {
-
-        if (req.body.postBody._exportId) {
-
-          if (!modules[moduleName] || !modules[moduleName].export || !modules[moduleName].export[functionName]) {
-            errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
-          } else {
-            func = modules[moduleName].export[functionName];
-          }
-        } else if (req.body.postBody._importId) {
-
-          if (!modules[moduleName] || !modules[moduleName].import || !modules[moduleName].import[functionName]) {
-            errors.push({code: 'missing_function', message: functionName + ' function not found', source: 'adaptor'});
-          } else {
-            func = modules[moduleName].import[functionName];
-          }
-        }
-
-      }
-    }
-  } else {
-    errors.push({code: 'invalid_endpoint', message: endpoint + 'is invalid', source: 'adaptor'});
   }
 
   if (errors.length > 0) {
@@ -243,7 +216,7 @@ function validateModuleFunctionResponse(reqBody, result) {
 }
 
 
-function validateReq(req) {
+function validateReq(req, modules) {
   var errors = [];
 
   var systemToken = findToken(req);
@@ -263,6 +236,16 @@ function validateReq(req) {
 
   if (!req.body.module) {
     errors.push({field: 'module', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+  } else if (!modules[req.body.module]) {
+    errors.push({code: 'module_not_found', message: req.body.module + ' module not found', source: 'adaptor'});
+  }
+
+  if (!req.body.function) {
+    errors.push({field: 'function', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
+  } else if (!_.isArray(req.body.function)) {
+    errors.push({field: 'function', code: 'invalid_field', message: 'function must be an array', source: 'adaptor'});
+  } else if (req.body.function.length === 0) {
+    errors.push({field: 'function', code: 'invalid_field', message: 'function length must be more than zero', source: 'adaptor'});
   }
 
   return errors;

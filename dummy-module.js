@@ -18,7 +18,9 @@ var setup = {
 
     options.functionName = 'runSetupSuccessStep';
     return callback(null, options);
-  }
+  },
+
+  notAFunction: 'not_a_func'
 }
 
 var processSettings = function(options, callback) {

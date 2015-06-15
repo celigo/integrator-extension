@@ -1,7 +1,7 @@
 {
-  "name": "integrator-connector",
+  "name": "integrator-extension",
   "version": "0.1.0",
-  "description": "Integrator Connector",
+  "description": "Integrator Extension",
   "main": "server.js",
   "engines": {
     "node": "0.10.x"
@@ -17,7 +17,8 @@
     "body-parser": "1.12.2",
     "object-sizeof": "1.0.6",
     "deep-is": "0.1.3",
-    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.2.1"
+    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.2.1",
+    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v0.1.0"
   },
   "devDependencies": {
     "mocha": "1.18.2",

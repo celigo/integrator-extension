@@ -18,18 +18,29 @@ var setup = {
 
     options.functionName = 'runSetupSuccessStep';
     return callback(null, options);
-  }
+  },
+
+  notAFunction: 'not_a_func'
 }
 
-var processSettings = function(options, callback) {
-  logger.info('running processSettings!');
-  if (options.error) {
-    return callback(new Error('processSettings'));
-  }
+var settings = {
+  persistSettings: function(options, callback) {
+    logger.info('running persistSettings!');
+    if (options.error) {
+      return callback(new Error('persistSettings'));
+    }
 
-  options.functionName = 'processSettings';
-  return callback(null, options);
-};
+    options.functionName = 'persistSettings';
+    return callback(null, options);
+  },
+
+  refreshMetadata: function(options, callback) {
+    logger.info('running settings refreshMetadata!');
+
+    options.functionName = 'refreshMetadata';
+    return callback(null, options);
+  }
+}
 
 var hooks = {
   doSomethingError: function(options, callback) {
@@ -64,6 +75,6 @@ var hooks = {
 }
 
 exports.setup = setup;
-exports.processSettings = processSettings;
+exports.settings = settings;
 exports.import = hooks;
 exports.export = hooks;

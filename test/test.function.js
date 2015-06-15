@@ -19,7 +19,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'doSomething',
+        function: ['import', 'doSomething'],
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -44,7 +44,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'doSomethingError',
+        function: ['import', 'doSomethingError'],
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -56,91 +56,6 @@ describe('Hook tests', function() {
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         res.statusCode.should.equal(422);
         var expected = { errors: [ { code: 'my_error', message: 'doSomethingError'} ] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing bearer token error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'doSomethingError',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          _importId: _importId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing _importId', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'doSomethingError',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          bearerToken: bearerToken
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"missing_required_field","message":"_importId or _exportId must be sent in the request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing function name error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          bearerToken: bearerToken,
-          _importId: _importId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"function","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing function error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'badFunction',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          bearerToken: bearerToken,
-          _importId: _importId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"missing_function","message":"badFunction function not found", source: 'adaptor'}] };
 
         assert.deepEqual(body, expected);
         done();
@@ -157,7 +72,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'doSomething',
+        function: ['export', 'doSomething'],
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -182,7 +97,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'doSomethingError',
+        function: ['export', 'doSomethingError'],
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -201,123 +116,8 @@ describe('Hook tests', function() {
       }, systemToken);
     });
 
-    it('should fail with 422 for missing bearer token error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'doSomethingError',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          key2: {k: 'v'},
-          _exportId: _exportId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing _exportId', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'doSomethingError',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          key2: {k: 'v'},
-          bearerToken: bearerToken
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"missing_required_field","message":"_importId or _exportId must be sent in the request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing function name error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          key2: {k: 'v'},
-          bearerToken: bearerToken,
-          _exportId: _exportId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"field":"function","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
-    it('should fail with 422 for missing function error', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'badFunction',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          key2: {k: 'v'},
-          bearerToken: bearerToken,
-          _exportId: _exportId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"missing_function","message":"badFunction function not found", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
-
     it('should fail when response is greater than max page size', generateMaxPageSizeTest(false));
     it('should fail when response is not searializable', generateNonStringifiableResponseTest(false));
-  });
-
-  describe('Misc function tests', function() {
-
-    it('should fail when both _importId and exportId are sent', function(done) {
-      var setupStepUrl = baseURL + '/function'
-      var postBody = {
-        module: 'dummy-module',
-        function: 'doSomething',
-        maxPageSize: 2000,
-        postBody: {
-          key1: ['abc'],
-          bearerToken: bearerToken,
-          _importId: _importId,
-          _exportId: _exportId
-        }
-      };
-
-      testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-        res.statusCode.should.equal(422);
-        var expected = { errors: [{"code":"invalid_request","message":"both _importId and _exportId must not be sent together", source: 'adaptor'}] };
-
-        assert.deepEqual(body, expected);
-        done();
-      }, systemToken);
-    });
   });
 
   function generateMaxPageSizeTest(isImport) {
@@ -325,7 +125,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'echoResponse',
+        function: [],
         maxPageSize: 2,
         postBody: {
           resp: ['abc', 'abc'],
@@ -334,10 +134,14 @@ describe('Hook tests', function() {
       };
 
       if (isImport) {
+        postBody.function.push('import');
         postBody.postBody._importId = _importId;
       } else {
+        postBody.function.push('export');
         postBody.postBody._exportId = _exportId;
       }
+
+      postBody.function.push('echoResponse');
 
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         logger.info(body);
@@ -355,7 +159,7 @@ describe('Hook tests', function() {
       var setupStepUrl = baseURL + '/function'
       var postBody = {
         module: 'dummy-module',
-        function: 'respondWithNonSearializableObject',
+        function: [],
         maxPageSize: 2000,
         postBody: {
           key1: ['abc'],
@@ -364,11 +168,14 @@ describe('Hook tests', function() {
       };
 
       if (isImport) {
+        postBody.function.push('import');
         postBody.postBody._importId = _importId;
       } else {
+        postBody.function.push('export');
         postBody.postBody._exportId = _exportId;
       }
 
+      postBody.function.push('respondWithNonSearializableObject');
       testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
         logger.info(body);
         res.statusCode.should.equal(422);

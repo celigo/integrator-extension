@@ -101,14 +101,6 @@ app.get('/healthCheck', function (req, res) {
   res.send('I am doing good!');
 });
 
-app.put('/setup', function (req, res) {
-  processIntegrationRequest(req, res, 'setup');
-});
-
-app.put('/settings', function (req, res) {
-  processIntegrationRequest(req, res, 'settings');
-});
-
 app.post('/function', function (req, res) {
   processIntegrationRequest(req, res, 'function');
 });
@@ -154,7 +146,8 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  if (endpoint === 'function') {
+  // TODO change to hooks
+  if (req.body.function[0] === 'import' || req.body.function[0]==='export') {
     isFunction = true;
 
     if (!req.body.maxPageSize) {
@@ -227,11 +220,6 @@ function validateReq(req, modules) {
 
   if (!req.body.postBody) {
     errors.push({field: 'postBody', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-  } else {
-
-    if (!req.body.postBody.bearerToken) {
-      errors.push({field: 'bearerToken', code: 'missing_required_field', message: 'missing required field in request', source: 'adaptor'});
-    }
   }
 
   if (!req.body.module) {

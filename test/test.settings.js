@@ -11,10 +11,11 @@ var _integrationId = '_integrationId';
 
 describe('Connector settings tests', function() {
 
-  it('should fail with 422 for settings error', function(done) {
-    var setupStepUrl = baseURL + '/settings'
+  it('should fail with 422 for persistSettings error', function(done) {
+    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
+      function: ['settings', 'persistSettings'],
       postBody: {
         error: true,
         bearerToken: bearerToken,
@@ -22,57 +23,59 @@ describe('Connector settings tests', function() {
       }
     };
 
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
-      var expected = { errors: [ { code: 'Error', message: 'processSettings' } ] };
+      var expected = { errors: [ { code: 'Error', message: 'persistSettings' } ] };
 
       assert.deepEqual(body, expected);
       done();
     }, systemToken);
   });
 
-  it('should pass after successfully executing settings step', function(done) {
-    var setupStepUrl = baseURL + '/settings'
+  it('should pass after successfully executing persistSettings', function(done) {
+    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
+      function: ['settings', 'persistSettings'],
       postBody: {
-        persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
         pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
-        delta: {fieldTwo: 'newValue'},
         bearerToken: bearerToken,
         _integrationId: _integrationId
       }
     };
 
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
       res.statusCode.should.equal(200);
       logger.info(body);
 
-      postBody.postBody.functionName = 'processSettings';
+      postBody.postBody.functionName = 'persistSettings';
       assert.deepEqual(body, postBody.postBody);
 
       done();
     }, systemToken);
   });
 
-  it('should fail with 422 for missing bearer token error', function(done) {
-    var setupStepUrl = baseURL + '/settings'
+  it('should pass after successfully executing refreshMetadata', function(done) {
+    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
+      function: ['settings', 'refreshMetadata'],
       postBody: {
-        persisted: {fieldOne: 'oldValue', fieldTwo: 'oldValue'},
-        pending: {fieldOne: 'oldValue', fieldTwo: 'newValue'},
-        delta: {fieldTwo: 'newValue'},
+        key: 'value',
+        bearerToken: bearerToken,
         _integrationId: _integrationId
       }
     };
 
-    testUtil.putRequest(setupStepUrl, postBody, function(error, res, body) {
-      res.statusCode.should.equal(422);
-      var expected = { errors: [{"field":"bearerToken","code":"missing_required_field","message":"missing required field in request", source: 'adaptor'}] };
+    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+      res.statusCode.should.equal(200);
+      logger.info(body);
 
-      assert.deepEqual(body, expected);
+      postBody.postBody.functionName = 'refreshMetadata';
+      assert.deepEqual(body, postBody.postBody);
+
       done();
     }, systemToken);
   });
+
 });

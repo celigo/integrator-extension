@@ -1,7 +1,7 @@
 {
-  "name": "integrator-connector",
+  "name": "integrator-extension",
   "version": "0.1.0",
-  "description": "Integrator Connector",
+  "description": "Integrator Extension",
   "main": "server.js",
   "engines": {
     "node": "0.10.x"
@@ -15,7 +15,6 @@
     "winston": "0.7.3",
     "express-winston": "0.2.12",
     "body-parser": "1.12.2",
-    "bluebird": "2.9.25",
     "object-sizeof": "1.0.6",
     "deep-is": "0.1.3"
   },

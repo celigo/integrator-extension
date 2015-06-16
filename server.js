@@ -26,10 +26,10 @@ var modules = {
   'dummy-module': require('./dummy-module')
 }
 
-// if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
-// }
+}
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;
 

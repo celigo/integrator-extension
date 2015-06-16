@@ -44,7 +44,7 @@ var settings = {
 
 var hooks = {
   doSomethingError: function(options, callback) {
-    logger.info('running import doSomethingError!');
+    logger.info('running hooks doSomethingError!');
 
     var error = new Error('doSomethingError');
     error.name = 'my_error';
@@ -53,19 +53,19 @@ var hooks = {
   },
 
   doSomething: function(options, callback) {
-    logger.info('running import doSomething!');
+    logger.info('running hooks doSomething!');
 
     options.functionName = 'doSomething';
     return callback(null, [options]);
   },
 
   echoResponse: function(options, callback) {
-    logger.info('running import echoResponse!');
+    logger.info('running hooks echoResponse!');
     return callback(null, options.resp);
   },
 
   respondWithNonSearializableObject: function(options, callback) {
-    logger.info('running import respondWithNonStringifiableObject!');
+    logger.info('running hooks respondWithNonStringifiableObject!');
 
     return callback(null, {
       a: 'b',
@@ -76,5 +76,4 @@ var hooks = {
 
 exports.setup = setup;
 exports.settings = settings;
-exports.import = hooks;
-exports.export = hooks;
+exports.hooks = hooks;

@@ -193,4 +193,48 @@ describe('Server tests', function() {
       done();
     }, 'BAD_INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
   });
+
+  it('should fail with 422 when response exceeds max size', function(done) {
+    var setupStepUrl = baseURL + '/function'
+    var postBody = {
+      module: 'dummy-module',
+      function: ['hooks', 'echoResponse'],
+      maxResponsSize: 2,
+      postBody: {
+        resp: ['abc', 'abc'],
+        bearerToken: bearerToken
+      }
+    };
+
+    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+      logger.info(body);
+      res.statusCode.should.equal(422);
+      var expected = { errors: [{"code":"invalid_hook_response","message":"response object size exceeds maxResponsSize=2"}] };
+
+      assert.deepEqual(body, expected);
+      done();
+    }, systemToken);
+  });
+
+  it('should fail with 422 when response is not serializable', function(done) {
+    var setupStepUrl = baseURL + '/function'
+    var postBody = {
+      module: 'dummy-module',
+      function: ['hooks', 'respondWithNonSearializableObject'],
+      maxResponsSize: 2000,
+      postBody: {
+        key1: ['abc'],
+        bearerToken: bearerToken
+      }
+    };
+
+    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+      logger.info(body);
+      res.statusCode.should.equal(422);
+      var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object not serializable [stringified/parsed object not same as original]"}] };
+
+      assert.deepEqual(body, expected);
+      done();
+    }, systemToken);
+  });
 });

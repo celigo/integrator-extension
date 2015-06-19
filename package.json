@@ -1,7 +1,7 @@
 {
-  "name": "integrator-connector",
+  "name": "integrator-extension",
   "version": "0.1.0",
-  "description": "Integrator Connector",
+  "description": "Integrator Extension",
   "main": "server.js",
   "engines": {
     "node": "0.10.x"

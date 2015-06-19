@@ -18,22 +18,33 @@ var setup = {
 
     options.functionName = 'runSetupSuccessStep';
     return callback(null, options);
+  },
+
+  notAFunction: 'not_a_func'
+}
+
+var settings = {
+  persistSettings: function(options, callback) {
+    logger.info('running persistSettings!');
+    if (options.error) {
+      return callback(new Error('persistSettings'));
+    }
+
+    options.functionName = 'persistSettings';
+    return callback(null, options);
+  },
+
+  refreshMetadata: function(options, callback) {
+    logger.info('running settings refreshMetadata!');
+
+    options.functionName = 'refreshMetadata';
+    return callback(null, options);
   }
 }
 
-var processSettings = function(options, callback) {
-  logger.info('running processSettings!');
-  if (options.error) {
-    return callback(new Error('processSettings'));
-  }
-
-  options.functionName = 'processSettings';
-  return callback(null, options);
-};
-
 var hooks = {
   doSomethingError: function(options, callback) {
-    logger.info('running import doSomethingError!');
+    logger.info('running hooks doSomethingError!');
 
     var error = new Error('doSomethingError');
     error.name = 'my_error';
@@ -42,19 +53,19 @@ var hooks = {
   },
 
   doSomething: function(options, callback) {
-    logger.info('running import doSomething!');
+    logger.info('running hooks doSomething!');
 
     options.functionName = 'doSomething';
     return callback(null, [options]);
   },
 
   echoResponse: function(options, callback) {
-    logger.info('running import echoResponse!');
+    logger.info('running hooks echoResponse!');
     return callback(null, options.resp);
   },
 
   respondWithNonSearializableObject: function(options, callback) {
-    logger.info('running import respondWithNonStringifiableObject!');
+    logger.info('running hooks respondWithNonStringifiableObject!');
 
     return callback(null, {
       a: 'b',
@@ -64,6 +75,5 @@ var hooks = {
 }
 
 exports.setup = setup;
-exports.processSettings = processSettings;
-exports.import = hooks;
-exports.export = hooks;
+exports.settings = settings;
+exports.hooks = hooks;

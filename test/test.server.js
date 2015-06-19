@@ -209,7 +209,7 @@ describe('Server tests', function() {
     testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
       logger.info(body);
       res.statusCode.should.equal(422);
-      var expected = { errors: [{"code":"invalid_hook_response","message":"response object size exceeds maxResponsSize=2"}] };
+      var expected = { errors: [{"code":"response_size_exceeded","message":"response stream exceeded limit of 2 bytes."}] };
 
       assert.deepEqual(body, expected);
       done();

@@ -163,7 +163,7 @@ app.post('/function', function (req, res) {
 
 function validateFunctionResponse(reqBody, result) {
   //If maxResponsSize not sent in request then set a imit of 2MB
-  var maxResponsSize = reqBody.maxResponsSize || 2 * 1024 * 1024);
+  var maxResponsSize = reqBody.maxResponsSize || (2 * 1024 * 1024);
 
   if (sizeof(result) > maxResponsSize) {
     var error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');

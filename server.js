@@ -162,12 +162,12 @@ app.post('/function', function (req, res) {
 });
 
 function validateFunctionResponse(reqBody, result) {
-  //If maxResponsSize not sent in request then set a very generous limit of 5MB
-  var maxResponsSize = reqBody.maxResponsSize || (5 * 1024 * 1024);
+  //If maxResponsSize not sent in request then set a imit of 2MB
+  var maxResponsSize = reqBody.maxResponsSize || 2 * 1024 * 1024);
 
   if (sizeof(result) > maxResponsSize) {
-    var error = new Error('response object size exceeds maxResponsSize=' + maxResponsSize);
-    error.name = 'invalid_hook_response';
+    var error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
+    error.name = 'response_size_exceeded';
 
     return error;
   }

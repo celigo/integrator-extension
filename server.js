@@ -26,6 +26,7 @@ var modules = {
   'dummy-module': require('./dummy-module')
 }
 
+//TODO - revisit this
 if (process.env.NODE_ENV === 'production') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
@@ -103,11 +104,7 @@ app.get('/healthCheck', function (req, res) {
 });
 
 app.post('/function', function (req, res) {
-  processIntegrationRequest(req, res, 'function');
-});
-
-function processIntegrationRequest(req, res, endpoint) {
-  var errors = validateReq(req, modules);
+  var errors = validateRequest(req, modules);
 
   if (errors.length > 0) {
     if (errors[0].code === 'unauthorized') {
@@ -147,44 +144,30 @@ function processIntegrationRequest(req, res, endpoint) {
     return res.status(422).json({errors: errors});
   }
 
-  // TODO change to hooks
-  if (req.body.function[0] === 'import' || req.body.function[0]==='export') {
-    isFunction = true;
-
-    if (!req.body.maxPageSize) {
-      errors.push({code: 'missing_required_field', message: 'maxPageSize must be sent in the request', source: 'adaptor'});
-    }
-
-  }
-
-  if (errors.length > 0) {
-    return res.status(422).json({errors: errors});
-  }
-
   func(req.body.postBody, function(err, result) {
     if (err) {
       errors.push({code: err.name, message: err.message});
       return res.status(422).json({errors: errors});
     }
 
-    if (isFunction) {
-      var validationError = validateModuleFunctionResponse(req.body, result);
+    var validationError = validateFunctionResponse(req.body, result);
 
-      if (validationError) {
-        errors.push({code: validationError.name, message: validationError.message});
-        return res.status(422).json({errors: errors});
-      }
+    if (validationError) {
+      errors.push({code: validationError.name, message: validationError.message});
+      return res.status(422).json({errors: errors});
     }
 
     res.json(result);
   });
-}
+});
 
-//TODO -revisit name
-function validateModuleFunctionResponse(reqBody, result) {
-  if (sizeof(result) > reqBody.maxPageSize) {
-    var error = new Error('hook response object size exceeds max page size ' + reqBody.maxPageSize);
-    error.name = 'invalid_hook_response';
+function validateFunctionResponse(reqBody, result) {
+  //If maxResponsSize not sent in request then set a imit of 2MB
+  var maxResponsSize = reqBody.maxResponsSize || (2 * 1024 * 1024);
+
+  if (sizeof(result) > maxResponsSize) {
+    var error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
+    error.name = 'response_size_exceeded';
 
     return error;
   }
@@ -210,7 +193,7 @@ function validateModuleFunctionResponse(reqBody, result) {
 }
 
 
-function validateReq(req, modules) {
+function validateRequest(req, modules) {
   var errors = [];
 
   var systemToken = findToken(req);

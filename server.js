@@ -1,3 +1,4 @@
+/*jshint -W080 */
 var nconf = require('nconf').argv().env();
 if (process.env.NODE_ENV !== 'production') {
   nconf.defaults({
@@ -115,7 +116,6 @@ app.post('/function', function (req, res) {
     return res.status(422).json({errors: errors});
   }
 
-  var functionName = undefined;
   var moduleName = req.body.module;
   var func = undefined;
   var isFunction = false;

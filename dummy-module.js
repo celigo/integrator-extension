@@ -4,7 +4,7 @@ var setup = {
   initialize: function(options, callback) {
     logger.info('running setup initialize!');
 
-    options.functionName = 'initialize';
+    options.function = 'initialize';
     return callback(null, options);
   },
 
@@ -16,7 +16,7 @@ var setup = {
   runSetupSuccessStep: function(options, callback) {
     logger.info('running runSetupSuccessStep!');
 
-    options.functionName = 'runSetupSuccessStep';
+    options.function = 'runSetupSuccessStep';
     return callback(null, options);
   },
 
@@ -30,14 +30,14 @@ var settings = {
       return callback(new Error('persistSettings'));
     }
 
-    options.functionName = 'persistSettings';
+    options.function = 'persistSettings';
     return callback(null, options);
   },
 
   refreshMetadata: function(options, callback) {
     logger.info('running settings refreshMetadata!');
 
-    options.functionName = 'refreshMetadata';
+    options.function = 'refreshMetadata';
     return callback(null, options);
   }
 }
@@ -55,7 +55,7 @@ var hooks = {
   doSomething: function(options, callback) {
     logger.info('running hooks doSomething!');
 
-    options.functionName = 'doSomething';
+    options.function = 'doSomething';
     return callback(null, [options]);
   },
 

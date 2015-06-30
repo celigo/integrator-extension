@@ -31,7 +31,7 @@ describe('Hook tests', function() {
       logger.info(body);
       res.statusCode.should.equal(200);
 
-      postBody.postBody.functionName = 'doSomething';
+      postBody.postBody.function = 'doSomething';
       assert.deepEqual(body, [postBody.postBody]);
 
       done();

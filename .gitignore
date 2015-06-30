@@ -3,3 +3,4 @@
 /scratch
 /server.log.*
 npm-debug.log
+/.jshintrc

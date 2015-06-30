@@ -27,7 +27,7 @@ describe('Connector setup tests', function() {
       res.statusCode.should.equal(200);
       logger.info(body);
 
-      postBody.postBody.functionName = 'runSetupSuccessStep';
+      postBody.postBody.function = 'runSetupSuccessStep';
       assert.deepEqual(body, postBody.postBody);
 
       done();
@@ -50,7 +50,7 @@ describe('Connector setup tests', function() {
       res.statusCode.should.equal(200);
       logger.info(body);
 
-      postBody.postBody.functionName = 'initialize';
+      postBody.postBody.function = 'initialize';
       assert.deepEqual(body, postBody.postBody);
 
       done();

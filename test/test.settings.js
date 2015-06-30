@@ -48,7 +48,7 @@ describe('Connector settings tests', function() {
       res.statusCode.should.equal(200);
       logger.info(body);
 
-      postBody.postBody.functionName = 'persistSettings';
+      postBody.postBody.function = 'persistSettings';
       assert.deepEqual(body, postBody.postBody);
 
       done();
@@ -71,7 +71,7 @@ describe('Connector settings tests', function() {
       res.statusCode.should.equal(200);
       logger.info(body);
 
-      postBody.postBody.functionName = 'refreshMetadata';
+      postBody.postBody.function = 'refreshMetadata';
       assert.deepEqual(body, postBody.postBody);
 
       done();

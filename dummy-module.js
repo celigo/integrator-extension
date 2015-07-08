@@ -109,7 +109,6 @@ var hooks = {
 var wrappers = {
   pingOptions: function(options, callback) {
     logger.info('running wrappers echoOptions!')
-    options.function = 'echoOptions'
     options.statusCode = 200
     return callback(null, options)
   },

@@ -109,7 +109,7 @@ var hooks = {
 var wrappers = {
   echoOptions: function(options, callback) {
     logger.info('running wrappers echoOptions!')
-    options.function = echoOptions
+    options.function = 'echoOptions'
     return callback(null, options)
   },
 

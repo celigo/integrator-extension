@@ -108,7 +108,7 @@ var hooks = {
 
 var wrappers = {
   pingOptions: function(options, callback) {
-    logger.info('running wrappers echoOptions!')
+    logger.info('running wrappers pingOptions!')
     options.statusCode = 200
     return callback(null, options)
   },
@@ -121,7 +121,28 @@ var wrappers = {
   pingError: function(options, callback) {
     logger.info('running wrappers pingError!')
     return callback(null, {statusCode: 401, errors: [{code: 'pingCode', message: 'pingMessage'}]})
-  }
+  },
+
+  importOptions: function(options, callback) {
+    logger.info('running wrappers importOptions!')
+
+    //lets pass the options back via id for validation!
+    return callback(null, {statusCode: 200, id: options})
+  },
+
+  returnVariousImportResponses: function(options, callback) {
+    logger.info('running wrappers returnVariousImportResponses!')
+
+    var toReturn = [
+        {statusCode: 200}
+      , {statusCode: 200, id:'myId1'}
+      , {statusCode: 200, id:'myId2', errors: [{code:'c1', message: 'm1'}]}
+      , {statusCode: 422, errors: [{code:'c1', message: 'm1'}]}
+      , {statusCode: 401, errors: [{code:'c2', message: 'm2'}]}
+    ]
+    
+    return callback(null, toReturn)
+  },
 }
 
 exports.setup = setup

@@ -107,8 +107,8 @@ var hooks = {
 }
 
 var wrappers = {
-  echoOptions: function(options, callback) {
-    logger.info('running wrappers echoOptions!')
+  pingOptions: function(options, callback) {
+    logger.info('running wrappers pingOptions!')
     return callback(null, options)
   },
 
@@ -146,6 +146,13 @@ var wrappers = {
   returnBadImportResponseWithNoStatusCode: function(options, callback) {
     logger.info('running wrappers returnBadImportResponseWithNoStatusCode!')
     return callback(null, [{id:'myId1'}])
+  },
+
+  exportOptions: function(options, callback) {
+    logger.info('running wrappers exportOptions!')
+
+    //lets pass the options back via data for validation!
+    return callback(null, {data: [{options: options}], lastPage: true})
   },
 
   echoExportResponseFromState: function(options, callback) {

@@ -143,6 +143,11 @@ var wrappers = {
 
     return callback(null, toReturn)
   },
+
+  returnBadImportResponseWithNoStatusCode: function(options, callback) {
+    logger.info('running wrappers returnBadImportResponseWithNoStatusCode!')
+    return callback(null, [{id:'myId1'}])
+  },
 }
 
 exports.setup = setup

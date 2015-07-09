@@ -127,7 +127,7 @@ var wrappers = {
     logger.info('running wrappers importOptions!')
 
     //lets pass the options back via id for validation!
-    return callback(null, {statusCode: 200, id: options})
+    return callback(null, [{statusCode: 200, id: options}])
   },
 
   returnVariousImportResponses: function(options, callback) {
@@ -140,7 +140,7 @@ var wrappers = {
       , {statusCode: 422, errors: [{code:'c1', message: 'm1'}]}
       , {statusCode: 401, errors: [{code:'c2', message: 'm2'}]}
     ]
-    
+
     return callback(null, toReturn)
   },
 }

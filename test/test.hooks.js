@@ -1,3 +1,5 @@
+'use strict'
+
 var should = require('should');
 var assert = require('assert');
 var nconf = require('nconf');
@@ -9,12 +11,11 @@ var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
 var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 
 var _importId = '_importId';
-var _exportId = '_exportId';
 
+var functionURL = baseURL + '/function'
 describe('Hook tests', function() {
 
   it('should pass after successfully calling hook function', function(done) {
-    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
       function: ['hooks', 'doSomething'],
@@ -27,8 +28,8 @@ describe('Hook tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
-      logger.info(body);
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
+      // logger.info(body);
       res.statusCode.should.equal(200);
 
       postBody.postBody.function = 'doSomething';
@@ -39,7 +40,6 @@ describe('Hook tests', function() {
   });
 
   it('should fail with 422 for error', function(done) {
-    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
       function: ['hooks', 'doSomethingError'],
@@ -51,7 +51,7 @@ describe('Hook tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
       var expected = { errors: [ { code: 'my_error', message: 'doSomethingError'} ] };
 

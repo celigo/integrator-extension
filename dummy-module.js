@@ -1,21 +1,57 @@
+'use strict'
+
 var logger = require('winston')
+
+var installer = {
+  connectorInstallerFunction: function(options, callback) {
+    options.function = 'connectorInstallerFunction'
+    return callback(null, options)
+  },
+
+  runInstallerErrorStep: function(options, callback) {
+    return callback(new Error('runInstallerErrorStep'))
+  },
+
+  runInstallerSuccessStep: function(options, callback) {
+    options.function = 'runInstallerSuccessStep'
+    return callback(null, options)
+  },
+
+  connectorUpdateFunction: function(options, callback) {
+    options.function = 'connectorInstallerFunction'
+    return callback(null, options)
+  },
+
+  notAFunction: 'not_a_func'
+}
+
+var uninstaller = {
+  connectorUninstallerFunction: function(options, callback) {
+    options.function = 'connectorInstallerFunction'
+    return callback(null, options)
+  },
+
+  runUninstallerErrorStep: function(options, callback) {
+    return callback(new Error('runUninstallerErrorStep'))
+  },
+
+  runUninstallerSuccessStep: function(options, callback) {
+    options.function = 'runUninstallerSuccessStep'
+    return callback(null, options)
+  }
+}
 
 var setup = {
   initialize: function(options, callback) {
-    logger.info('running setup initialize!')
-
     options.function = 'initialize'
     return callback(null, options)
   },
 
   runSetupErrorStep: function(options, callback) {
-    logger.info('running runSetupErrorStep!')
     return callback(new Error('runSetupErrorStep'))
   },
 
   runSetupSuccessStep: function(options, callback) {
-    logger.info('running runSetupSuccessStep!')
-
     options.function = 'runSetupSuccessStep'
     return callback(null, options)
   },
@@ -25,7 +61,6 @@ var setup = {
 
 var settings = {
   persistSettings: function(options, callback) {
-    logger.info('running persistSettings!')
     if (options.error) {
       return callback(new Error('persistSettings'))
     }
@@ -35,8 +70,6 @@ var settings = {
   },
 
   refreshMetadata: function(options, callback) {
-    logger.info('running settings refreshMetadata!')
-
     options.function = 'refreshMetadata'
     return callback(null, options)
   }
@@ -44,8 +77,6 @@ var settings = {
 
 var hooks = {
   doSomethingError: function(options, callback) {
-    logger.info('running hooks doSomethingError!')
-
     var error = new Error('doSomethingError')
     error.name = 'my_error'
 
@@ -53,52 +84,15 @@ var hooks = {
   },
 
   doSomething: function(options, callback) {
-    logger.info('running hooks doSomething!')
-
     options.function = 'doSomething'
     return callback(null, [options])
   },
 
   echoResponse: function(options, callback) {
-    logger.info('running hooks echoResponse!')
     return callback(null, options.resp)
   },
 
   respondWithNonSearializableObject: function(options, callback) {
-    logger.info('running hooks respondWithNonStringifiableObject!')
-
-    return callback(null, {
-      a: 'b',
-      date: new Date()
-    })
-  }
-}
-
-var hooks = {
-  doSomethingError: function(options, callback) {
-    logger.info('running hooks doSomethingError!')
-
-    var error = new Error('doSomethingError')
-    error.name = 'my_error'
-
-    return callback(error)
-  },
-
-  doSomething: function(options, callback) {
-    logger.info('running hooks doSomething!')
-
-    options.function = 'doSomething'
-    return callback(null, [options])
-  },
-
-  echoResponse: function(options, callback) {
-    logger.info('running hooks echoResponse!')
-    return callback(null, options.resp)
-  },
-
-  respondWithNonSearializableObject: function(options, callback) {
-    logger.info('running hooks respondWithNonStringifiableObject!')
-
     return callback(null, {
       a: 'b',
       date: new Date()
@@ -108,29 +102,23 @@ var hooks = {
 
 var wrappers = {
   pingOptions: function(options, callback) {
-    logger.info('running wrappers pingOptions!')
     return callback(null, options)
   },
 
   pingSuccess: function(options, callback) {
-    logger.info('running wrappers pingSuccess!')
     return callback(null, {statusCode: 200})
   },
 
   pingError: function(options, callback) {
-    logger.info('running wrappers pingError!')
     return callback(null, {statusCode: 401, errors: [{code: 'pingCode', message: 'pingMessage'}]})
   },
 
   importOptions: function(options, callback) {
-    logger.info('running wrappers importOptions!')
-
     //lets pass the options back via id for validation!
     return callback(null, [{statusCode: 200, id: options}])
   },
 
   returnVariousImportResponses: function(options, callback) {
-    logger.info('running wrappers returnVariousImportResponses!')
 
     var toReturn = [
         {statusCode: 200}
@@ -144,24 +132,22 @@ var wrappers = {
   },
 
   returnBadImportResponseWithNoStatusCode: function(options, callback) {
-    logger.info('running wrappers returnBadImportResponseWithNoStatusCode!')
     return callback(null, [{id:'myId1'}])
   },
 
   exportOptions: function(options, callback) {
-    logger.info('running wrappers exportOptions!')
-
     //lets pass the options back via data for validation!
     return callback(null, {data: [{options: options}], lastPage: true})
   },
 
   echoExportResponseFromState: function(options, callback) {
-    logger.info('running wrappers echoExportResponseFromState!')
     return callback(null, options.state.resp)
   },
 }
 
-exports.setup = setup
+exports.setup = setup // Legacy .. will be removed
+exports.installer = installer
+exports.uninstaller = uninstaller
 exports.settings = settings
 exports.hooks = hooks
 exports.wrappers = wrappers

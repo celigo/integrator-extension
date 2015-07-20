@@ -65,17 +65,18 @@ expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length
 expressWinston.requestWhitelist.push('method');
 expressWinston.requestWhitelist.push('url');
 expressWinston.requestWhitelist.push('query');
+
+var message = "{{res.statusCode}} HTTP {{req.method}} {{req.url}} {{res.responseTime}}ms"
 var expressWinstonLogger = expressWinston.logger({
-  transports: [
-    fileTransport,
-    consoleTransport
-  ]
+  transports: [fileTransport, consoleTransport],
+  msg: message,
+  meta: false
 });
+
 var expressWinstonErrorLogger = expressWinston.errorLogger({
-  transports: [
-    fileTransport,
-    consoleTransport
-  ]
+  transports: [fileTransport, consoleTransport],
+  msg: message,
+  meta: false
 });
 
 // we need the logs from all our 3rd party modules.

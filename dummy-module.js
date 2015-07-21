@@ -27,7 +27,7 @@ var installer = {
 
 var uninstaller = {
   connectorUninstallerFunction: function(options, callback) {
-    options.function = 'connectorInstallerFunction'
+    options.function = 'connectorUninstallerFunction'
     return callback(null, options)
   },
 

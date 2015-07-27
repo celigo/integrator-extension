@@ -101,20 +101,24 @@ var hooks = {
 
   preMapFunction: function(options, callback) {
     var data = options.data
+      , resp = []
     for (var i = 0; i < data.length; i++) {
       data[i].processedPreMap = true
+      resp.push(data[i])
     }
 
-    return callback(null, data)
+    return callback(null, resp)
   },
 
   postMapFunction: function(options, callback) {
     var data = options.postMapData
+      , resp = []
     for (var i = 0; i < data.length; i++) {
       data[i].processedPostMap = true
+      resp.push(data[i])
     }
 
-    return callback(null, data)
+    return callback(null, resp)
   },
 
   postSubmitFunction: function(options, callback) {

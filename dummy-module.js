@@ -130,6 +130,17 @@ var hooks = {
     }
 
     return callback(null, data)
+  },
+
+  preSavePageFunction: function(options, callback) {
+    var data = options.data
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].id) {
+        data[i].processedPreSavePage = true
+      }
+    }
+
+    return callback(null, {data: data, errors: options.errors})
   }
 }
 

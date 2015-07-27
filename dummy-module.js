@@ -97,6 +97,35 @@ var hooks = {
       a: 'b',
       date: new Date()
     })
+  },
+
+  preMapFunction: function(options, callback) {
+    var data = options.data
+    for (var i = 0; i < data.length; i++) {
+      data[i].processedPreMap = true
+    }
+
+    return callback(null, data)
+  },
+
+  postMapFunction: function(options, callback) {
+    var data = options.postMapData
+    for (var i = 0; i < data.length; i++) {
+      data[i].processedPostMap = true
+    }
+
+    return callback(null, data)
+  },
+
+  postSubmitFunction: function(options, callback) {
+    var data = options.responseData
+    for (var i = 0; i < data.length; i++) {
+      if (data[i].id) {
+        data[i].id = data[i].id + '-postSubmit'
+      }
+    }
+
+    return callback(null, data)
   }
 }
 

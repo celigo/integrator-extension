@@ -104,7 +104,7 @@ var hooks = {
       , resp = []
     for (var i = 0; i < data.length; i++) {
       data[i].processedPreMap = true
-      resp.push(data[i])
+      resp.push({data: data[i]})
     }
 
     return callback(null, resp)
@@ -115,7 +115,7 @@ var hooks = {
       , resp = []
     for (var i = 0; i < data.length; i++) {
       data[i].processedPostMap = true
-      resp.push(data[i])
+      resp.push({data: data[i]})
     }
 
     return callback(null, resp)

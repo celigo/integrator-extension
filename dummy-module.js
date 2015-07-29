@@ -18,7 +18,7 @@ var installer = {
   },
 
   connectorUpdateFunction: function(options, callback) {
-    options.function = 'connectorInstallerFunction'
+    options.function = 'connectorUpdateFunction'
     return callback(null, options)
   },
 

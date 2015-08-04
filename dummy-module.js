@@ -174,7 +174,7 @@ var wrappers = {
   },
 
   returnDataValueAsIdImport: function(options, callback) {
-    logger.info(options.data)
+    // logger.info(options.data)
     var data = options.data
     var toReturn = []
 

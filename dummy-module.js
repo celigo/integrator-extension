@@ -173,6 +173,18 @@ var wrappers = {
     return callback(null, toReturn)
   },
 
+  returnDataValueAsIdImport: function(options, callback) {
+    logger.info(options.data)
+    var data = options.data
+    var toReturn = []
+
+    for (var i = 0; i < data.length; i++) {
+      toReturn.push({statusCode: 200, id: data[i]})
+    }
+
+    return callback(null, toReturn)
+  },
+
   returnBadImportResponseWithNoStatusCode: function(options, callback) {
     return callback(null, [{id:'myId1'}])
   },

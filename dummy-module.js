@@ -179,7 +179,7 @@ var wrappers = {
     var toReturn = []
 
     for (var i = 0; i < data.length; i++) {
-      toReturn.push({statusCode: 200, id: data[i]})
+      toReturn.push({statusCode: 200, id: {data: data[i], isArray: Array.isArray(data[i])}})
     }
 
     return callback(null, toReturn)

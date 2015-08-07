@@ -197,6 +197,112 @@ var wrappers = {
   echoExportResponseFromState: function(options, callback) {
     return callback(null, options.state.resp)
   },
+
+  exportArrayOfArrays: function(options, callback) {
+    var toReturn = [
+      [
+        {
+          "amount": {
+            "value": "10.85"
+          },
+          "customer": {
+            "variable": {
+              "internalId": "13"
+            }
+          }
+        },{
+
+          "amount": {
+            "value": "16"
+          },
+          "customer": {
+            "variable": {
+              "internalId": "42"
+            }
+          }
+        }
+      ]
+      ,[
+        {
+          "test": true,
+          "orders": [
+            {
+              "team": "giants",
+              "right": 2
+            },{
+              "team": "49ers",
+              "left": 3
+            }
+          ]
+        },{
+          "templeton": 14
+        }
+      ]
+    ]
+
+    return callback(null, {data: toReturn, lastPage: true})
+  },
+
+  exportArrayOfObjectsContainingArrays: function(options, callback) {
+    var toReturn = [
+      {
+        a : [
+          {
+            "name":"charlie",
+            "value":16
+          }, {
+            "name":"logan",
+            "value":25
+          }
+        ]
+      }, {
+        b : [
+          {
+            "name":"scott",
+            "value":1
+          } , {
+            "name":"jean",
+            "value":2
+          }, {
+            "name":"bobby",
+            "value":3
+          }
+        ]
+      }
+    ]
+
+    return callback(null, {data: toReturn, lastPage: true})
+  },
+
+  importArrayOfArrays: function(options, callback) {
+    logger.info(options.data)
+    var data = options.data
+    var toReturn = []
+
+    if( !Array.isArray(data) ) {
+      return callback(null, {statusCode: 500, errors: [{code:'DataError', message: 'data passed to wrapper should be Array'}]})
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      toReturn.push({statusCode: 200, id: {data: data[i], isArray: Array.isArray(data[i])}})
+    }
+    return callback(null, toReturn)
+  },
+
+  importArrayOfObjectsContainingArrays: function(options, callback) {
+    logger.info(options.data)
+    var data = options.data
+    var toReturn = []
+
+    if( !Array.isArray(data) ) {
+      return callback(null, {statusCode: 500, errors: [{code:'DataError', message: 'data passed to wrapper should be Array'}]})
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      toReturn.push({statusCode: 200, id: {data: data[i], isObject: 'object' === typeof data[i] }})
+    }
+    return callback(null, toReturn)
+  },
 }
 
 exports.setup = setup // Legacy .. will be removed

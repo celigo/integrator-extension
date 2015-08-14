@@ -246,7 +246,7 @@ var wrappers = {
   exportArrayOfObjectsContainingArrays: function(options, callback) {
     var toReturn = [
       {
-        a : [
+        subObj : [
           {
             "name":"charlie",
             "value":16
@@ -256,7 +256,7 @@ var wrappers = {
           }
         ]
       }, {
-        b : [
+        subObj : [
           {
             "name":"scott",
             "value":1
@@ -284,7 +284,19 @@ var wrappers = {
     }
 
     for (var i = 0; i < data.length; i++) {
-      toReturn.push({statusCode: 200, id: {data: data[i], isArray: Array.isArray(data[i])}})
+      var objToReturn = {
+        id: {
+          data: i,
+          isArray: Array.isArray(data[i])
+        }
+      }
+
+      if(objToReturn.id.isArray) {
+        objToReturn.statusCode = 200
+      } else {
+        objToReturn.statusCode = 422
+      }
+      toReturn.push(objToReturn)
     }
     return callback(null, toReturn)
   },
@@ -299,7 +311,20 @@ var wrappers = {
     }
 
     for (var i = 0; i < data.length; i++) {
-      toReturn.push({statusCode: 200, id: {data: data[i], isObject: 'object' === typeof data[i] }})
+      var objToReturn = {
+        id: {
+          data: i,
+          isObject: 'object' === typeof data[i],
+          objectContainsArray: Array.isArray(data[i].subObj)
+        }
+      }
+
+      if(objToReturn.id.isObject && objToReturn.id.objectContainsArray) {
+        objToReturn.statusCode = 200
+      } else {
+        objToReturn.statusCode = 500
+      }
+      toReturn.push(objToReturn)
     }
     return callback(null, toReturn)
   },

@@ -103,8 +103,13 @@ var hooks = {
     var data = options.data
       , resp = []
     for (var i = 0; i < data.length; i++) {
-      data[i].processedPreMap = true
-      resp.push({data: data[i]})
+      if (data[i].errors) {
+        resp.push({errors: data[i].errors})
+      } else {
+
+        data[i].processedPreMap = true
+        resp.push({data: data[i]})
+      }
     }
 
     return callback(null, resp)

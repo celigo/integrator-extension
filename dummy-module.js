@@ -103,8 +103,13 @@ var hooks = {
     var data = options.data
       , resp = []
     for (var i = 0; i < data.length; i++) {
-      data[i].processedPreMap = true
-      resp.push({data: data[i]})
+      if (data[i].errors) {
+        resp.push({errors: data[i].errors})
+      } else {
+
+        data[i].processedPreMap = true
+        resp.push({data: data[i]})
+      }
     }
 
     return callback(null, resp)
@@ -196,6 +201,137 @@ var wrappers = {
 
   echoExportResponseFromState: function(options, callback) {
     return callback(null, options.state.resp)
+  },
+
+  exportArrayOfArrays: function(options, callback) {
+    var toReturn = [
+      [
+        {
+          "amount": {
+            "value": "10.85"
+          },
+          "customer": {
+            "variable": {
+              "internalId": "13"
+            }
+          }
+        },{
+
+          "amount": {
+            "value": "16"
+          },
+          "customer": {
+            "variable": {
+              "internalId": "42"
+            }
+          }
+        }
+      ]
+      ,[
+        {
+          "test": true,
+          "orders": [
+            {
+              "team": "giants",
+              "right": 2
+            },{
+              "team": "49ers",
+              "left": 3
+            }
+          ]
+        },{
+          "templeton": 14
+        }
+      ]
+    ]
+
+    return callback(null, {data: toReturn, lastPage: true})
+  },
+
+  exportArrayOfObjectsContainingArrays: function(options, callback) {
+    var toReturn = [
+      {
+        subObj : [
+          {
+            "name":"charlie",
+            "value":16
+          }, {
+            "name":"logan",
+            "value":25
+          }
+        ]
+      }, {
+        subObj : [
+          {
+            "name":"scott",
+            "value":1
+          } , {
+            "name":"jean",
+            "value":2
+          }, {
+            "name":"bobby",
+            "value":3
+          }
+        ]
+      }
+    ]
+
+    return callback(null, {data: toReturn, lastPage: true})
+  },
+
+  importArrayOfArrays: function(options, callback) {
+    logger.info(options.data)
+    var data = options.data
+    var toReturn = []
+
+    if( !Array.isArray(data) ) {
+      return callback(null, {statusCode: 500, errors: [{code:'DataError', message: 'data passed to wrapper should be Array'}]})
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      var objToReturn = {
+        id: {
+          data: i,
+          isArray: Array.isArray(data[i])
+        }
+      }
+
+      if(objToReturn.id.isArray) {
+        objToReturn.statusCode = 200
+      } else {
+        objToReturn.statusCode = 422
+      }
+      toReturn.push(objToReturn)
+    }
+    return callback(null, toReturn)
+  },
+
+  importArrayOfObjectsContainingArrays: function(options, callback) {
+    logger.info(options.data)
+    var data = options.data
+    var toReturn = []
+
+    if( !Array.isArray(data) ) {
+      return callback(null, {statusCode: 500, errors: [{code:'DataError', message: 'data passed to wrapper should be Array'}]})
+    }
+
+    for (var i = 0; i < data.length; i++) {
+      var objToReturn = {
+        id: {
+          data: i,
+          isObject: 'object' === typeof data[i],
+          objectContainsArray: Array.isArray(data[i].subObj)
+        }
+      }
+
+      if(objToReturn.id.isObject && objToReturn.id.objectContainsArray) {
+        objToReturn.statusCode = 200
+      } else {
+        objToReturn.statusCode = 500
+      }
+      toReturn.push(objToReturn)
+    }
+    return callback(null, toReturn)
   },
 }
 

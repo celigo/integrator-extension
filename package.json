@@ -18,7 +18,7 @@
     "object-sizeof": "1.0.6",
     "deep-is": "0.1.3",
     "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.2.23",
-    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v0.2.10"
+    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v0.2.11"
   },
   "devDependencies": {
     "mocha": "2.2.5",

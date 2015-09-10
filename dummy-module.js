@@ -156,6 +156,10 @@ var wrappers = {
     return callback(null, {statusCode: 200})
   },
 
+  pingStringStatusCode: function(options, callback) {
+    return callback(null, {statusCode: '200'})
+  },
+
   pingError: function(options, callback) {
     return callback(null, {statusCode: 401, errors: [{code: 'pingCode', message: 'pingMessage'}]})
   },
@@ -176,6 +180,10 @@ var wrappers = {
     ]
 
     return callback(null, toReturn)
+  },
+
+  returnStringStatusCodeInImportResponse: function(options, callback) {
+    return callback(null, [{statusCode: '200'}])
   },
 
   returnDataValueAsIdImport: function(options, callback) {

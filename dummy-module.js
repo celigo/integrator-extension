@@ -92,6 +92,10 @@ var hooks = {
     return callback(null, options.resp)
   },
 
+  throwException: function(options, callback) {
+    throw new Error('myUncaughtException')
+  },
+
   respondWithNonSearializableObject: function(options, callback) {
     return callback(null, {
       a: 'b',

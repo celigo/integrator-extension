@@ -223,7 +223,7 @@ describe('Server tests', function() {
     testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       // logger.info(body);
       res.statusCode.should.equal(422);
-      var expected = { errors: [{"code":"invalid_hook_response","message":"hook response object not serializable [stringified/parsed object not same as original]"}] };
+      var expected = { errors: [{"code":"invalid_extension_response","message":"extension response is not serializable."}] };
 
       assert.deepEqual(body, expected);
       done();

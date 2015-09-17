@@ -21,7 +21,7 @@ var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
-var deepIs = require('deep-is');
+var extensionUtil = require('./util');
 
 var modules = {
   'dummy-module': require('./dummy-module')
@@ -165,27 +165,18 @@ app.post('/function', function (req, res) {
 function validateFunctionResponse(reqBody, result) {
   //If maxResponsSize not sent in request then set a imit of 2MB
   var maxResponsSize = reqBody.maxResponsSize || (2 * 1024 * 1024);
+  var error
 
   if (sizeof(result) > maxResponsSize) {
-    var error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
+    error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
     error.name = 'response_size_exceeded';
 
     return error;
   }
 
-  try {
-    var stringifiedResult = JSON.stringify(result);
-    var reconstructedResult = JSON.parse(stringifiedResult);
-
-    if (!deepIs(result, reconstructedResult)) {
-      var error = new Error('stringified/parsed object not same as original');
-      error.name = 'invalid_hook_response';
-      throw error;
-    }
-
-  } catch (e) {
-    var error = new Error('hook response object not serializable [' + e.message + ']');
-    error.name = e.name;
+  if (!extensionUtil.isSerializable(result)) {
+    error = new Error('extension response is not serializable.');
+    error.name = 'invalid_extension_response';
 
     return error;
   }

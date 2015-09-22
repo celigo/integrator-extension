@@ -116,29 +116,51 @@ var hooks = {
       }
     }
 
+    // logger.info(resp)
     return callback(null, resp)
   },
 
   postMapFunction: function(options, callback) {
+    // logger.info(data)
+
     var data = options.postMapData
       , resp = []
     for (var i = 0; i < data.length; i++) {
-      data[i].processedPostMap = true
-      resp.push({data: data[i]})
+      if (data[i].postMapErrors) {
+        resp.push({errors: data[i].postMapErrors})
+      } else {
+
+        data[i].processedPostMap = true
+        resp.push({data: data[i]})
+      }
     }
+
+    // logger.info(resp)
 
     return callback(null, resp)
   },
 
   postSubmitFunction: function(options, callback) {
     var data = options.responseData
+      , resp = []
+
     for (var i = 0; i < data.length; i++) {
+      var aResp = {}
+      aResp.statusCode = data[i].statusCode
       if (data[i].id) {
-        data[i].id = data[i].id + '-postSubmit'
+        aResp.id = data[i].id + '-postSubmit'
+      } else if (data[i].postSubmitErrors){
+
+        aResp.errors = data[i].postSubmitErrors
+      } else if (data[i].errors){
+
+        aResp.errors = data[i].errors
       }
+
+      resp.push(aResp)
     }
 
-    return callback(null, data)
+    return callback(null, resp)
   },
 
   preSavePageFunction: function(options, callback) {

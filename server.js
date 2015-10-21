@@ -163,8 +163,8 @@ app.post('/function', function (req, res) {
 });
 
 function validateFunctionResponse(reqBody, result) {
-  //If maxResponsSize not sent in request then set a imit of 2MB
-  var maxResponsSize = reqBody.maxResponsSize || (2 * 1024 * 1024);
+  //If maxResponsSize not sent in request then set a imit of 5MB
+  var maxResponsSize = reqBody.maxResponsSize || (5 * 1024 * 1024);
   var error
 
   if (sizeof(result) > maxResponsSize) {

@@ -1,6 +1,6 @@
 /*jshint -W080 */
 var nconf = require('nconf').argv().env();
-if (process.env.NODE_ENV !== 'production') {
+if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging') {
   nconf.defaults({
     'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
     "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN": "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN",
@@ -28,7 +28,7 @@ var modules = {
 }
 
 //TODO - revisit this
-if (process.env.NODE_ENV === 'production') {
+if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
 }
@@ -41,7 +41,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (process.env.NODE_ENV === 'production')
+  handleExceptions: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
 };
 
 var consoleTransportOpts = {

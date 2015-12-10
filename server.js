@@ -220,6 +220,10 @@ var server = app.listen(port, function () {
   logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
 
+// our load balancer "Idle Timeout" is currently set to 300 seconds.
+// this timeout should be just slightly larger to avoid 504 errors.
+server.timeout = 315000;
+
 function findToken(req) {
   var token;
   if (req.headers && req.headers.authorization) {

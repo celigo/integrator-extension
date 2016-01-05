@@ -6,5 +6,5 @@ script:
 - make -f .travis test
 notifications:
   slack:
-    secure: auzL6SRHDlP96z79c9C8LtLLbmDrg0SaTSrTK8osQvmnXdKB7V3G+aqyNp6JPbejpvix8C+xkzkeaLra75cNjFntEHclLzbipFZuP++8zQzNMw6MrtEiGJd5+orTsizoheI1TUKPtp9pkJqJ5Q2lWOb4AEjkmemnHN3v4zyidtc=
+    secure: hhdHneVB7ulrfCxgBrvhB7j+Zg1IoKbwXkj1YuC8oVzWwVpkiJMKWHjXy10Wv9cX3tm/7wTCqjrdbHi4g4L758YH4arcsGWXDrNRp927PKiRCQJKso4pbpWsr5UsEZxqw2UP70VH39ZExNtDLtCOS+zQMkIBqDWUZWIc/FPDQk0=
   webhooks: https://api.integrator.io/v1/exports/55ed3cc386de45f94413d3e0/data

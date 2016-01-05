@@ -1,0 +1,7 @@
+// in the current directory, you should make a copy of this file called 'development.json'
+// and use the reference vars below to establish your own dev environment.  Most of these
+// vars can be shared. The ones that cannot have been modified to illustrate 'get_your_own' values.
+{
+  "TEST_INTEGRATOR_EXTENSION_PORT": 7000,
+  "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "get_your_own"
+}

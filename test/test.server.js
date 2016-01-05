@@ -7,12 +7,13 @@ var logger = require('winston');
 var testUtil = require('./util');
 
 var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_EXTENSION_PORT')
-var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
+var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN';
 var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 var _integrationId = '_integrationId';
 
 var functionURL = baseURL + '/function'
 describe('Server tests', function() {
+
   it('should fail with 422 for missing postbody error', function(done) {
     var postBody = {
       module: 'dummy-module',

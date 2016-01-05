@@ -1,19 +1,14 @@
-ifndef SystemRoot
-	MOCHA_COV=./node_modules/.bin/_mocha
-	MOCHA=./node_modules/.bin/mocha
+MOCHA_COV=./node_modules/.bin/_mocha
+MOCHA=./node_modules/.bin/mocha
 
-	NODE_ENV=unittest
-else
-	MOCHA_COV=.\node_modules\.bin\_mocha
-	MOCHA=.\node_modules\.bin\mocha
-
-	NODE_ENV=unittest
-endif
+ENVIRONMENT_VARIABLES = NODE_ENV=unittest
 
 test:
+	@$(ENVIRONMENT_VARIABLES) \
 	$(MOCHA) test
 
 debug:
+	@$(ENVIRONMENT_VARIABLES) \
 	$(MOCHA) --debug-brk test
 
 .PHONY: test debug

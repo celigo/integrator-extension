@@ -1,0 +1,11 @@
+MOCHA_COV=./node_modules/.bin/_mocha
+MOCHA=./node_modules/.bin/mocha
+ISTANBUL=./node_modules/.bin/istanbul
+
+ENVIRONMENT_VARIABLES = NODE_ENV=travis
+
+test:
+	@$(ENVIRONMENT_VARIABLES) \
+	$(MOCHA) test
+
+.PHONY: test

@@ -1,3 +1,5 @@
+'use strict'
+
 var request = require('request');
 
 exports.postRequest = function(uri, json, callback, bearerToken) {

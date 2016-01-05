@@ -1,0 +1,10 @@
+sudo: false
+language: node_js
+node_js:
+- 0.12.7
+script:
+- make test
+notifications:
+  slack:
+    secure: ENQjeKuTuRkkAyyX/T4P6+iTtzyQ7cJRyg4aV3EzbVt24WNua6bQf3fYXFDyOFfgSvq9Rmrxadhc0g68wGzRDOKpnkWw+FXlJarx3hQqEhbgZ6+InPbMo2jd1OBH+v0IaFXbCZWItsVmgmrs/MZM4aljqYPwpEVwAAyvAqkluNI=
+  webhooks: https://api.integrator.io/v1/exports/55ed3cc386de45f94413d3e0/data

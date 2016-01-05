@@ -18,8 +18,6 @@ if(env === 'unittest') {
   env = nconf.get('NODE_ENV');
 }
 
-console.log('Extension NODE_ENV', env)
-
 // Important: Remove default limit of 5
 var http = require('http')
 http.globalAgent.maxSockets = Infinity
@@ -227,6 +225,7 @@ function validateRequest(req, modules) {
   return errors;
 }
 
+logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 var server = app.listen(port, function () {
   logger.info('integrator-extension server listening on port ' + port);
 });

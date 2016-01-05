@@ -1,12 +1,20 @@
 /*jshint -W080 */
 var nconf = require('nconf').argv().env();
-if (process.env.NODE_ENV !== 'production') {
+var env = process.env.NODE_ENV
+
+if(env === 'unittest') {
+  nconf.file('env/unittest.json');
+} else if (!env || env !== 'production') {
+  // default = development
+  nconf.file('env/development.json');
   nconf.defaults({
-    'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
-    "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN": "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN",
-    "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    'NODE_ENV': 'development'
   });
+
+  env = nconf.get('NODE_ENV');
 }
+
+console.log('Extension NODE_ENV', env)
 
 // Important: Remove default limit of 5
 var http = require('http')
@@ -28,12 +36,12 @@ var modules = {
 }
 
 //TODO - revisit this
-if (process.env.NODE_ENV === 'production') {
+if (env === 'production') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
 }
 
-var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;
+var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -41,7 +49,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (process.env.NODE_ENV === 'production')
+  handleExceptions: (env === 'production')
 };
 
 var consoleTransportOpts = {
@@ -217,7 +225,6 @@ function validateRequest(req, modules) {
 
 var server = app.listen(port, function () {
   logger.info('integrator-extension server listening on port ' + port);
-  logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
 
 // our load balancer "Idle Timeout" is currently set to 300 seconds.

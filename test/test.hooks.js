@@ -15,10 +15,6 @@ var _importId = '_importId';
 var functionURL = baseURL + '/function'
 describe('Hook tests', function() {
 
-  before(function(done) {
-    setTimeout(done, 3000)
-  })
-
   it('should pass after successfully calling hook function', function(done) {
     var postBody = {
       module: 'dummy-module',

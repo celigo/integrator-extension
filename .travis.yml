@@ -2,10 +2,8 @@ sudo: false
 language: node_js
 node_js:
 - 0.12.7
-services:
-- redis-server
 script:
-- make test
+- make -f .travis test
 notifications:
   slack:
     secure: ENQjeKuTuRkkAyyX/T4P6+iTtzyQ7cJRyg4aV3EzbVt24WNua6bQf3fYXFDyOFfgSvq9Rmrxadhc0g68wGzRDOKpnkWw+FXlJarx3hQqEhbgZ6+InPbMo2jd1OBH+v0IaFXbCZWItsVmgmrs/MZM4aljqYPwpEVwAAyvAqkluNI=

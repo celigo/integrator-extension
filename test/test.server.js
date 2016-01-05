@@ -13,6 +13,7 @@ var _integrationId = '_integrationId';
 
 var functionURL = baseURL + '/function'
 describe('Server tests', function() {
+
   it('should fail with 422 for missing postbody error', function(done) {
     var postBody = {
       module: 'dummy-module',

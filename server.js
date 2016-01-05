@@ -1,9 +1,13 @@
+'use strict'
+
 /*jshint -W080 */
 var nconf = require('nconf').argv().env();
 var env = process.env.NODE_ENV
 
 if(env === 'unittest') {
   nconf.file('env/unittest.json');
+} else if(env === 'travis') {
+  nconf.file('env/travis.json');
 } else if (!env || env !== 'production') {
   // default = development
   nconf.file('env/development.json');

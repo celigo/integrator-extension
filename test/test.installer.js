@@ -13,6 +13,7 @@ var _integrationId = '_integrationId';
 
 var functionURL = baseURL + '/function'
 describe('Connector installer tests', function() {
+
   it('should pass after successfully executing installer step', function(done) {
     var postBody = {
       module: 'dummy-module',

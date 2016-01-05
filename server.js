@@ -15,7 +15,6 @@ if(env === 'unittest') {
       "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
     });
   }
-
 } else if(env === 'travis') {
   nconf.file('env/travis.json');
 } else if (!env || env !== 'production') {

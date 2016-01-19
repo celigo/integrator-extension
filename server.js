@@ -48,8 +48,7 @@ var modules = {
 
 //TODO - revisit this
 if (env === 'production') {
-  modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
-  modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
+  modules['techServices'] = require('tech-services-iio');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80

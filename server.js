@@ -111,7 +111,7 @@ console.log = function hijacked_log(level) {
   }
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(expressWinstonLogger);
 app.use(expressWinstonErrorLogger);
 
@@ -182,7 +182,7 @@ app.post('/function', function (req, res) {
 });
 
 function validateFunctionResponse(reqBody, result) {
-  //If maxResponsSize not sent in request then set a imit of 5MB
+  //If maxResponsSize not sent in request then set a limit of 5MB
   var maxResponsSize = reqBody.maxResponsSize || (5 * 1024 * 1024);
   var error
 

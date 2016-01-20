@@ -230,4 +230,28 @@ describe('Server tests', function() {
       done();
     }, systemToken);
   });
+
+  it('should pass when request size is greater than default 100kb', function(done) {
+    var largeString = 'a';
+    for (var i = 0; i < 4000000; i++) {
+      largeString += 'a'
+    }
+
+    var postBody = {
+      module: 'dummy-module',
+      function: ['hooks', 'echoResponse'],
+      maxResponsSize: 2000,
+      postBody: {
+        key1: [largeString],
+        bearerToken: bearerToken
+      }
+    };
+
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
+      // logger.info(body);
+      res.statusCode.should.equal(200);
+
+      done();
+    }, systemToken);
+  });
 });

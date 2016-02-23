@@ -50,6 +50,7 @@ var modules = {
 if (env === 'production') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
+  modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80

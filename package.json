@@ -16,7 +16,7 @@
     "express-winston": "1.0.0",
     "body-parser": "1.13.3",
     "object-sizeof": "1.0.6",
-    "tech-services-iio": "git+ssh://git@github.com:CeligoServices/tech-services-iio.git#2016.02.21"
+    "tech-services-iio": "git+ssh://git@github.com:CeligoServices/tech-services-iio.git#2016.02.22"
   },
   "devDependencies": {
     "mocha": "2.2.5",

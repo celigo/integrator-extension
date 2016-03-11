@@ -16,7 +16,7 @@
     "express-winston": "1.0.0",
     "body-parser": "1.13.3",
     "object-sizeof": "1.0.6",
-    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.2.0-staging-beta",
+    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.3.0-staging-pratham",
     "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v0.3.4"
   },
   "devDependencies": {

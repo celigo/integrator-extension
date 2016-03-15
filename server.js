@@ -31,6 +31,7 @@ var modules = {
 if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
+  modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;

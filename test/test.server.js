@@ -7,12 +7,13 @@ var logger = require('winston');
 var testUtil = require('./util');
 
 var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_EXTENSION_PORT')
-var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
+var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN';
 var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 var _integrationId = '_integrationId';
 
 var functionURL = baseURL + '/function'
 describe('Server tests', function() {
+
   it('should fail with 422 for missing postbody error', function(done) {
     var postBody = {
       module: 'dummy-module',
@@ -226,6 +227,30 @@ describe('Server tests', function() {
       var expected = { errors: [{"code":"invalid_extension_response","message":"extension response is not serializable."}] };
 
       assert.deepEqual(body, expected);
+      done();
+    }, systemToken);
+  });
+
+  it('should pass when request size is greater than default 100kb', function(done) {
+    var largeString = 'a';
+    for (var i = 0; i < 4000000; i++) {
+      largeString += 'a'
+    }
+
+    var postBody = {
+      module: 'dummy-module',
+      function: ['hooks', 'echoResponse'],
+      maxResponsSize: 2000,
+      postBody: {
+        key1: [largeString],
+        bearerToken: bearerToken
+      }
+    };
+
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
+      // logger.info(body);
+      res.statusCode.should.equal(200);
+
       done();
     }, systemToken);
   });

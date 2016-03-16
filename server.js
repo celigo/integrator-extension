@@ -1,11 +1,30 @@
+'use strict'
+
 /*jshint -W080 */
+var fs = require('fs')
 var nconf = require('nconf').argv().env();
-if (process.env.NODE_ENV !== 'production' && process.env.NODE_ENV !== 'staging') {
+var env = process.env.NODE_ENV
+
+if(env === 'unittest') {
+  if (fs.existsSync('./env/unittest.json')) {
+    nconf.file('env/unittest.json');
+  } else {
+    // hard code default values as unittest.json won't exist when using extension as a test module from integrator
+    nconf.defaults({
+      'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+      "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    });
+  }
+} else if(env === 'travis') {
+  nconf.file('env/travis.json');
+} else if (!env || (env !== 'production' && env !== 'staging')) {
+  // default = development
+  nconf.file('env/development.json');
   nconf.defaults({
-    'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
-    "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN": "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN",
-    "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    'NODE_ENV': 'development'
   });
+
+  env = nconf.get('NODE_ENV');
 }
 
 // Important: Remove default limit of 5
@@ -28,13 +47,14 @@ var modules = {
 }
 
 //TODO - revisit this
-if (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging') {
+if (env === 'production' || env === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
+  modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
   modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
 }
 
-var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;
+var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -42,7 +62,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (process.env.NODE_ENV === 'production' || process.env.NODE_ENV === 'staging')
+  handleExceptions: (env === 'production' || env === 'staging')
 };
 
 var consoleTransportOpts = {
@@ -93,7 +113,7 @@ console.log = function hijacked_log(level) {
   }
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(expressWinstonLogger);
 app.use(expressWinstonErrorLogger);
 
@@ -164,7 +184,7 @@ app.post('/function', function (req, res) {
 });
 
 function validateFunctionResponse(reqBody, result) {
-  //If maxResponsSize not sent in request then set a imit of 5MB
+  //If maxResponsSize not sent in request then set a limit of 5MB
   var maxResponsSize = reqBody.maxResponsSize || (5 * 1024 * 1024);
   var error
 
@@ -216,9 +236,9 @@ function validateRequest(req, modules) {
   return errors;
 }
 
+logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 var server = app.listen(port, function () {
   logger.info('integrator-extension server listening on port ' + port);
-  logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
 
 // our load balancer "Idle Timeout" is currently set to 300 seconds.

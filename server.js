@@ -17,7 +17,7 @@ if(env === 'unittest') {
   }
 } else if(env === 'travis') {
   nconf.file('env/travis.json');
-} else if (!env || env !== 'production') {
+} else if (!env || (env !== 'production' && env !== 'staging')) {
   // default = development
   nconf.file('env/development.json');
   nconf.defaults({
@@ -47,10 +47,11 @@ var modules = {
 }
 
 //TODO - revisit this
-if (env === 'production') {
+if (env === 'production' || env === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
   modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
+  modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
@@ -61,7 +62,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (env === 'production')
+  handleExceptions: (env === 'production' || env === 'staging')
 };
 
 var consoleTransportOpts = {

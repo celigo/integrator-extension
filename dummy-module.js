@@ -41,24 +41,6 @@ var uninstaller = {
   }
 }
 
-var setup = {
-  initialize: function(options, callback) {
-    options.function = 'initialize'
-    return callback(null, options)
-  },
-
-  runSetupErrorStep: function(options, callback) {
-    return callback(new Error('runSetupErrorStep'))
-  },
-
-  runSetupSuccessStep: function(options, callback) {
-    options.function = 'runSetupSuccessStep'
-    return callback(null, options)
-  },
-
-  notAFunction: 'not_a_func'
-}
-
 var settings = {
   persistSettings: function(options, callback) {
     if (options.error) {
@@ -369,7 +351,6 @@ var wrappers = {
   },
 }
 
-exports.setup = setup // Legacy .. will be removed
 exports.installer = installer
 exports.uninstaller = uninstaller
 exports.settings = settings

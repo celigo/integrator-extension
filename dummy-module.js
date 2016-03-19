@@ -86,7 +86,7 @@ var hooks = {
   },
 
   preMapFunction: function(options, callback) {
-    var data = options.postMapData
+    var data = options.data
       , resp = []
     for (var i = 0; i < data.length; i++) {
       if (data[i].errors) {
@@ -146,7 +146,7 @@ var hooks = {
   },
 
   preSavePageFunction: function(options, callback) {
-    var data = options.postMapData
+    var data = options.data
     for (var i = 0; i < data.length; i++) {
       data[i].processedPreSavePage = true
     }
@@ -178,7 +178,6 @@ var wrappers = {
   },
 
   returnVariousImportResponses: function(options, callback) {
-
     var toReturn = [
         {statusCode: 200}
       , {statusCode: 200, id:'myId1'}
@@ -296,7 +295,7 @@ var wrappers = {
   },
 
   importArrayOfArrays: function(options, callback) {
-    //logger.info(options.postMapData)
+    logger.info(options.postMapData)
     var data = options.postMapData
     var toReturn = []
 

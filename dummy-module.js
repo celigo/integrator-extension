@@ -178,7 +178,6 @@ var wrappers = {
   },
 
   returnVariousImportResponses: function(options, callback) {
-
     var toReturn = [
         {statusCode: 200}
       , {statusCode: 200, id:'myId1'}
@@ -195,8 +194,8 @@ var wrappers = {
   },
 
   returnDataValueAsIdImport: function(options, callback) {
-    // logger.info(options.data)
-    var data = options.data
+    // logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     for (var i = 0; i < data.length; i++) {
@@ -296,8 +295,8 @@ var wrappers = {
   },
 
   importArrayOfArrays: function(options, callback) {
-    logger.info(options.data)
-    var data = options.data
+    logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     if( !Array.isArray(data) ) {
@@ -323,8 +322,8 @@ var wrappers = {
   },
 
   importArrayOfObjectsContainingArrays: function(options, callback) {
-    logger.info(options.data)
-    var data = options.data
+    logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     if( !Array.isArray(data) ) {

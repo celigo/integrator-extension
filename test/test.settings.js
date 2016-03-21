@@ -5,14 +5,14 @@ var logger = require('winston');
 var testUtil = require('./util');
 
 var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_EXTENSION_PORT')
-var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
+var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN';
 var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 var _integrationId = '_integrationId';
 
+var functionURL = baseURL + '/function'
 describe('Connector settings tests', function() {
 
   it('should fail with 422 for persistSettings error', function(done) {
-    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
       function: ['settings', 'persistSettings'],
@@ -23,7 +23,7 @@ describe('Connector settings tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
       var expected = { errors: [ { code: 'Error', message: 'persistSettings' } ] };
 
@@ -33,7 +33,6 @@ describe('Connector settings tests', function() {
   });
 
   it('should pass after successfully executing persistSettings', function(done) {
-    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
       function: ['settings', 'persistSettings'],
@@ -44,11 +43,11 @@ describe('Connector settings tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(200);
-      logger.info(body);
+      // logger.info(body);
 
-      postBody.postBody.functionName = 'persistSettings';
+      postBody.postBody.function = 'persistSettings';
       assert.deepEqual(body, postBody.postBody);
 
       done();
@@ -56,7 +55,6 @@ describe('Connector settings tests', function() {
   });
 
   it('should pass after successfully executing refreshMetadata', function(done) {
-    var setupStepUrl = baseURL + '/function'
     var postBody = {
       module: 'dummy-module',
       function: ['settings', 'refreshMetadata'],
@@ -67,11 +65,11 @@ describe('Connector settings tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(200);
-      logger.info(body);
+      // logger.info(body);
 
-      postBody.postBody.functionName = 'refreshMetadata';
+      postBody.postBody.function = 'refreshMetadata';
       assert.deepEqual(body, postBody.postBody);
 
       done();

@@ -3,3 +3,6 @@
 /scratch
 /server.log.*
 npm-debug.log
+/.jshintrc
+/env/unittest.json
+/env/development.json

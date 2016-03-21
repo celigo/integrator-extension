@@ -1,0 +1,10 @@
+sudo: false
+language: node_js
+node_js:
+- 0.12.7
+script:
+- make -f .travis test
+notifications:
+  slack:
+    secure: hhdHneVB7ulrfCxgBrvhB7j+Zg1IoKbwXkj1YuC8oVzWwVpkiJMKWHjXy10Wv9cX3tm/7wTCqjrdbHi4g4L758YH4arcsGWXDrNRp927PKiRCQJKso4pbpWsr5UsEZxqw2UP70VH39ZExNtDLtCOS+zQMkIBqDWUZWIc/FPDQk0=
+  webhooks: https://api.integrator.io/v1/exports/55ed3cc386de45f94413d3e0/data

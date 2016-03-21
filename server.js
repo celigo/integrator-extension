@@ -1,10 +1,30 @@
+'use strict'
+
+/*jshint -W080 */
+var fs = require('fs')
 var nconf = require('nconf').argv().env();
-if (process.env.NODE_ENV !== 'production') {
+var env = process.env.NODE_ENV
+
+if(env === 'unittest') {
+  if (fs.existsSync('./env/unittest.json')) {
+    nconf.file('env/unittest.json');
+  } else {
+    // hard code default values as unittest.json won't exist when using extension as a test module from integrator
+    nconf.defaults({
+      'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+      "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    });
+  }
+} else if(env === 'travis') {
+  nconf.file('env/travis.json');
+} else if (!env || (env !== 'production' && env !== 'staging')) {
+  // default = development
+  nconf.file('env/development.json');
   nconf.defaults({
-    'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
-    "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN": "TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN",
-    "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    'NODE_ENV': 'development'
   });
+
+  env = nconf.get('NODE_ENV');
 }
 
 // Important: Remove default limit of 5
@@ -20,19 +40,21 @@ var logger = require('winston');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
-var deepIs = require('deep-is');
+var extensionUtil = require('./util');
 
 var modules = {
   'dummy-module': require('./dummy-module')
 }
 
 //TODO - revisit this
-if (process.env.NODE_ENV === 'production') {
+if (env === 'production' || env === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
+  modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
+  modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
 }
 
-var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80;
+var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
 
 // configure logging.  pretty ugly code but dont know better way yet
 var fileTransportOpts = {
@@ -40,7 +62,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (process.env.NODE_ENV === 'production')
+  handleExceptions: (env === 'production' || env === 'staging')
 };
 
 var consoleTransportOpts = {
@@ -64,17 +86,18 @@ expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length
 expressWinston.requestWhitelist.push('method');
 expressWinston.requestWhitelist.push('url');
 expressWinston.requestWhitelist.push('query');
+
+var message = "{{res.statusCode}} HTTP {{req.method}} {{req.url}} {{res.responseTime}}ms"
 var expressWinstonLogger = expressWinston.logger({
-  transports: [
-    fileTransport,
-    consoleTransport
-  ]
+  transports: [fileTransport, consoleTransport],
+  msg: message,
+  meta: false
 });
+
 var expressWinstonErrorLogger = expressWinston.errorLogger({
-  transports: [
-    fileTransport,
-    consoleTransport
-  ]
+  transports: [fileTransport, consoleTransport],
+  msg: message,
+  meta: false
 });
 
 // we need the logs from all our 3rd party modules.
@@ -90,7 +113,7 @@ console.log = function hijacked_log(level) {
   }
 }
 
-app.use(bodyParser.json());
+app.use(bodyParser.json({limit: '5mb'}));
 app.use(expressWinstonLogger);
 app.use(expressWinstonErrorLogger);
 
@@ -115,7 +138,6 @@ app.post('/function', function (req, res) {
     return res.status(422).json({errors: errors});
   }
 
-  var functionName = undefined;
   var moduleName = req.body.module;
   var func = undefined;
   var isFunction = false;
@@ -162,29 +184,20 @@ app.post('/function', function (req, res) {
 });
 
 function validateFunctionResponse(reqBody, result) {
-  //If maxResponsSize not sent in request then set a imit of 2MB
-  var maxResponsSize = reqBody.maxResponsSize || (2 * 1024 * 1024);
+  //If maxResponsSize not sent in request then set a limit of 5MB
+  var maxResponsSize = reqBody.maxResponsSize || (5 * 1024 * 1024);
+  var error
 
   if (sizeof(result) > maxResponsSize) {
-    var error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
+    error = new Error('response stream exceeded limit of ' + maxResponsSize + ' bytes.');
     error.name = 'response_size_exceeded';
 
     return error;
   }
 
-  try {
-    var stringifiedResult = JSON.stringify(result);
-    var reconstructedResult = JSON.parse(stringifiedResult);
-
-    if (!deepIs(result, reconstructedResult)) {
-      var error = new Error('stringified/parsed object not same as original');
-      error.name = 'invalid_hook_response';
-      throw error;
-    }
-
-  } catch (e) {
-    var error = new Error('hook response object not serializable [' + e.message + ']');
-    error.name = e.name;
+  if (!extensionUtil.isSerializable(result)) {
+    error = new Error('extension response is not serializable.');
+    error.name = 'invalid_extension_response';
 
     return error;
   }
@@ -223,10 +236,14 @@ function validateRequest(req, modules) {
   return errors;
 }
 
+logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 var server = app.listen(port, function () {
   logger.info('integrator-extension server listening on port ' + port);
-  logger.info('NODE_ENV: ' + nconf.get('NODE_ENV'));
 });
+
+// our load balancer "Idle Timeout" is currently set to 300 seconds.
+// this timeout should be just slightly larger to avoid 504 errors.
+server.timeout = 315000;
 
 function findToken(req) {
   var token;

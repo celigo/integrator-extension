@@ -1,4 +1,8 @@
-require('longjohn');
-require('../server.js');
+var server = require('../server.js');
+var nconf = require('nconf')
+var logger = require('winston')
 
-console.log('process.env.NODE_ENV - ' + process.env.NODE_ENV);
+logger.info('Test node env - ' + nconf.get('NODE_ENV'));
+
+if (nconf.get('NODE_ENV') !== 'unittest' && nconf.get('NODE_ENV') !== 'travis')
+  throw new Error('nconf.get(\'NODE_ENV\')')

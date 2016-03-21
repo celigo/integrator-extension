@@ -1,3 +1,5 @@
+'use strict'
+
 var should = require('should');
 var assert = require('assert');
 var nconf = require('nconf');
@@ -5,16 +7,17 @@ var logger = require('winston');
 var testUtil = require('./util');
 
 var baseURL = 'http://localhost:' + nconf.get('TEST_INTEGRATOR_EXTENSION_PORT')
-var bearerToken = nconf.get('TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN');
+var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN';
 var systemToken = nconf.get('INTEGRATOR_EXTENSION_SYSTEM_TOKEN');
 var _integrationId = '_integrationId';
 
-describe('Connector setup tests', function() {
-  it('should pass after successfully executing setup step', function(done) {
-    var setupStepUrl = baseURL + '/function'
+var functionURL = baseURL + '/function'
+describe('Connector installer tests', function() {
+
+  it('should pass after successfully executing installer step', function(done) {
     var postBody = {
       module: 'dummy-module',
-      function: ['setup', 'runSetupSuccessStep'],
+      function: ['installer', 'runInstallerSuccessStep'],
       postBody: {
         key1: 'value1',
         key2: 'value1',
@@ -23,22 +26,21 @@ describe('Connector setup tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(200);
-      logger.info(body);
+      // logger.info(body);
 
-      postBody.postBody.functionName = 'runSetupSuccessStep';
+      postBody.postBody.function = 'runInstallerSuccessStep';
       assert.deepEqual(body, postBody.postBody);
 
       done();
     }, systemToken);
   });
 
-  it('should call initialize setup', function(done) {
-    var setupStepUrl = baseURL + '/function'
+  it('should call connectorInstallerFunction installer', function(done) {
     var postBody = {
       module: 'dummy-module',
-      function: ['setup', 'initialize'],
+      function: ['installer', 'connectorInstallerFunction'],
       postBody: {
         key: 'value',
         bearerToken: bearerToken,
@@ -46,22 +48,21 @@ describe('Connector setup tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(200);
-      logger.info(body);
+      // logger.info(body);
 
-      postBody.postBody.functionName = 'initialize';
+      postBody.postBody.function = 'connectorInstallerFunction';
       assert.deepEqual(body, postBody.postBody);
 
       done();
     }, systemToken);
   });
 
-  it('should fail with 422 for setup error', function(done) {
-    var setupStepUrl = baseURL + '/function'
+  it('should fail with 422 for installer error', function(done) {
     var postBody = {
       module: 'dummy-module',
-      function: ['setup', 'runSetupErrorStep'],
+      function: ['installer', 'runInstallerErrorStep'],
       postBody: {
         key: 'value',
         bearerToken: bearerToken,
@@ -69,9 +70,9 @@ describe('Connector setup tests', function() {
       }
     };
 
-    testUtil.postRequest(setupStepUrl, postBody, function(error, res, body) {
+    testUtil.postRequest(functionURL, postBody, function(error, res, body) {
       res.statusCode.should.equal(422);
-      var expected = { errors: [ { code: 'Error', message: 'runSetupErrorStep'} ] };
+      var expected = { errors: [ { code: 'Error', message: 'runInstallerErrorStep'} ] };
 
       assert.deepEqual(body, expected);
       done();

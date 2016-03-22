@@ -5,18 +5,27 @@ var fs = require('fs')
 var nconf = require('nconf').argv().env();
 var env = process.env.NODE_ENV
 
+var fileName = __filename
+var runningAsModule = fileName.indexOf('node_modules') !== -1 // temp code for running tests from adaptor/integrator
+
 if(env === 'unittest') {
-  if (fs.existsSync('./env/unittest.json')) {
+  if (fs.existsSync('./env/unittest.json') && !runningAsModule) {
     nconf.file('env/unittest.json');
   } else {
-    // hard code default values as unittest.json won't exist when using extension as a test module from integrator
     nconf.defaults({
       'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
       "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
     });
   }
 } else if(env === 'travis') {
-  nconf.file('env/travis.json');
+  if (runningAsModule) {
+    nconf.defaults({
+      'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+      "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    });
+  } else {
+    nconf.file('env/travis.json');
+  }
 } else if (!env || (env !== 'production' && env !== 'staging')) {
   // default = development
   nconf.file('env/development.json');

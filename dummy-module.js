@@ -78,6 +78,14 @@ var hooks = {
     throw new Error('myUncaughtException')
   },
 
+  useWrongEmptyErrorInCallback: function(options, callback) {
+    return callback({})
+  },
+
+  respondWithEmptyBody: function(options, callback) {
+    return callback(null, null)
+  },
+
   respondWithNonSearializableObject: function(options, callback) {
     return callback(null, {
       a: 'b',

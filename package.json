@@ -17,7 +17,7 @@
     "body-parser": "1.13.3",
     "object-sizeof": "1.0.6",
     "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v1.0.1.2",
-    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.2.1-staging-tritiya",
+    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#1.2.0",
     "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v0.1.5",
     "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v0.0.3"
   },

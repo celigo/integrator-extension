@@ -19,7 +19,7 @@
     "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v1.2.0",
     "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.2.4",
     "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v1.0.1",
-    "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v0.0.5-staging"
+    "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v0.1.1"
   },
   "devDependencies": {
     "mocha": "2.2.5",

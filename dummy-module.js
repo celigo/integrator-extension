@@ -41,24 +41,6 @@ var uninstaller = {
   }
 }
 
-var setup = {
-  initialize: function(options, callback) {
-    options.function = 'initialize'
-    return callback(null, options)
-  },
-
-  runSetupErrorStep: function(options, callback) {
-    return callback(new Error('runSetupErrorStep'))
-  },
-
-  runSetupSuccessStep: function(options, callback) {
-    options.function = 'runSetupSuccessStep'
-    return callback(null, options)
-  },
-
-  notAFunction: 'not_a_func'
-}
-
 var settings = {
   persistSettings: function(options, callback) {
     if (options.error) {
@@ -94,6 +76,14 @@ var hooks = {
 
   throwException: function(options, callback) {
     throw new Error('myUncaughtException')
+  },
+
+  useWrongEmptyErrorInCallback: function(options, callback) {
+    return callback({})
+  },
+
+  respondWithEmptyBody: function(options, callback) {
+    return callback(null, null)
   },
 
   respondWithNonSearializableObject: function(options, callback) {
@@ -196,7 +186,6 @@ var wrappers = {
   },
 
   returnVariousImportResponses: function(options, callback) {
-
     var toReturn = [
         {statusCode: 200}
       , {statusCode: 200, id:'myId1'}
@@ -213,8 +202,8 @@ var wrappers = {
   },
 
   returnDataValueAsIdImport: function(options, callback) {
-    // logger.info(options.data)
-    var data = options.data
+    // logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     for (var i = 0; i < data.length; i++) {
@@ -314,8 +303,8 @@ var wrappers = {
   },
 
   importArrayOfArrays: function(options, callback) {
-    logger.info(options.data)
-    var data = options.data
+    logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     if( !Array.isArray(data) ) {
@@ -341,8 +330,8 @@ var wrappers = {
   },
 
   importArrayOfObjectsContainingArrays: function(options, callback) {
-    logger.info(options.data)
-    var data = options.data
+    logger.info(options.postMapData)
+    var data = options.postMapData
     var toReturn = []
 
     if( !Array.isArray(data) ) {
@@ -369,7 +358,6 @@ var wrappers = {
   },
 }
 
-exports.setup = setup // Legacy .. will be removed
 exports.installer = installer
 exports.uninstaller = uninstaller
 exports.settings = settings

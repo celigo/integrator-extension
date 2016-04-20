@@ -5,19 +5,28 @@ var fs = require('fs')
 var nconf = require('nconf').argv().env();
 var env = process.env.NODE_ENV
 
+var fileName = __filename
+var runningAsModule = fileName.indexOf('node_modules') !== -1 // temp code for running tests from adaptor/integrator
+
 if(env === 'unittest') {
-  if (fs.existsSync('./env/unittest.json')) {
+  if (fs.existsSync('./env/unittest.json') && !runningAsModule) {
     nconf.file('env/unittest.json');
   } else {
-    // hard code default values as unittest.json won't exist when using extension as a test module from integrator
     nconf.defaults({
       'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
       "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
     });
   }
 } else if(env === 'travis') {
-  nconf.file('env/travis.json');
-} else if (!env || env !== 'production') {
+  if (runningAsModule) {
+    nconf.defaults({
+      'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+      "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    });
+  } else {
+    nconf.file('env/travis.json');
+  }
+} else if (!env || (env !== 'production' && env !== 'staging')) {
   // default = development
   nconf.file('env/development.json');
   nconf.defaults({
@@ -47,10 +56,11 @@ var modules = {
 }
 
 //TODO - revisit this
-if (env === 'production') {
+if (env === 'production' || env === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
   modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
+  modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
@@ -61,7 +71,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (env === 'production')
+  handleExceptions: (env === 'production' || env === 'staging')
 };
 
 var consoleTransportOpts = {

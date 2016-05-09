@@ -61,6 +61,7 @@ if (env === 'production' || env === 'staging') {
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
   modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
   modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
+  modules['bigcommerce-netsuite-connector'] = require('bigcommerce-netsuite-connector');
   modules['adp-netsuite-connector'] = require('adp-netsuite-connector');
 }
 

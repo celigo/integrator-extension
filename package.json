@@ -16,11 +16,12 @@
     "express-winston": "1.0.0",
     "body-parser": "1.13.3",
     "object-sizeof": "1.0.6",
-    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v1.2.0",
+    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v1.2.1",
     "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.3.0",
-    "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v0.1.5",
+    "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v1.1.0",
     "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v1.0.0",
-    "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0-staging-shashtham"
+    "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0-staging-shashtham",
+    "adp-netsuite-connector": "git+ssh://git@github.com:celigo/adp-netsuite-connector.git#v1.1.0"
   },
   "devDependencies": {
     "mocha": "2.2.5",

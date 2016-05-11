@@ -45,9 +45,8 @@ https.globalAgent.maxSockets = Infinity
 var _ = require('lodash');
 var express = require('express');
 var app = express();
-var winston = require('winston'),
-  winstonDailyRotateFile = require('winston-daily-rotate-file');
-var logger = new (winston.Logger)();
+var logger = require('winston')
+var winstonDailyRotateFile = require('winston-daily-rotate-file');
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
@@ -85,12 +84,14 @@ var consoleTransportOpts = {
 };
 
 var fileTransport = new winstonDailyRotateFile(fileTransportOpts);
-var consoleTransport = new winston.transports.Console(consoleTransportOpts);
+var consoleTransport = new logger.transports.Console(consoleTransportOpts);
 
 // Gives an error when module is installed in integrator for testing
 // Add loggers only when not running as a module
 if (__dirname.indexOf('node_modules') === -1) {
-  logger.configure({transports: [fileTransport, consoleTransport]})
+  logger.remove(logger.transports.Console)
+  logger.add(logger.transports.Console, consoleTransportOpts);
+  logger.add(winstonDailyRotateFile, fileTransportOpts);
 }
 
 expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length);
@@ -116,17 +117,17 @@ var consoleOpts = ['log', 'profile', 'startTimer'];
 consoleOpts.concat(Object.keys(logger.levels))
   .forEach(function (method) {
     console[method] = function () {
-      return logger[method].apply(logger, arguments);
+      return logger[method].apply(logger, arguments)
     };
   });
-var log = console.log;
+var log = console.log
 console.log = function hijacked_log(level) {
   if (arguments.length > 1 && level in this) {
-    log.apply(this, arguments);
+    log.apply(this, arguments)
   } else {
-    var args = Array.prototype.slice.call(arguments);
-    args.unshift('info');
-    log.apply(this, args);
+    var args = Array.prototype.slice.call(arguments)
+    args.unshift('info')
+    log.apply(this, args)
   }
 }
 

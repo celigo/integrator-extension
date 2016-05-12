@@ -20,7 +20,7 @@
     "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.3.2-staging",
     "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v1.1.0",
     "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v1.0.11-staging",
-    "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0-staging-saptam",
+    "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0-staging-ashtam",
     "adp-netsuite-connector": "git+ssh://git@github.com:celigo/adp-netsuite-connector.git#v1.1.0"
   },
   "devDependencies": {

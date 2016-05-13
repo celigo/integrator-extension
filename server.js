@@ -5,19 +5,28 @@ var fs = require('fs')
 var nconf = require('nconf').argv().env();
 var env = process.env.NODE_ENV
 
+var fileName = __filename
+var runningAsModule = fileName.indexOf('node_modules') !== -1 // temp code for running tests from adaptor/integrator
+
 if(env === 'unittest') {
-  if (fs.existsSync('./env/unittest.json')) {
+  if (fs.existsSync('./env/unittest.json') && !runningAsModule) {
     nconf.file('env/unittest.json');
   } else {
-    // hard code default values as unittest.json won't exist when using extension as a test module from integrator
     nconf.defaults({
       'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
       "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
     });
   }
 } else if(env === 'travis') {
-  nconf.file('env/travis.json');
-} else if (!env || env !== 'production') {
+  if (runningAsModule) {
+    nconf.defaults({
+      'TEST_INTEGRATOR_EXTENSION_PORT': 7000,
+      "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
+    });
+  } else {
+    nconf.file('env/travis.json');
+  }
+} else if (!env || (env !== 'production' && env !== 'staging')) {
   // default = development
   nconf.file('env/development.json');
   nconf.defaults({
@@ -36,7 +45,8 @@ https.globalAgent.maxSockets = Infinity
 var _ = require('lodash');
 var express = require('express');
 var app = express();
-var logger = require('winston');
+var logger = require('winston')
+var winstonDailyRotateFile = require('winston-daily-rotate-file')
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
@@ -47,10 +57,13 @@ var modules = {
 }
 
 //TODO - revisit this
-if (env === 'production') {
+if (env === 'production' || env === 'staging') {
   modules['netsuite-zendesk-connector'] = require('netsuite-zendesk-connector');
   modules['shopify-netsuite-connector'] = require('shopify-netsuite-connector');
   modules['netsuite-jira-connector'] = require('netsuite-jira-connector');
+  modules['magento-netsuite-connector'] = require('magento-netsuite-connector');
+  modules['bigcommerce-netsuite-connector'] = require('bigcommerce-netsuite-connector');
+  modules['adp-netsuite-connector'] = require('adp-netsuite-connector');
 }
 
 var port = nconf.get('TEST_INTEGRATOR_EXTENSION_PORT') || 80
@@ -61,7 +74,7 @@ var fileTransportOpts = {
   maxsize: 10000000,
   maxFiles: 2,
   json: false,
-  handleExceptions: (env === 'production')
+  handleExceptions: (env === 'production' || env === 'staging')
 };
 
 var consoleTransportOpts = {
@@ -70,15 +83,15 @@ var consoleTransportOpts = {
   prettyPrint: true
 };
 
-var fileTransport = new logger.transports.DailyRotateFile(fileTransportOpts);
+var fileTransport = new winstonDailyRotateFile(fileTransportOpts);
 var consoleTransport = new logger.transports.Console(consoleTransportOpts);
 
 // Gives an error when module is installed in integrator for testing
 // Add loggers only when not running as a module
 if (__dirname.indexOf('node_modules') === -1) {
-  logger.remove(logger.transports.Console);
+  logger.remove(logger.transports.Console)
   logger.add(logger.transports.Console, consoleTransportOpts);
-  logger.add(logger.transports.DailyRotateFile, fileTransportOpts);
+  logger.add(winstonDailyRotateFile, fileTransportOpts);
 }
 
 expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length);
@@ -100,15 +113,21 @@ var expressWinstonErrorLogger = expressWinston.errorLogger({
 });
 
 // we need the logs from all our 3rd party modules.
-logger.extend(console);
-var log = console.log;
+var consoleOpts = ['log', 'profile', 'startTimer'];
+consoleOpts.concat(Object.keys(logger.levels))
+  .forEach(function (method) {
+    console[method] = function () {
+      return logger[method].apply(logger, arguments)
+    };
+  });
+var log = console.log
 console.log = function hijacked_log(level) {
   if (arguments.length > 1 && level in this) {
-    log.apply(this, arguments);
+    log.apply(this, arguments)
   } else {
-    var args = Array.prototype.slice.call(arguments);
-    args.unshift('info');
-    log.apply(this, args);
+    var args = Array.prototype.slice.call(arguments)
+    args.unshift('info')
+    log.apply(this, args)
   }
 }
 

@@ -22,7 +22,7 @@
     "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v1.1.0",
     "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v1.0.0",
     "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0-staging-shashtham",
-    "adp-netsuite-connector": "git+ssh://git@github.com:celigo/adp-netsuite-connector.git#v1.1.0"
+    "adp-netsuite-connector": "git+ssh://git@github.com:celigo/adp-netsuite-connector.git#v1.1.1"
   },
   "devDependencies": {
     "mocha": "2.2.5",

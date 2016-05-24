@@ -83,7 +83,7 @@ var consoleTransportOpts = {
   prettyPrint: true
 };
 
-var logger = new (winston.Logger)()
+var logger = null
 var fileTransport = new winstonDailyRotateFile(fileTransportOpts)
 var consoleTransport = new winston.transports.Console(consoleTransportOpts)
 var winstonTransports = [fileTransport, consoleTransport]

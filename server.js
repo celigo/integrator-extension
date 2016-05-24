@@ -52,14 +52,15 @@ var consoleTransportOpts = {
 };
 
 var logger = null
-var fileTransport = new winstonDailyRotateFile(fileTransportOpts);
-var consoleTransport = new winston.transports.Console(consoleTransportOpts);
+var fileTransport = new winstonDailyRotateFile(fileTransportOpts)
+var consoleTransport = new winston.transports.Console(consoleTransportOpts)
+var winstonTransports = [fileTransport, consoleTransport]
 
 // Gives an error when module is installed in integrator for testing
 // Add loggers only when not running as a module
 if (__dirname.indexOf('node_modules') === -1) {
   logger = new (winston.Logger)()
-  logger.configure({transports: [fileTransport, consoleTransport]})
+  logger.configure({ transports: winstonTransports })
 }
 
 expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length);
@@ -77,7 +78,7 @@ var expressWinstonOps = {
 if (logger) {
   expressWinstonOps.winstonInstance = logger
 } else {
-  expressWinstonOps.transports = [fileTransport, consoleTransport]
+  expressWinstonOps.transports = winstonTransports
   logger = winston
 }
 var expressWinstonLogger = expressWinston.logger(expressWinstonOps)

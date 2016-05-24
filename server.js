@@ -45,8 +45,8 @@ https.globalAgent.maxSockets = Infinity
 var _ = require('lodash');
 var express = require('express');
 var app = express();
-var logger = require('winston')
-var winstonDailyRotateFile = require('winston-daily-rotate-file');
+var winston = require('winston')
+var winstonDailyRotateFile = require('winston-daily-rotate-file')
 var expressWinston = require('express-winston');
 var bodyParser = require('body-parser');
 var sizeof = require('object-sizeof');
@@ -83,15 +83,16 @@ var consoleTransportOpts = {
   prettyPrint: true
 };
 
-var fileTransport = new winstonDailyRotateFile(fileTransportOpts);
-var consoleTransport = new logger.transports.Console(consoleTransportOpts);
+var logger = null
+var fileTransport = new winstonDailyRotateFile(fileTransportOpts)
+var consoleTransport = new winston.transports.Console(consoleTransportOpts)
+var winstonTransports = [fileTransport, consoleTransport]
 
 // Gives an error when module is installed in integrator for testing
 // Add loggers only when not running as a module
 if (__dirname.indexOf('node_modules') === -1) {
-  logger.remove(logger.transports.Console)
-  logger.add(logger.transports.Console, consoleTransportOpts);
-  logger.add(winstonDailyRotateFile, fileTransportOpts);
+  logger = new (winston.Logger)()
+  logger.configure({ transports: winstonTransports })
 }
 
 expressWinston.requestWhitelist.splice(0, expressWinston.requestWhitelist.length);
@@ -100,17 +101,20 @@ expressWinston.requestWhitelist.push('url');
 expressWinston.requestWhitelist.push('query');
 
 var message = "{{res.statusCode}} HTTP {{req.method}} {{req.url}} {{res.responseTime}}ms"
-var expressWinstonLogger = expressWinston.logger({
-  transports: [fileTransport, consoleTransport],
+var expressWinstonOps = {
   msg: message,
   meta: false
-});
+}
 
-var expressWinstonErrorLogger = expressWinston.errorLogger({
-  transports: [fileTransport, consoleTransport],
-  msg: message,
-  meta: false
-});
+if (logger) {
+  expressWinstonOps.winstonInstance = logger
+} else {
+  expressWinstonOps.transports = winstonTransports
+  logger = winston
+}
+
+var expressWinstonLogger = expressWinston.logger(expressWinstonOps)
+var expressWinstonErrorLogger = expressWinston.errorLogger(expressWinstonOps)
 
 // we need the logs from all our 3rd party modules.
 var consoleOpts = ['log', 'profile', 'startTimer'];

@@ -70,7 +70,6 @@ expressWinston.requestWhitelist.push('query');
 
 var message = "{{res.statusCode}} HTTP {{req.method}} {{req.url}} {{res.responseTime}}ms"
 var expressWinstonOps = {
-  winstonInstance: logger,
   msg: message,
   meta: false
 }

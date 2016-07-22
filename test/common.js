@@ -1,8 +1,10 @@
-var server = require('../server.js');
-var nconf = require('nconf')
 var logger = require('winston')
 
-logger.info('Test node env - ' + nconf.get('NODE_ENV'));
+var consoleTransportOpts = {
+  colorize: true,
+  timestamp: true,
+  prettyPrint: true
+}
 
-if (nconf.get('NODE_ENV') !== 'unittest' && nconf.get('NODE_ENV') !== 'travis')
-  throw new Error('nconf.get(\'NODE_ENV\')')
+logger.remove(logger.transports.Console)
+logger.add(logger.transports.Console, consoleTransportOpts)

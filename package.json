@@ -1,31 +1,41 @@
 {
-  "name": "integrator-extension",
+  "name": "lambda-integrator-extension",
+  "main": "./lib/extensions",
   "version": "0.1.0",
-  "description": "Integrator Extension",
-  "main": "server.js",
+  "description": "Integrator extenstion for Integrator.io",
+  "homepage": "https://integrator.io",
+  "author": "Celigo Inc. <developer@celigo.com> (http://www.celigo.com)",
   "engines": {
-    "node": "0.12.x"
+    "node": ">= 0.12"
   },
   "private": true,
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/celigo/integrator-extension.git"
+  },
   "dependencies": {
-    "express": "4.13.3",
-    "lodash": "2.4.1",
-    "request": "2.61.0",
-    "nconf": "0.6.9",
+    "lodash": "4.11.0",
+    "object-sizeof": "1.0.10",
     "winston": "2.2.0",
-    "winston-daily-rotate-file": "1.0.1",
+    "express": "4.13.4",
+    "body-parser": "1.15.0",
     "express-winston": "1.3.0",
-    "body-parser": "1.13.3",
-    "object-sizeof": "1.0.6",
-    "netsuite-zendesk-connector": "git+ssh://git@github.com:celigo/netsuite-zendesk-connector.git#v1.3.1",
-    "shopify-netsuite-connector": "git+ssh://git@github.com:celigo/shopify-netsuite-connector.git#v1.3.1-encodeURIhotFix",
-    "netsuite-jira-connector": "git+ssh://git@github.com:celigo/netsuite-jira-connector.git#v1.1.0",
-    "magento-netsuite-connector": "git+ssh://git@github.com:celigo/magento-netsuite-connector.git#v1.0.1",
-    "bigcommerce-netsuite-connector": "git+ssh://git@github.com:celigo/bigcommerce-netsuite-connector.git#v1.0.0",
-    "adp-netsuite-connector": "git+ssh://git@github.com:celigo/adp-netsuite-connector.git#v1.1.1"
+    "request": "2.71.0"
   },
   "devDependencies": {
-    "mocha": "2.2.5",
-    "should": "7.0.4"
+    "mocha": "2.4.5",
+    "should": "8.3.0"
+  },
+  "scripts": {
+    "test": "mocha --require ./test/common.js --reporter spec --recursive --timeout 45000 test"
+  },
+  "standard": {
+    "globals": [
+      "describe",
+      "it",
+      "before",
+      "after"
+    ]
   }
 }

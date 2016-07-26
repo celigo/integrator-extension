@@ -1,6 +1,6 @@
 {
-  "name": "lambda-integrator-extension",
-  "main": "./lib/extensions",
+  "name": "integrator-extension",
+  "main": "./lib/main",
   "version": "0.1.0",
   "description": "Integrator extenstion for Integrator.io",
   "homepage": "https://integrator.io",

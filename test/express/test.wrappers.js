@@ -11,7 +11,7 @@ var functionURL = baseURL + '/function'
 
 describe('Wrapper tests', function () {
   before(function (done) {
-    testUtil.createServerForUnitTest(true, true, done)
+    testUtil.createMockExpressServer(true, true, done)
   })
 
   it('should pass after successfully calling hook function', function (done) {
@@ -64,6 +64,6 @@ describe('Wrapper tests', function () {
   })
 
   after(function (done) {
-    testUtil.stopUnitTestServer(done)
+    testUtil.stopMockExpressServer(done)
   })
 })

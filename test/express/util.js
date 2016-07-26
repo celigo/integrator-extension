@@ -1,7 +1,8 @@
 'use strict'
 
 var request = require('request')
-var extensionServer = require('../../lib/express')
+var extension = require('../../lib/main')
+var expressExtension = extension.express
 var testModule = require('./testModule')
 
 exports.postRequest = function (uri, json, bearerToken, callback) {
@@ -64,8 +65,8 @@ exports.deleteRequest = function (uri, bearerToken, callback) {
   })
 }
 
-exports.createServerForUnitTest = function (diy, connector, callback) {
-  extensionServer.createServer({
+exports.createMockExpressServer = function (diy, connector, callback) {
+  expressExtension.createServer({
     diy: diy ? testModule : undefined,
     connectors: {
       '9ce44f88a25272b6d9cbb430ebbcfcf1': connector ? testModule : undefined,
@@ -78,8 +79,8 @@ exports.createServerForUnitTest = function (diy, connector, callback) {
   })
 }
 
-exports.stopUnitTestServer = function (callback) {
-  extensionServer.stopServer(function (err) {
+exports.stopMockExpressServer = function (callback) {
+  expressExtension.stopServer(function (err) {
     return callback(err)
   })
 }

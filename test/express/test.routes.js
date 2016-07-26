@@ -9,7 +9,7 @@ var bearerToken = 'ott873f2beed978433997c42b4e5af05d9b'
 
 describe('Express /function route tests', function () {
   before(function (done) {
-    testUtil.createServerForUnitTest(true, true, done)
+    testUtil.createMockExpressServer(true, true, done)
   })
 
   it('should return error when request doesn\'t have type field set.', function (done) {
@@ -113,7 +113,7 @@ describe('Express /function route tests', function () {
 
   describe('DIY and connectors test', function () {
     before(function (done) {
-      testUtil.stopUnitTestServer(function (err) {
+      testUtil.stopMockExpressServer(function (err) {
         if (err) {
           err.message.should.equal('Integration-extension-server not deployed.')
           err.code.should.equal('invaid_function_call')
@@ -135,7 +135,7 @@ describe('Express /function route tests', function () {
         }
       }
 
-      testUtil.createServerForUnitTest(false, true, function (err) {
+      testUtil.createMockExpressServer(false, true, function (err) {
         if (err) return done(err)
 
         var functionURL1 = 'http://localhost:' + port + '/function'
@@ -149,7 +149,7 @@ describe('Express /function route tests', function () {
           }
 
           body.errors[0].should.eql(expected)
-          testUtil.stopUnitTestServer(done)
+          testUtil.stopMockExpressServer(done)
         })
       })
     })
@@ -168,7 +168,7 @@ describe('Express /function route tests', function () {
         }
       }
 
-      testUtil.createServerForUnitTest(false, true, function (err) {
+      testUtil.createMockExpressServer(false, true, function (err) {
         if (err) return done(err)
 
         var functionURL1 = 'http://localhost:' + port + '/function'
@@ -182,13 +182,13 @@ describe('Express /function route tests', function () {
           }
 
           body.errors[0].should.eql(expected)
-          testUtil.stopUnitTestServer(done)
+          testUtil.stopMockExpressServer(done)
         })
       })
     })
 
     after(function (done) {
-      testUtil.createServerForUnitTest(true, true, done)
+      testUtil.createMockExpressServer(true, true, done)
     })
   })
 
@@ -289,6 +289,6 @@ describe('Express /function route tests', function () {
   })
 
   after(function (done) {
-    testUtil.stopUnitTestServer(done)
+    testUtil.stopMockExpressServer(done)
   })
 })

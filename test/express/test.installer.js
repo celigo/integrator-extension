@@ -12,7 +12,7 @@ var functionURL = baseURL + '/function'
 
 describe('Express connector installer tests', function () {
   before(function (done) {
-    testUtil.createServerForUnitTest(false, true, done)
+    testUtil.createMockExpressServer(false, true, done)
   })
 
   it('should pass after successfully executing installer step.', function (done) {
@@ -86,6 +86,6 @@ describe('Express connector installer tests', function () {
   })
 
   after(function (done) {
-    testUtil.stopUnitTestServer(done)
+    testUtil.stopMockExpressServer(done)
   })
 })

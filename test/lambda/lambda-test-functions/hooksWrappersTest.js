@@ -1,4 +1,5 @@
-var lambdaExtension = require('../../../lib/main').lambda
+var extension = require('../../../lib/main')
+var lambdaExtension = extension.lambda
 var testModule = require('./testModule')
 
 var options = {

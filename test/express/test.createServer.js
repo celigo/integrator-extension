@@ -1,12 +1,13 @@
 'use strict'
 
-var extensionServer = require('../../lib/express')
+var extension = require('../../lib/main')
+var expressExtension = extension.express
 
 var port = 7000
 
 describe('Server tests', function () {
   it('should return error if options parameter is not passed to the createServer function.', function (done) {
-    extensionServer.createServer(undefined, function (e) {
+    expressExtension.createServer(undefined, function (e) {
       e.message.should.equal('Options parameter is not provided.')
       e.code.should.equal('missing_parameter')
       done()
@@ -19,7 +20,7 @@ describe('Server tests', function () {
       port: port
     }
 
-    extensionServer.createServer(options, function (e) {
+    expressExtension.createServer(options, function (e) {
       e.message.should.equal('systemToken not provided in options.')
       e.code.should.equal('missing_required_field')
       done()
@@ -32,7 +33,7 @@ describe('Server tests', function () {
       systemToken: 'INTEGRATOR_EXTENSION_SYSTEM_TOKEN'
     }
 
-    extensionServer.createServer(options, function (e) {
+    expressExtension.createServer(options, function (e) {
       e.message.should.equal('Either DIY or connectors field needs to be set.')
       e.code.should.equal('missing_required_field')
       done()
@@ -46,7 +47,7 @@ describe('Server tests', function () {
       connectors: {}
     }
 
-    extensionServer.createServer(options, function (e) {
+    expressExtension.createServer(options, function (e) {
       e.message.should.equal('No connector modules provided in the connectors field.')
       e.code.should.equal('invalid_field')
       done()

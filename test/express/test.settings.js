@@ -12,7 +12,7 @@ var functionURL = baseURL + '/function'
 
 describe('Express connector settings tests', function () {
   before(function (done) {
-    testUtil.createServerForUnitTest(false, true, done)
+    testUtil.createMockExpressServer(false, true, done)
   })
 
   it('should fail with 422 for persistSettings error', function (done) {
@@ -89,6 +89,6 @@ describe('Express connector settings tests', function () {
   })
 
   after(function (done) {
-    testUtil.stopUnitTestServer(done)
+    testUtil.stopMockExpressServer(done)
   })
 })

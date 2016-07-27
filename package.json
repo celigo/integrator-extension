@@ -1,14 +1,13 @@
 {
   "name": "integrator-extension",
   "main": "./lib/main",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Integrator extenstion for Integrator.io",
   "homepage": "https://integrator.io",
   "author": "Celigo Inc. <developer@celigo.com> (http://www.celigo.com)",
   "engines": {
     "node": ">= 0.12"
   },
-  "private": true,
   "license": "MIT",
   "repository": {
     "type": "git",

@@ -1,8 +1,0 @@
-// separate unit testing environment vars...
-// in the current directory you should make a copy of this file called 'unittest.json'
-// and use the reference vars below to establish your own unit test environment.  Most of
-// these vars can be shared. the ones that cannot have been modified to illustrate 'get_your_own' values.
-{
-  "TEST_INTEGRATOR_EXTENSION_PORT": 7000,
-  "INTEGRATOR_EXTENSION_SYSTEM_TOKEN": "TEST_INTEGRATOR_EXTENSION_SYSTEM_TOKEN"
-}

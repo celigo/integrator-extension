@@ -1,42 +1,45 @@
-# Integrator Extensions
+# Extension Functions
 
-Integrator extensions are custom code that can be used to customize various integrator.io functionalities. Currently
-integrator.io supports the following extensions:
+Extension Functions allow a user to write custom code to further customize and enhance integrator.io. Currently
+integrator.io supports the following type of extension functions:
 
   * [Hooks](#hooks)
   * [Wrappers](#wrappers)
+  * [Installer](#installer) (applicable only to connectors)
+  * [Uninstaller](#uninstaller) (applicable only to connectors)
+  * [Settings](#settings) (applicable only to connectors)
+
+**Note**: In the documentation that follows, the word value should be interpreted as defined at http://www.json.org/ unless mentioned otherwise.
 
 ### Hooks
 
-Hooks are custom code that can be executed at different stages during a flow run to customize the flow. Hooks can be categorized into two types - export hooks and import hooks.
+A flow in integrator.io is mainly composed of an export and an import. The export is responsible for getting the data of the source system and breaking it
+into smaller pages. The import processes those pages and stores the data in the target system. Hooks are custom code that can be executed at different stages during the execution of a flow and allow to modify the behavior of export and import processes.
 
 #### Export hooks
 
-Export hooks are the hooks that are executed during the export process of a flow run. Currently integrator supports
+Export hooks are executed during the export process of a flow. Currently integrator supports
 only one type of hook - preSavePage.
 
 **preSavePage**
 
-This hook gets invoked before saving the data that's fetched using export configuration for further processing. This
+This hook gets invoked before saving a page of data that's fetched by the export for further processing. This
 hook can be used to add or delete records or modify the existing records present in the data that is passed to
 the hook preSavePage function.
 
 ```js
 /*
  * options object in the preSavePageFunction contains the following properties:
- *      
- *   bearerToken       Is the one-time token that is passed by the integrator.io.
- *      
- *   data              Is an array of values(http://www.json.org/) which has been exported from the
- *                     export endpoint.
- *      
- *   errors            Is an array of JSON objects where each JSON object contains the code
- *                     and message of the error that occurred during the export process.
- *                     Format of each JSON object will be {message: 'error message', code: 'error code'}
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
+ *     
+ *  data - an array of values (a page) which has been exported by the export process.
+ *     
+ *  errors - an array of JSON objects where each JSON object contains the code and message of the error that occurred during the export process. Format of each JSON object will be {message: 'error message', code: 'error code'}
  *
- *   _exportId         Is the _exportId of the flow for which the hook is defined.
+ *  _exportId - the _exportId of the export for which the hook is defined.
  *
- *   settings          Is the container for all integrator.io settings data for an integration.
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
@@ -46,15 +49,10 @@ module.hooks.preSavePageFunction = function (options, callback) {
 
   /*
    * The callback function expects takes in two arguments.
-   *	 err                Error object to convey a fatal error has occurred.
+   *	err - Error object to convey a fatal error has occurred. This will stop the whole export process.
    *
-   *	 responseData       Response data is a JSON object which is of the below format:
-   *                        { data: value, errors: [{code: 'error code', message: 'error message'}] }
-   *                        data: Needs to be set to the modified data. Its structure is similar
-   *                              to the data parameter that is sent to the preSavePage function.
-   *                        errors: Needs to be set to the modified errors. Its structure is similar
-   *                                to the data parameter that is sent to the preSavePage function.
-   *                  
+   *	responseData - Response data is a JSON object which is of the following format: { data: value, errors: [{code: 'error code', message: 'error message'}] }. 'data' needs to be set to the modified data. Its structure is similar to the data parameter that is sent to the preSavePage function. 'errors' needs to be set to the modified errors. Its structure is similar to the data parameter that is sent to the preSavePage function.
+   *                 
    */
 
   return callback(err, responseData)		
@@ -68,20 +66,20 @@ of import hooks - preMap, postMap and postSubmit.
 
 **preMap**
 
-This hook gets invoked before the fields in the export record are mapped to their respective fields in import record. This hook can be used to reformat the record's data in a way that existing mapping functionality provided by integrator.io can be leveraged without modifying the number of records.
+This hook gets invoked before the fields are mapped to their respective fields in the objects to be imported. This hook can be used to reformat the record's fields before they get mapped.
 
 
 ```js
 /*
  * options object contains the following properties:
- *      
- *   bearerToken       Is the one-time token that is passed by the integrator.io.
- *      
- *   data              Is an array of values(http://www.json.org/) which will be used for mapping by integrator.io.                     
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
+ *     
+ *  data - an array objects to be imported which will be used for mapping by integrator.io.                     
  *
- *   _importId         Is the _importId of the flow for which the hook is defined.
+ *  _importId - the _importId of the import for which the hook is defined.
  *
- *   settings  	       Is the container for all integrator.io settings data for an integration.		
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
  */
 
 module.hooks.preMapFunction = function (options, callback) {
@@ -91,15 +89,10 @@ module.hooks.preMapFunction = function (options, callback) {
 
   /*
    * The callback function expects takes in two arguments.
-   *	err              Error object to convey a fatal error has occurred.
+   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
    *
-   *	responseData     Response data is an array of JSON objects where each JSON object can be in below three formats:
-   *                     {data: value, errors: [{code: 'error code', message: 'error message'}]}
-   *                     {errors:[{code: 'error code', message: 'error message'}]}
-   *                     {}
-   *                     Here empty JSON will convey integrator.io to ignore the record.
-   *					 The data field can have any value as defined by http://www.json.org/.
-   *                     
+   *	responseData - Response data is an array of JSON objects where each JSON object can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
+   *                    
    */
 
   return callback(err, responseData)		
@@ -108,23 +101,22 @@ module.hooks.preMapFunction = function (options, callback) {
 
 **postMap**
 
-This hook gets invoked after the fields in the export record are mapped to their respective fields in import record. For an instance
-if any further modification is required in mapped record without violating the data length constraint then this hook can be used.
+This hook gets invoked after the fields in the source objects have been mapped to their respective fields in object to be imported. This hook can be used to further
+modify the mapped data.
 
 ```js
 /*
  * options object contains the following properties:
- *      
- *   bearerToken       Is the one-time token that is passed by the integrator.io.
- *      
- *   preMapData        Is an array of values(http://www.json.org/) which will be used for mapping by integrator.io.
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
+ *     
+ *  preMapData - an array of values which was used for mapping by the import.
  *
- *   postMapData       Is an array of values(http://www.json.org/) which is obtained after the mapping has been
- *	                   performed by integrator.io based on the mapping configuration set for the flow.
- *      
- *   _importId         Is the _importId of the flow for which the hook is defined.
+ *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
+ *     
+ *  _importId - the _importId of the import for which the hook is defined.
  *
- *   settings  	       Is the container for all integrator.io settings data for an integration.
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
  */
 
 module.hooks.postMapFunction = function (options, callback) {
@@ -134,16 +126,10 @@ module.hooks.postMapFunction = function (options, callback) {
 
   /*
    * The callback function takes in two arguments.
-   *	err              Error object to convey a fatal error has occurred.
+   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
    *
-   *	responseData     Response data is an array where each element can be in below three JSON formats
-   *                   mapping to each record:
-   *                     { data: value, errors: [{ message: 'error message', code: 'error code' }] }
-   *                     { errors:[{ message: 'error message', code: 'error code' }] }
-   *                     {}
-   *					 Here empty JSON will convey integrator.io to ignore the record.
-   *                     The data field can have any value as defined by http://www.json.org/.
-   *                     
+   *	responseData - Response data is an array where each element can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
+   *                    
    */
 
   return callback(err, responseData)		
@@ -152,26 +138,23 @@ module.hooks.postMapFunction = function (options, callback) {
 
 **postSubmit**
 
-This hook gets invoked after import records are submitted to the import endpoint and response is obtained from import side. It can
-be used for manipulating the response data received from import for success and error cases.
+This hook gets invoked after the records are processed by the import. It can be used to further process imported objects and modify the response data received from import for success and error cases. This can also be used to invoke some other process which need to be done at the end of the import.
 
 ```js
 /*
  * options object contains the following properties:
- *      
- *   bearerToken       Is the one-time token that is passed by the integrator.io.
- *      
- *   preMapData        Is an array of values(http://www.json.org/) which will be used for mapping by integrator.io.
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
+ *     
+ *  preMapData - an array of values which was used for mapping by the import.
  *
- *   postMapData       Is an array of values(http://www.json.org/) which is obtained after the mapping has been
- *                     performed by integrator.io based on the mapping configuration set for the flow.
- *      
- *   responseData      Is an array of objects which corresponds to the response received by the import
- *                     after submitting the postMapData to the import endpoint.
+ *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
+ *     
+ *  responseData - an array of objects which corresponds to a canonical response produced to be import process. Each object in responseData has the following structure: {statusCode: 200/422, id: string, errors: [{code, message, source}]}.
  *
- *   _importId         Is the _importId of the flow in which the hook is defined.
+ *  _importId - the _importId of the import for which the hook is defined.
  *
- *   settings  	       Is the container for all integrator.io settings data for an integration.
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
  */
 
 module.hooks.postSubmitFunction = function (options, callback) {
@@ -181,49 +164,48 @@ module.hooks.postSubmitFunction = function (options, callback) {
 
   /*
    * The callback function takes in two arguments.
-   *	err              Error object to convey a fatal error has occurred.
+   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
    *
-   *	responseData     returnResponseData should have structure similar to responseData.
-   *                     Must be of the same length as responseData.
+   *	responseData - returned responseData should have a similar structure and must have same length as the original responseData.
    *
    */
 
   return callback(err, returnResponseData)		
 }
 ```
+
 ---
 
 ### Wrappers
 
-Wrappers are custom code that are used to bypass integrator logic. They allow you to build up a whole custom integrator.io
-flow component(export, import and connection).
+Wrappers allow you to write totally custom export and import adaptors. They provide an excellent way of connecting to applications that are not supported by integrator.io out of the box.
 
 #### Ping
 
-This wrapper function is to verify whether the connection defined for the wrapper type adaptor is valid.
+This wrapper function is called to verify whether the connection defined for the wrapper adaptor is valid.
 
 ```js
 /* options object contains the following properties:
- *      
- *   bearerToken           Is the one-time token that is passed by the integrator.
- *      
- *   connection            Is the connection object containing the connection configuration which is:
- *                         connection: {encrypted: {...}, unencrypted: {...}}
- *                         encrypted object contains the private data needed to verify the connection with the endpoint.
- *                         unencrypted object contains the public data needed to verify the connetion with the endpoint.
- *   _importId/_exportId   _id of the export or import to which the connection belongs to.
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
+ *     
+ *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
+ *
+ *  _importId/_exportId - _id of the export or import associated with the connection.
  *
  */
 
 module.wrappers.pingConnectionFunction = function (options, callback) {
   /*
-   *    error         Error object to convey a fatal error has occurred.
-   *        
-   *    response      response object provides information about whether the wrapper function was able to
-   *                  establish a connection with the endpoint.
-   *                  response object contains two fields statusCode and errors.
-   *                  if statusCode is 401 then the errors field needs to be set.
-   *                  { statusCode: 200/401, errors: [{message: 'error message', code: 'error code'}]}
+   *  ping function code
+   */
+
+  /*
+   * The callback function takes in two arguments.
+   *	err - Error object to convey a fatal error has occurred. This will fail the whole call.
+   *
+   *  response - Response object provides information about whether the ping was successful or not. It contains two fields statusCode and errors. statusCode should be set to
+   401 and errors should be populated if the connection fails. Else, statusCode should be set to 200. { statusCode: 200/401, errors: [{message: 'error message', code: 'error code'}]}
    */
 
   return callback(error, response)
@@ -232,106 +214,105 @@ module.wrappers.pingConnectionFunction = function (options, callback) {
 
 #### Export
 
-This wrapper function contains the complete logic of exporting data from an endpoint. This will substitute/override the actual
-implementation of integrator.io export. The wrapper export function returns back pages of data and will be called by the integrator.io
-until all the records have been returned to integrator.io.
+A wrapper export allows to write a full export and substitute the actual
+implementation of an integrator.io export. The wrapper export function returns back pages of data and is called by integrator.io again
+and again until all the records have been returned to integrator.io.
 
 ```js
 /*
  * options parameter in export functions contains the following fields:
  *
- *  bearerToken       Is the one-time token that is passed by the integrator.
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
  *
- *  Connection        Is the connection object containing the connection configuration which is:
- *                    connection: {encrypted: {...}, unencrypted: {...}}
- *                    encrypted object contains the private data needed to verify the connection with the endpoint.
- *                    unencrypted object contains the public data needed to verify the connection with the endpoint.
+ *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
  *
- *  type              If this field is not set then the export type will be all. Else it will be set to either of
- *                    'delta', 'type' or 'once'.
+ *  type - the export type and can have the values 'delta', 'type' or 'once'. If its not set then it should be assumed that all records need to be exported.
  *  
- *  delta             This field is set only when export type is delta and contains a JSON object having the below properties:
- *                    dateField: The field to be used to determine whether the record has to be picked.
- *                    lastExecutionTime: Is the date on which last job was run in milliseconds.
+ *  delta - this field is set only when export type is delta. It contains a JSON object having two properties {dateField: ..., lastExecutionTime: ...}. 'dateField' is the field to be used to query
+ records that need to be exported. lastExecutionTime (in milliseconds) is the date on which the corresponding export job was last run.
  *
- *  once              This field is set only when export type is once and contains a JSON object having the below properties:
- *                    booleanField: The boolean field to be used to determine whether the record has to be picked.
+ *  once - this field is set only when export type is once and contains a JSON object having one property {booleanField: ...}. 'booleanField' is the field to be used to query
+ records that need to be exported.
  *
- *  test              This field is set only when export type is test and contains a JSON object having the below properties:
- *                    limit: The maximum number of records that can be fetched.
+ *  test - this field is set only when export type is test and contains a JSON object having one property {limit: ...}. 'limit' is the maximum number of records that should be fetched.
  *
- *  state             Information provided by the previous call to the wrapper function during a export process.
+ *  state - the allows to pass information between successive export calls. The state returned as part of response for previous call will be passed as is.
  *
- *  _exportId         _id of the wrapper export.
+ *  _exportId - _id of the wrapper export.
  *
- *  settings          Is the container for all integrator.io settings data for an integration.
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
  *
- *  configuration     The configuration provided for the wrapper export.
+ *  configuration - the configuration provided for the wrapper export. Can be used to further customize the wrapper.
  */
 
 module.wrappers.exportFunction = function (options, callback) {
   /*
-   *    error         Error object to convey a fatal error has occurred.
-   *        
-   *    response      The response should contain a JSON object where following properties are set:
-   *                  connectionOffline: A boolean value to specify whether connection is offline or online.
-   *                  data: An array of values(http://www.json.org/) where each value is a record that has been exported.
-   *                  errors: An array of JSON objects where each element represents error information in the format:
-   *                          {message: 'error message', code: 'error code'} that occured during the export.
-   *                  lastPage: A boolean field which is used to convey integrator.io that this is the last
-   *                            page of the export process.
-   *                  state: An object which can be used to specify the current state of the export process
-   *                         which will be used by the next call to the wrapper function.
+   *  export function code
+   */
+
+  /*
+   *	err - Error object to convey a fatal error has occurred. This will halt the export process.
+   *       
+   *  response - the response should contain a JSON object where following properties can be set. connectionOffline: A boolean value to specify if connection when offline during the course of the export. If set to true this will make the wrapper connection offline and stop the export process. data: An array of values where each value is a record that has been exported. errors: An array of JSON objects where each element represents error information in the format {message: 'error message', code: 'error code'} that occurred during the export. lastPage: A boolean to convey integrator.io that this is the last page of the export process. No more calls will be made once lastPage is set to true. state: An object which can be used to specify the current state of the export process that will be passed back in the next call to the wrapper function.
    */
 
   return callback(error, response)
 }
 ```
-**Note:** No further calls will be made to a wrapper function if same response is sent more than 5 times to integrator.io during an export process by the wrapper function.
+**Note:** No further calls will be made to a wrapper function if same response is sent more than 5 times to integrator.io during an export process by the wrapper function. integrator.io will consider this as an infinite loop and stop the export process.
 
 #### Import
+A wrapper import allows to write a full end to end import and substitute the actual
+implementation of an integrator.io import.
 
-This wrapper function contains the complete logic of importing data to an endpoint. This will substitute/override the actual
-implementation of integrator.io import.
 ```js
-/* options object contains the following properties:
- *      
- *      bearerToken           Is the one-time token that is passed by the integrator.io.
- *      
- *      connection            Is the connection object containing the connection configuration which is:
- *                            connection: {encrypted: {...}, unencrypted: {...}}
- *                            encrypted object contains the private data needed to verify the connection with the endpoint.
- *                            unencrypted object contains the public data needed to verify the connection with the endpoint.
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke select integrator.io API routes.
  *
- *      preMapData            Is an array of values(http://www.json.org/) which will be used for mapping by
- *                            integrator.io.
+ *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
  *
- *      postMapData           Is an array of values(http://www.json.org/) which is obtained after the mapping has been
- *                            performed by integrator.io based on the mapping configuration set for the flow.
+ *  preMapData - an array of values which was used for mapping by the import.
  *
- *      _importId             _id of the wrapper import.
+ *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
  *
- *      settings              Is the container for all integrator.io settings data for an integration.
+ *  _importId - _id of the wrapper import.
  *
- *      configuration         The configuration provided for the wrapper import.
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
+ *  configuration - the configuration provided for the wrapper export. Can be used to further customize the wrapper.
  */
 
 module.wrappers.importFunction = function (options, callback) {
   /*
-   *    error         Error object to convey a fatal error has occurred.
-   *        
-   *    response      Response is an array of JSON objects where each object should follow the below format:  
-   *                  {statusCode: 200/401/422, id: string, ignored: boolean, errors: [{code, message}]}
-   *                  
-   *                  statusCode: should be set to 200 when the import was successful for the given, 401 when
-   *                              the operation was unauthorized and 422 when an error occurred during the process.
-   *                  id: The id of the record.
-   *                  ignored: Is set to true when the field is ignored by the import.
-   *                  errors: Is an array of JSON objects representing the list of the errors that occurred while
-   *                          importing the records.
-   *                          [{message: 'error message', code: 'error code'}]
+   *  import function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred. This will halt the export process.
+   *       
+   *  response - Response is an array of JSON objects where each object should follow the following structure: {statusCode: 200/401/422, id: string, ignored: boolean, errors: [{code, message}]}. statusCode should be set to 200 when the import was successful, 401 when the operation failed with an authorization or connection error and 422 when some other error occurred during the process. id is the identifier of the record in the target system. ignored should set to true if the record was ignored and not imported. errors is an array of JSON objects representing the list of the errors that occurred while importing the records [{message: 'error message', code: 'error code'}]. errors can be used with statusCode 200 as well to indicate partial success, e.g., import succeeded without a field.
    */
 
   return callback(error, response)
 }
 ```
+
+---
+
+### Installer
+
+TODO
+
+---
+
+### Uninstaller
+
+TODO
+
+---
+
+### Settings
+
+TODO

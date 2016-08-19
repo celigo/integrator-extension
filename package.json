@@ -14,8 +14,8 @@
     "url": "https://github.com/celigo/integrator-extension.git"
   },
   "dependencies": {
-    "lodash": "4.11.0",
-    "object-sizeof": "1.0.10",
+    "lodash.isplainobject": "4.0.6",
+    "lodash.isempty": "4.4.0",
     "winston": "2.2.0",
     "express": "4.14.0",
     "body-parser": "1.15.0",

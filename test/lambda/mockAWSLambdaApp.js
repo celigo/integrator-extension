@@ -1,4 +1,4 @@
-var _ = require('lodash')
+var isEmpty = require('lodash.isempty')
 var regions = ['us-east-1', 'us-west-2', 'ap-southeast-2', 'ap-northeast-1', 'eu-central-1', 'eu-central-1']
 var testFunctions = require('./lambda-test-functions')
 
@@ -17,7 +17,7 @@ function AWS () {
   }
 
   function validateAWSParams (params, callback) {
-    if (!params || _.isEmpty(params)) {
+    if (!params || isEmpty(params)) {
       return callback(createError('Missing region in config', 'ConfigError'))
     }
 

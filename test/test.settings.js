@@ -4,9 +4,13 @@ var testUtil = require('./util')
 
 var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN'
 var _integrationId = '_integrationId'
-var _connectorId = 'connector1'
+var _connectorId = '9ce44f88a25272b6d9cbb430ebbcfcf1'
 
-describe('Lambda connector settings tests', function () {
+describe('Connector settings tests', function () {
+  before(function (done) {
+    testUtil.createMockExtension(true, true, done)
+  })
+
   it('should fail with 422 for persistSettings error', function (done) {
     var extensionProperties = {
       diy: false,
@@ -21,11 +25,10 @@ describe('Lambda connector settings tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       var expected = [{ code: 'Error', message: 'persistSettings' }]
-      testUtil.validateErrorRetured(data, expected, done)
+      testUtil.validateErrorsRetured(four0xErrors, expected)
+      done()
     })
   })
 
@@ -43,14 +46,9 @@ describe('Lambda connector settings tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
-      data.StatusCode.should.equal(200)
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       options.function = 'persistSettings'
-      var body = JSON.parse(data.Payload)
-      body.should.eql(options)
+      data.should.eql(options)
 
       done()
     })
@@ -70,14 +68,9 @@ describe('Lambda connector settings tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
-      data.StatusCode.should.equal(200)
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       options.function = 'refreshMetadata'
-
-      var body = JSON.parse(data.Payload)
-      body.should.eql(options)
+      data.should.eql(options)
 
       done()
     })

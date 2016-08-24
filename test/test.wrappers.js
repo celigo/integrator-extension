@@ -5,7 +5,11 @@ var testUtil = require('./util')
 var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN'
 var _importId = '_importId'
 
-describe('Lambda wrapper tests', function () {
+describe('Wrapper tests', function () {
+  before(function (done) {
+    testUtil.createMockExtension(true, true, done)
+  })
+
   it('should pass after successfully calling wrapper function', function (done) {
     var extensionProperties = {
       diy: true,
@@ -21,13 +25,8 @@ describe('Lambda wrapper tests', function () {
       _importId: _importId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
-      data.StatusCode.should.equal(200)
-      var body = JSON.parse(data.Payload)
-      body.should.eql([{statusCode: 200, id: options}])
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
+      data.should.eql([{statusCode: 200, id: options}])
       done()
     })
   })
@@ -46,11 +45,10 @@ describe('Lambda wrapper tests', function () {
       _importId: _importId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       var expected = [{ code: 'pingCode', message: 'pingMessage' }]
-      testUtil.validateErrorRetured(data, expected, done)
+      testUtil.validateErrorsRetured(four0xErrors, expected)
+      done()
     })
   })
 })

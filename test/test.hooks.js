@@ -1,11 +1,16 @@
 'use strict'
 
 var testUtil = require('./util')
+var should = require('should')
 
 var _importId = '_importId'
 var bearerToken = 'bearerToken'
 
-describe('Lambda hook tests', function () {
+describe('hook tests', function () {
+  before(function (done) {
+    testUtil.createMockExtension(true, true, done)
+  })
+
   it('should pass after successfully calling hook function.', function (done) {
     var options = {
       key1: [{a: 1}, {b: 2}],
@@ -21,10 +26,8 @@ describe('Lambda hook tests', function () {
       maxResponseSize: 2000
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (err, data) {
-      if (err) return done(err)
-      data.StatusCode.should.equal(200)
-      var body = JSON.parse(data.Payload)
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
+      should.not.exist(four0xErrors)
       var expected = [{
         key1: [{a: 1}, {b: 2}],
         key2: {k: 'v'},
@@ -32,7 +35,7 @@ describe('Lambda hook tests', function () {
         _importId: _importId,
         function: 'doSomething'
       }]
-      body.should.eql(expected)
+      data.should.eql(expected)
       done()
     })
   })
@@ -51,11 +54,10 @@ describe('Lambda hook tests', function () {
       _importId: _importId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (err, data) {
-      if (err) return done(err)
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       var expected = [{ code: 'my_error', message: 'doSomethingError' }]
-      testUtil.validateErrorRetured(data, expected, done)
+      testUtil.validateErrorsRetured(four0xErrors, expected)
+      done()
     })
   })
 })

@@ -4,9 +4,13 @@ var testUtil = require('./util')
 
 var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN'
 var _integrationId = '_integrationId'
-var _connectorId = 'connector1'
+var _connectorId = '9ce44f88a25272b6d9cbb430ebbcfcf1'
 
-describe('Lambda connector installer tests', function () {
+describe('Connector installer tests', function () {
+  before(function (done) {
+    testUtil.createMockExtension(true, true, done)
+  })
+
   it('should pass after successfully executing installer step', function (done) {
     var extensionProperties = {
       _connectorId: _connectorId,
@@ -21,13 +25,9 @@ describe('Lambda connector installer tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
-      data.StatusCode.should.equal(200)
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       options.function = 'runInstallerSuccessStep'
-      var body = JSON.parse(data.Payload)
-      body.should.eql(options)
+      data.should.eql(options)
 
       done()
     })
@@ -46,13 +46,9 @@ describe('Lambda connector installer tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
-      data.StatusCode.should.equal(200)
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       options.function = 'connectorInstallerFunction'
-      var body = JSON.parse(data.Payload)
-      body.should.eql(options)
+      data.should.eql(options)
 
       done()
     })
@@ -71,11 +67,10 @@ describe('Lambda connector installer tests', function () {
       _integrationId: _integrationId
     }
 
-    testUtil.invokeFunction(options, extensionProperties, 'hooksWrappersTest', function (error, data) {
-      if (error) return done(error)
-
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
       var expected = [{ code: 'Error', message: 'runInstallerErrorStep' }]
-      testUtil.validateErrorRetured(data, expected, done)
+      testUtil.validateErrorsRetured(four0xErrors, expected)
+      done()
     })
   })
 })

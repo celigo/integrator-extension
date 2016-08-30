@@ -32,7 +32,10 @@ the hook preSavePage function.
  * options object in the preSavePageFunction contains the following properties:
  *     
  *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
+ * 
+ *  preview - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of
+ * the data being exported. In some cases a developer may wish to branch their logic accordingly.
+ *
  *  data - an array of values (a page) which has been exported by the export process.
  *     
  *  errors - an array of JSON objects where each JSON object contains the code and message of the error that occurred during the export process. Format of each JSON object will be {message: 'error message', code: 'error code'}
@@ -48,8 +51,8 @@ module.hooks.preSavePageFunction = function (options, callback) {
    */
 
   /*
-   * The callback function expects takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will stop the whole export process.
+   * The callback function expects two arguments.
+   *	err - Error object to convey that a fatal error has occurred. This will stop the whole export process.
    *
    *	responseData - Response data is a JSON object which is of the following format: { data: value, errors: [{code: 'error code', message: 'error message'}] }. 'data' needs to be set to the modified data. Its structure is similar to the data parameter that is sent to the preSavePage function. 'errors' needs to be set to the modified errors. Its structure is similar to the errors parameter that is sent to the preSavePage function.
    *                 

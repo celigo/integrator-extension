@@ -1,6 +1,6 @@
 {
   "name": "integrator-extension",
-  "main": "./lib/abstractExtension",
+  "main": "./lib/extension",
   "version": "0.3.0",
   "description": "Integrator extenstion for Integrator.io",
   "homepage": "https://integrator.io",

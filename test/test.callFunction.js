@@ -7,7 +7,7 @@ var bearerToken = 'ott873f2beed978433997c42b4e5af05d9b'
 
 describe('Extension callFunction tests', function () {
   before(function (done) {
-    testUtil.createMockExtension(true, true, done)
+    testUtil.createMockExtension(true, false, done)
   })
 
   it('should return error when extension properties doesn\'t have type field set.', function (done) {
@@ -121,7 +121,7 @@ describe('Extension callFunction tests', function () {
           }]
 
           testUtil.validateErrorsRetured(four0xErrors, expected)
-          testUtil.createMockExtension(true, true, done)
+          testUtil.createMockExtension(true, false, done)
         })
       })
     })
@@ -143,7 +143,7 @@ describe('Extension callFunction tests', function () {
         function: 'doSomething'
       }
 
-      testUtil.createMockExtension(false, true, function (err) {
+      testUtil.createMockExtension(true, false, function (err) {
         if (err) return done(err)
 
         testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
@@ -152,7 +152,7 @@ describe('Extension callFunction tests', function () {
             message: 'Need to set either the diy or _connectorId field in extension options.'
           }]
           testUtil.validateErrorsRetured(four0xErrors, expected)
-          testUtil.createMockExtension(true, true, done)
+          testUtil.createMockExtension(true, false, done)
         })
       })
     })

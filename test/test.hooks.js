@@ -8,7 +8,7 @@ var bearerToken = 'bearerToken'
 
 describe('hook tests', function () {
   before(function (done) {
-    testUtil.createMockExtension(true, true, done)
+    testUtil.createMockExtension(true, false, done)
   })
 
   it('should pass after successfully calling hook function.', function (done) {

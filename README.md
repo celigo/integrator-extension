@@ -1,7 +1,7 @@
 # integrator-extension
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#Extension Functions) that can be hosted on multiple environments (both server based or server-less).
+integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#extension-functions) that can be hosted on multiple environments (both server based or server-less).
 
 ## Installation
 
@@ -34,7 +34,7 @@ connectors
 
 **Note**: The configuration object should only have one of the diy or connectors field.
 
-Currently, integrator-extension supports execution of extension functions through an [Express](https://github.com/ankush-garg/express-integrator-extension) based app running on a server or [AWS Lambda](https://github.com/ankush-garg/lambda-integrator-extension). They may further provide additional configuration properties. Please refer to the respective repositories for more details.
+Currently, integrator-extension supports execution of extension functions through an [Express](https://github.com/celigo/express-integrator-extension) based app running on a server or [AWS Lambda](https://github.com/celigo/lambda-integrator-extension). They may further provide additional configuration properties. Please refer to the respective repositories for more details.
 
 ---
 ---

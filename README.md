@@ -1,7 +1,9 @@
 # integrator-extension
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#extension-functions) that can be hosted on multiple environments (both server based or server-less).
+integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#extension-functions) that can be hosted on multiple environments (both server based or server-less). Currently, integrator-extension supports execution of extension functions through two extension types:
+1. [Express](https://github.com/celigo/express-integrator-extension) based app running on a server
+2. [AWS Lambda](https://github.com/celigo/lambda-integrator-extension).
 
 ## Installation
 
@@ -10,7 +12,7 @@ Using npm:
 $ npm i --save integrator-extension
 ```
 
- A function loadConfiguration to configure the extension is provided to which a configuration object has to be passed. The configuration object can be used to setup extension functions for both Do it yourself (DIY) integrations and Connectors. Given below are the details for common configuration properties.
+ A function loadConfiguration to configure the extension is provided to which a configuration object has to be passed. The configuration object can be used to setup extension functions for both Do it yourself (DIY) integrations and Connectors. Given below are the details of common configuration properties.
 
 diy
 
@@ -34,7 +36,7 @@ connectors
 
 **Note**: The configuration object should only have one of the diy or connectors field.
 
-Currently, integrator-extension supports execution of extension functions through an [Express](https://github.com/celigo/express-integrator-extension) based app running on a server or [AWS Lambda](https://github.com/celigo/lambda-integrator-extension). They may further provide additional configuration properties. Please refer to the respective repositories for more details.
+Different extension types may further provide additional configuration properties. Please refer to the respective repositories for more details.
 
 ---
 ---

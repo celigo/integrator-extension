@@ -1,20 +1,21 @@
-var AbstractExtension = require('../lib/abstractExtension')
-var extension = new AbstractExtension()
+var Extension = require('../lib/extension')
+var testExtension = new Extension()
 var testModule = require('./testModule')
 var should = require('should')
 
 exports.callFunction = function (options, extensionProperties, callback) {
-  return extension.callFunction(options, extensionProperties, callback)
+  return testExtension.callFunction(options, extensionProperties, callback)
 }
 
 exports.createMockExtension = function (diy, connector, callback) {
-  extension.loadConfiguration({
-    diy: diy ? testModule : undefined,
-    connectors: {
-      '9ce44f88a25272b6d9cbb430ebbcfcf1': connector ? testModule : undefined,
-      '6a4b9e817fb9f522dbd012f642855a03': connector ? testModule : undefined
-    }
-  }, function (e) {
+  var config = {}
+  config.diy = diy ? testModule : undefined
+  var connectors = {
+    '9ce44f88a25272b6d9cbb430ebbcfcf1': testModule,
+    '6a4b9e817fb9f522dbd012f642855a03': testModule
+  }
+  config.connectors = connector ? connectors : undefined
+  testExtension.loadConfiguration(config, function (e) {
     return callback(e)
   })
 }

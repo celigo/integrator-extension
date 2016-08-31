@@ -8,7 +8,7 @@ var _connectorId = '9ce44f88a25272b6d9cbb430ebbcfcf1'
 
 describe('Connector installer tests', function () {
   before(function (done) {
-    testUtil.createMockExtension(true, true, done)
+    testUtil.createMockExtension(false, true, done)
   })
 
   it('should pass after successfully executing installer step', function (done) {

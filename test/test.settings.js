@@ -8,7 +8,7 @@ var _connectorId = '9ce44f88a25272b6d9cbb430ebbcfcf1'
 
 describe('Connector settings tests', function () {
   before(function (done) {
-    testUtil.createMockExtension(true, true, done)
+    testUtil.createMockExtension(false, true, done)
   })
 
   it('should fail with 422 for persistSettings error', function (done) {

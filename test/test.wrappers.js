@@ -7,7 +7,7 @@ var _importId = '_importId'
 
 describe('Wrapper tests', function () {
   before(function (done) {
-    testUtil.createMockExtension(true, true, done)
+    testUtil.createMockExtension(true, false, done)
   })
 
   it('should pass after successfully calling wrapper function', function (done) {

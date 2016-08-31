@@ -1,7 +1,7 @@
 # integrator-extension
 [![js-standard-style](https://img.shields.io/badge/code%20style-standard-brightgreen.svg)](http://standardjs.com/)
 
-integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#extension functions) that can be hosted on multiple environments (both server based or server-less).
+integrator-extension provides an easy to use framework for extending [integrator.io](http://www.celigo.com/ipaas-integration-platform/) through various [extension functions](#Extension Functions) that can be hosted on multiple environments (both server based or server-less).
 
 ## Installation
 

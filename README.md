@@ -13,7 +13,7 @@ Using npm:
 $ npm i --save integrator-extension
 ```
 
- A function loadConfiguration to configure the extension is provided to which a configuration object has to be passed. The configuration object can be used to setup extension functions for both Do it yourself (DIY) integrations and Connectors. Given below are the details of common configuration properties.
+ A function loadConfiguration to configure the extension is provided to which a configuration object has to be passed. The configuration object can be used to setup extension functions for both [Do it yourself (DIY)](#diy) integrations and [Connectors](#connectors). Given below are the details of common configuration properties.
 
 diy
 

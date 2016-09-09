@@ -13,6 +13,8 @@ Using npm:
 $ npm i --save integrator-extension
 ```
 
+## Configuration
+
  A function loadConfiguration to configure the extension is provided to which a configuration object has to be passed. The configuration object can be used to setup extension functions for both Do it yourself (DIY) integrations and Connectors. Given below are the details of common configuration properties.
 
 diy
@@ -42,7 +44,7 @@ Different extension types may further provide additional configuration propertie
 ---
 ---
 
-# Extension Functions
+## Extension Functions
 
 Extension Functions allow a user to write custom code to further customize and enhance integrator.io. Currently
 integrator.io supports the following type of extension functions:

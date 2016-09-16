@@ -1,7 +1,7 @@
 {
   "name": "integrator-extension",
   "main": "./lib/extension",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Integrator extenstion for Integrator.io",
   "homepage": "https://integrator.io",
   "author": "Celigo Inc. <developer@celigo.com> (http://www.celigo.com)",

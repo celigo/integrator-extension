@@ -221,4 +221,36 @@ describe('Extension callFunction tests', function () {
       done()
     })
   })
+
+  it('should invoke a hook which is part of an instance', function (done) {
+    var extensionProperties = {
+      type: 'hook',
+      _connectorId: '6a4b9e817fb9f522dbd012f642855a03',
+      function: 'doSomething'
+    }
+
+    var options = {
+      key1: [ 'abc' ],
+      key2: { k: 'v' },
+      _importId: '56eae39e9a016a71a8a9c7e4',
+      bearerToken: bearerToken
+    }
+
+    testUtil.createMockExtension(false, true, function (err) {
+      if (err) return done(err)
+
+      testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
+        var expected = [{
+          key1: [ 'abc' ],
+          key2: { k: 'v' },
+          _importId: '56eae39e9a016a71a8a9c7e4',
+          bearerToken: 'ott873f2beed978433997c42b4e5af05d9b',
+          function: 'doSomething'
+        }]
+
+        data.should.eql(expected)
+        testUtil.createMockExtension(true, false, done)
+      })
+    })
+  })
 })

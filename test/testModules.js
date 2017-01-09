@@ -1,3 +1,17 @@
+var Hooks = function () {
+  this.functionName = 'doSomething'
+  this.doSomething = function (options, callback) {
+    options.function = this.functionName
+    return callback(null, [options])
+  }
+}
+
+var Extension = function () {
+  this.hooks = new Hooks()
+}
+
+exports.testInstance = new Extension()
+
 var testModule = {
   installer: {
     connectorInstallerFunction: function (options, callback) {
@@ -86,4 +100,4 @@ var testModule = {
   }
 }
 
-module.exports = testModule
+exports.testModule = testModule

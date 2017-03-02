@@ -61,6 +61,17 @@ var testModule = {
     }
   },
 
+  utilities: {
+    myUtility: function (options, callback) {
+      if (options.error) {
+        return callback(new Error('myUtility error'))
+      }
+
+      options.function = 'myUtility'
+      return callback(null, options)
+    }
+  },
+
   hooks: {
     doSomethingError: function (options, callback) {
       var error = new Error('doSomethingError')

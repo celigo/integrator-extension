@@ -89,6 +89,8 @@ the hook preSavePage function.
  *  _exportId - the _exportId of the export for which the hook is defined.
  *
  *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
+ *  configuration - the configuration provided for the preSavePage hook. Can be used to further customize the hook.
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
@@ -129,6 +131,8 @@ This hook gets invoked before the fields are mapped to their respective fields i
  *  _importId - the _importId of the import for which the hook is defined.
  *
  *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
+ *  configuration - the configuration provided for the preMap hook. Can be used to further customize the hook.
  */
 
 module.hooks.preMapFunction = function (options, callback) {
@@ -166,6 +170,8 @@ modify the mapped data.
  *  _importId - the _importId of the import for which the hook is defined.
  *
  *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
+ *  configuration - the configuration provided for the postMap hook. Can be used to further customize the hook.
  */
 
 module.hooks.postMapFunction = function (options, callback) {
@@ -204,6 +210,8 @@ This hook gets invoked after the records are processed by the import. It can be 
  *  _importId - the _importId of the import for which the hook is defined.
  *
  *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
+ *  configuration - the configuration provided for the postSubmit hook. Can be used to further customize the hook.
  */
 
 module.hooks.postSubmitFunction = function (options, callback) {

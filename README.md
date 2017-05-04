@@ -100,10 +100,17 @@ module.hooks.preSavePageFunction = function (options, callback) {
 
   /*
    * The callback function expects two arguments.
-   *	err - Error object to convey that a fatal error has occurred. This will stop the whole export process.
+   *	err - Error object to convey that a fatal error has occurred. 
+   *   This will stop the whole export process.
    *
-   *	responseData - Response data is a JSON object which is of the following format: { data: value, errors: [{code: 'error code', message: 'error message'}] }. 'data' needs to be set to the modified data. Its structure is similar to the data parameter that is sent to the preSavePage function. 'errors' needs to be set to the modified errors. Its structure is similar to the errors parameter that is sent to the preSavePage function.
-   *                 
+   *	responseData - Response data is a JSON object which is of the following format: 
+   *   { data: value, errors: [{code: 'error code', message: 'error message'}] }. 
+   *
+   *   'data' needs to be set to the modified data. Its structure is similar to the data parameter 
+   *     that is sent to the preSavePage function. 
+   * 
+   *   'errors' needs to be set to the modified errors. Its structure is similar to the errors parameter 
+   *     that is sent to the preSavePage function.
    */
 
   return callback(err, responseData)		
@@ -203,9 +210,18 @@ This hook gets invoked after the records are processed by the import. It can be 
  *     
  *  preMapData - an array of values which was used for mapping by the import.
  *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
+ *  postMapData - an array of values which was obtained after the mapping was done based on the 
+ *    mapping configuration set for the import.
  *     
- *  responseData - an array of objects which corresponds to a canonical response produced to be import process. Each object in responseData has the following structure: {statusCode: 200/422, id: string, errors: [{code, message, source}]}.
+ *  responseData - an array of objects which corresponds to a canonical response produced to be import process. 
+ *    Each object in responseData has the following structure: 
+ *    { statusCode: 200/422, id: string, errors: [{code, message, source}], _json: obj }
+ *                 
+ *     Note that the '_json' property contains the complete import response from the service this import 
+ *     integrated with.  For HTTP based services, this value will be the HTTP response body from the 
+ *     import operation.  This is a read/write property. Developers can modify this value if needed to 
+ *     support child import operations.
+
  *
  *  _importId - the _importId of the import for which the hook is defined.
  *
@@ -223,7 +239,8 @@ module.hooks.postSubmitFunction = function (options, callback) {
    * The callback function takes in two arguments.
    *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
    *
-   *	responseData - returned responseData should have a similar structure and must have same length as the original responseData.
+   *	responseData - returned responseData should have a similar structure and must have
+   *   same length as the original responseData.
    *
    */
 

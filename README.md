@@ -362,9 +362,8 @@ module.wrappers.importFunction = function (options, callback) {
 Installer functions are used to create or update different components of an integration based on features provided by a connector while installing a connector. Installer can be of three types - connector installer function, integration installer function and update function.
 
 #### Connector installer function
-Connector installer function is invoked when an user starts the connector install process. integrator.io creates an integration and passes control to the 
-installer function with the required information so that install steps can be updated in the integration document. The function name has to be set to
-the installer function field while creating a connector.
+Connector installer function is invoked when a user starts the connector install process. integrator.io creates an integration, associates the license to that integration and passes control to the
+installer function with the required information so that relevant resources required by the integration can be created and install steps can be updated on the integration document. The function name has to be set on the installerFunction field on the connector.
 
 ```js
 /*
@@ -397,8 +396,7 @@ module.installer.connectorInstallerFunction = function (options, callback) {
 ```
 
 #### Integration installer function
-Integration installer function is used to create different components of an integration. A set of integration installer functions can be used to create 
-different functional parts of an integration. The function name has to be set to the installerFunction field of each install step.
+Integration installer function is invoked as the installation wizard proceeds through the install steps. These functions can be used to create required resources, validate bundles, etc. The function name has to be set on the installerFunction field of each install step on the integration.
 
 ```js
 /*
@@ -429,9 +427,8 @@ module.installer.integrationInstallerFunction = function (options, callback) {
 }
 ```
 
-#### update function
-Update function is used to do an update for all the integrations belonging to a connector. Whenever there are any new features in a connector, 
-update function allows to do required changes based on the license of each user. The function name has to be set to the update function field while creating a connector.
+#### Update function
+Update function is used to do an update for the integrations belonging to a connector. Whenever, new versions of the connector need to be released or there are any new features in a connector, update function can be used to do required changes for integrations installed in user accounts. The function name has to be set on the updateFunction field on the connector. This function can be invoked only by the owner of the connector.
 
 ```js
 /*
@@ -464,12 +461,12 @@ module.installer.updateFunction = function (options, callback) {
 ---
 
 ### Uninstaller
-Uninstaller functions are used to remove the components of an integration while uninstalling an integration. Uninstaller functions are of three
+Uninstaller functions are used to remove the components of an integration while uninstalling the connector. Uninstaller functions are of three
 types - preUninstall function, integration uninstall function and connector uninstall function.
 
 #### PreUninstall function
-PreUninstall function is invoked before the uninstall process starts. This function is used to get the integration prepared for the uninstall process.
-One such use case is modifying the install steps. The function name has to be set to the pre-uninstall function field while creating a connector.
+PreUninstall function is invoked before the uninstall process starts. This function can be used to any required tasks before the start of the uninstall process.
+For instance, it can be used to modify the install steps to show them in different order to the end user. The function name has to be set on the preUninstallFunction field on the connector.
 
 ```js
 /*
@@ -501,7 +498,7 @@ module.uninstaller.preUninstallFunction = function (options, callback) {
 ```
 
 #### Integration uninstall function
-Integration uninstall is similar to integration install function. Using this we can uninstall each component of integration in a procedural manner. The function name has to be set to the uninstallerFunction field of each install step present in an integration.
+Integration uninstall function is similar to integration install function. This can be used to uninstall each component of integration in a procedural manner. The function name has to be set to the uninstallerFunction field of each install step on an integration.
 
 ```js
 /*
@@ -533,8 +530,7 @@ module.uninstaller.integrationUninstallerFunction = function (options, callback)
 ```
 
 #### Connector uninstall function
-Connector uninstall function is used to remove all those documents which were not removed in the integration uninstall steps. Once this function completes
-its operation the integration is deleted from integrator.io and also the license is updated accordingly. The function name has to be set to uninstaller function field of a connector.
+Connector uninstall function is used to remove all those documents which were not removed in the integration uninstall steps or complete any final uninstallation steps. Once this function completes the integration is deleted from integrator.io and the license is dissociated for future use. The function name has to be set to uninstallerFunction field on the connector.
 
 ```js
 /*
@@ -566,10 +562,10 @@ module.uninstaller.connectorUninstallerFunction = function (options, callback) {
 ---
 
 ### Settings
-Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations. integrator-extension supports three settings functions - persistSettings, refreshMetadata and changeEdition.
+Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations or other information. integrator-extension supports three settings functions - persistSettings, refreshMetadata and changeEdition.
 
 #### persistSettings
-persistSettings function is invoked whenever settings is updated in UI and it has to be saved to integration document based on what to save and what not to (can validate as well).
+persistSettings function is invoked whenever settings are updated in the UI and they need to be saved to integration document. The changed settings are passed to this function for updation, etc. as required.
 
 ```js
 /*
@@ -601,7 +597,7 @@ module.settings.persistSettings = function (options, callback) {
 ```
 
 #### refreshMetadata
-refreshMetadata function is invoked when a user tries to refresh the metadata and the new metadata values needed to be updated in integration settings.
+refreshMetadata function is invoked when a user tries to refresh the metadata used by the integration and the new metadata values needed to be updated in integration settings.
 
 ```js
 /*
@@ -633,7 +629,7 @@ module.settings.refreshMetadata = function (options, callback) {
 ```
 
 #### changeEdition
-Checks if a user's connector license is upgraded or downgraded, based on that it updates the integration with the license specific features. 
+This function can be used to change license specific features and is invoked when there are changes to the user's connector license.
 
 ```js
 /*

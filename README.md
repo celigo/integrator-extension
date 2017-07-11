@@ -359,17 +359,305 @@ module.wrappers.importFunction = function (options, callback) {
 ---
 
 ### Installer
+Installer functions are used to create or update different components of an integration based on features provided by a connector while installing a connector. Installer can be of three types - connector installer function, integration installer function and update function.
 
-TODO
+#### Connector installer function
+Connector installer function is invoked when an user starts the connector install process. integrator.io creates an integration and passes control to the 
+installer function with the required information so that install steps can be updated in the integration document. The function name has to be set to
+the installer function field while creating a connector.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration that is created.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ *  _connectorId - _id of the connector being installed.
+ *
+ */
+
+module.installer.connectorInstallerFunction = function (options, callback) {
+  /*
+   *  installer function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - No response is expected in this case.
+   *
+   */
+
+  return callback(error, response)
+}
+```
+
+#### Integration installer function
+Integration installer function is used to create different components of an integration. A set of integration installer functions can be used to create 
+different functional parts of an integration. The function name has to be set to the installerFunction field of each install step.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration that is created.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ */
+
+module.installer.integrationInstallerFunction = function (options, callback) {
+  /*
+   *  installer function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - an object in the below format:
+   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
+   *
+   */
+
+  return callback(error, response)
+}
+```
+
+#### update function
+Update function is used to do an update for all the integrations belonging to a connector. Whenever there are any new features in a connector, 
+update function allows to do required changes based on the license of each user. The function name has to be set to the update function field while creating a connector.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration.
+ *
+ *  opts - this field contains the connector license related information.
+ *
+ */
+
+module.installer.updateFunction = function (options, callback) {
+  /*
+   *  installer function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - no response is expected.
+   *
+   */
+
+  return callback(error, response)
+}
+```
 
 ---
 
 ### Uninstaller
+Uninstaller functions are used to remove the components of an integration while uninstalling an integration. Uninstaller functions are of three
+types - preUninstall function, integration uninstall function and connector uninstall function.
 
-TODO
+#### PreUninstall function
+PreUninstall function is invoked before the uninstall process starts. This function is used to get the integration prepared for the uninstall process.
+One such use case is modifying the install steps. The function name has to be set to the pre-uninstall function field while creating a connector.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration that is created.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ */
+
+module.uninstaller.preUninstallFunction = function (options, callback) {
+  /*
+   *  preUninstall function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - an object in the below format:
+   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
+   *
+   */
+
+  return callback(error, response)
+}
+```
+
+#### Integration uninstall function
+Integration uninstall is similar to integration install function. Using this we can uninstall each component of integration in a procedural manner. The function name has to be set to the uninstallerFunction field of each install step present in an integration.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration that is created.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ */
+
+module.uninstaller.integrationUninstallerFunction = function (options, callback) {
+  /*
+   *  uninstaller function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - an object in the below format:
+   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
+   *
+   */
+
+  return callback(error, response)
+}
+```
+
+#### Connector uninstall function
+Connector uninstall function is used to remove all those documents which were not removed in the integration uninstall steps. Once this function completes
+its operation the integration is deleted from integrator.io and also the license is updated accordingly. The function name has to be set to uninstaller function field of a connector.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration being installed.
+ *
+ *  opts - this field contains the connector license related information.
+ *
+ */
+
+module.uninstaller.connectorUninstallerFunction = function (options, callback) {
+  /*
+   *  uninstaller function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - No response expected.
+   */
+
+  return callback(error, response)
+}
+```
 
 ---
 
 ### Settings
+Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations. integrator-extension supports three settings functions - persistSettings, refreshMetadata and changeEdition.
 
-TODO
+#### persistSettings
+persistSettings function is invoked whenever settings is updated in UI and it has to be saved to integration document based on what to save and what not to (can validate as well).
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration being installed.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ *  pending - a json object containing key value pairs of different fields involved in a setting that is being updated.
+ *
+ */
+
+module.settings.persistSettings = function (options, callback) {
+  /*
+   *  settings function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - {success: boolean, pending: {<updated key value pairs of different fields involved in a setting>}}
+   */
+
+  return callback(error, response)
+}
+```
+
+#### refreshMetadata
+refreshMetadata function is invoked when a user tries to refresh the metadata and the new metadata values needed to be updated in integration settings.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration being installed.
+ *
+ *  opts - this field contains the connector license related information.
+ *  
+ *  also contains all the information related to the field whose metadata is being refreshed and new metadata.
+ *
+ */
+
+module.settings.refreshMetadata = function (options, callback) {
+  /*
+   *  settings function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - json object containing the information related to the field which also contains any changes done to new metadata.
+   */
+
+  return callback(error, response)
+}
+```
+
+#### changeEdition
+Checks if a user's connector license is upgraded or downgraded, based on that it updates the integration with the license specific features. 
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration being installed.
+ *
+ *  opts - this field contains the connector license related information.
+ *
+ */
+
+module.settings.changeEdition = function (options, callback) {
+  /*
+   *  settings function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred.
+   *       
+   *  response - no response expected.
+   */
+
+  return callback(error, response)
+}
+```

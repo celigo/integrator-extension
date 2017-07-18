@@ -233,7 +233,7 @@ module.hooks.postSubmitFunction = function (options, callback) {
 
 **postAggregate**
 
-This hook gets invoked after final aggregated file is uploaded on ftp/s3, when 'skipAggregation' property unset or set to 'flase' in the file import. This hook recives read only object.
+This hook gets invoked after final aggregated file is uploaded on ftp/s3, when 'skipAggregation' property unset or set to 'false' in the file import. This hook receives read only object.
 
 ```js
 /*
@@ -241,7 +241,7 @@ This hook gets invoked after final aggregated file is uploaded on ftp/s3, when '
  *     
  *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     
- *  postAggregateData - is readonly json object.
+ *  postAggregateData - is read only json object.
  *    Sample Data:
  *    postAggregateData = {
  *      success: true, // status of import.

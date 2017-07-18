@@ -231,6 +231,42 @@ module.hooks.postSubmitFunction = function (options, callback) {
 }
 ```
 
+**postAggregate**
+
+This hook gets invoked after final aggregated file is uploaded on ftp/s3, when 'skipAggrigate' property unset or  set to 'flase' in the file import. This hook recives read only object.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     
+ *  postAggregateData - is readonly json object.
+ *    Sample Data:
+ *    postAggregateData = {
+ *      success: true, // status of import.
+ *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by ftp/s3 file import.
+ *    }
+ *
+ *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
+ */
+
+module.hooks.postAggregateFunction = function (options, callback) {
+  /*
+   *  postSubmit function code
+   */
+
+  /*
+   * The callback function takes in two arguments.
+   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
+   *
+   *	returnResponseData - should be an object
+   *
+   */
+
+  return callback(err, returnResponseData)		
+}
+```
 ---
 
 ### Wrappers

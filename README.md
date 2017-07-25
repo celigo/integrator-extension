@@ -233,7 +233,7 @@ module.hooks.postSubmitFunction = function (options, callback) {
 
 **postAggregate**
 
-This hook gets invoked after final aggregated file is uploaded on ftp/s3, when 'skipAggregation' property unset or set to 'false' in the file import. This hook receives read only object.
+This hook gets invoked after the final aggregated file is uploaded to the destination service. Note that this hook only works when the 'skipAggregation' property is 'false'. This hook is passed a read only object.
 
 ```js
 /*
@@ -245,7 +245,7 @@ This hook gets invoked after final aggregated file is uploaded on ftp/s3, when '
  *    Sample Data:
  *    postAggregateData = {
  *      success: true, // status of import.
- *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by ftp/s3 file import.
+ *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by the file import.
  *    }
  *
  *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
@@ -253,7 +253,7 @@ This hook gets invoked after final aggregated file is uploaded on ftp/s3, when '
 
 module.hooks.postAggregateFunction = function (options, callback) {
   /*
-   *  postSubmit function code
+   *  postAggregation function code
    */
 
   /*

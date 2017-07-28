@@ -257,14 +257,12 @@ module.hooks.postAggregateFunction = function (options, callback) {
    */
 
   /*
-   * The callback function takes in two arguments.
+   * The callback function takes in one arguments.
    *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	returnResponseData - should be an object
    *
    */
 
-  return callback(err, returnResponseData)		
+  return callback(err)		
 }
 ```
 ---

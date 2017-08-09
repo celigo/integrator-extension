@@ -231,6 +231,40 @@ module.hooks.postSubmitFunction = function (options, callback) {
 }
 ```
 
+**postAggregate**
+
+This hook gets invoked after the final aggregated file is uploaded to the destination service. Note that this hook only works when the 'skipAggregation' property is 'false'. This hook is passed a read only object.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     
+ *  postAggregateData - is read only json object.
+ *    Sample Data:
+ *    postAggregateData = {
+ *      success: true, // status of import.
+ *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by the file import.
+ *    }
+ *
+ *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
+ */
+
+module.hooks.postAggregateFunction = function (options, callback) {
+  /*
+   *  postAggregation function code
+   */
+
+  /*
+   * The callback function takes in one argument.
+   *	err - Error object to convey that a fatal error has occurred. This will fail the whole page.
+   *
+   */
+
+  return callback(err)		
+}
+```
 ---
 
 ### Wrappers

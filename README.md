@@ -248,7 +248,12 @@ This hook gets invoked after the final aggregated file is uploaded to the destin
  *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by the file import.
  *    }
  *
+ *  _importId - the _importId of the import for which the hook is defined.
+ *
+ *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *
  *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
+ *
  */
 
 module.hooks.postAggregateFunction = function (options, callback) {

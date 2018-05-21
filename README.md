@@ -603,7 +603,7 @@ module.uninstaller.connectorUninstallerFunction = function (options, callback) {
 ---
 
 ### Settings
-Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations or other information. integrator-extension supports three settings functions - persistSettings, refreshMetadata, changeEdition and getMappingMetadata.
+Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations or other information. integrator-extension supports following settings functions - persistSettings, refreshMetadata, changeEdition and getMappingMetadata.
 
 #### persistSettings
 persistSettings function is invoked whenever settings are updated in the UI and they need to be saved to integration document. The changed settings are passed to this function for updation, etc. as required.
@@ -700,7 +700,7 @@ module.settings.changeEdition = function (options, callback) {
 ```
 
 #### getMappingMetadata
-This function can be used to add mapping validation for connectors. This function will be called on refresh to get the mapping metadata for connector.
+getMappingMetadata function is used to add mapping validation for connectors to ensure certain business critical mappings are not removed/edited by a business user. This function is called on page refresh/load to get the mapping metadata for connector stack to make mappings non-editable or required (non-deletable) or both for a front end user.
 
 ```js
 /*
@@ -708,7 +708,7 @@ This function can be used to add mapping validation for connectors. This functio
  *     
  *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *  
- *  _integrationId - _id of the integration being installed.
+ *  _integrationId - _id of the integration.
  *
  *  version - this field contains the version of the integration installed.
  *
@@ -723,15 +723,20 @@ module.settings.getMappingMetadata = function (options, callback) {
    *  err - return Error object but not handled in IO UI.
    *       
    *  response - Response data is an array of JSON objects where each object should follow following structure:
-   *  {"externalId":[{"requiredGenerateFields":[""],"nonEditableGenerateFields":[""]},{"generateList":"","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}]}. 
+   *  {"import1-externalId":[{"requiredGenerateFields":["generateFieldId1", "generateFieldId2"...],"nonEditableGenerateFields":[""]},{"generateList":"generateListId1","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}], "import2-externalId" : [...]} 
    * 
-   * externalId should be import adaptor external id. 
+   * externalId - Import adaptor external Id. 
    * 
-   * If mappings are only required on import/export side then we should add that in both requiredGenerateFields and nonEditableGenerateFields. 
+   * requiredGenerateFields - A collection of generate field ids that should be marked as required on UI.
    * 
-   * If mappings are only required on import side then we should add that only in requiredGenerateFields.
+   * nonEditableGenerateFields - A collection of generate field ids that should be marked as non-editable on UI. 
    * 
-   * generateList will be used we are adding validations for any generate list such as item, addressbook, etc.
+   * generateList - It contains generate list id of sublist and used to make the mapping mandatory of the sublist.
+   * 
+   * If mappings are required on both import and export side then you should add mapping generate field id in both requiredGenerateFields and nonEditableGenerateFields. 
+   * 
+   * If mappings are only required on import side then you should add mapping generate field id in requiredGenerateFields.
+   * 
    */
 
   return callback(error, response)

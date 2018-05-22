@@ -733,9 +733,9 @@ module.settings.getMappingMetadata = function (options, callback) {
    * 
    * generateList - It contains generate list id of sublist and used to make the mapping mandatory of the sublist.
    * 
-   * If mappings are required on both import and export side then you should add mapping generate field id in both requiredGenerateFields and nonEditableGenerateFields. 
+   * To ensure an extract-generate mapping pair cannot be altered, add the generate field id both requiredGenerateFields and nonEditableGenerateFields. 
    * 
-   * If mappings are only required on import side then you should add mapping generate field id in requiredGenerateFields.
+   * To ensure that a generate mapping is always present and mapped with any extract/hardcoded value, add the that generate field id to requiredGenerateFields.
    * 
    */
 

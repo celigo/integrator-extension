@@ -720,7 +720,7 @@ module.settings.getMappingMetadata = function (options, callback) {
    */
 
   /*
-   *  err - return Error object but not handled in IO UI.
+   *  err - Error object to convey a fatal error has occurred. Currently, IO does not handle this.
    *       
    *  response - Response data is an array of JSON objects where each object should follow following structure:
    *  {"import1-externalId":[{"requiredGenerateFields":["generateFieldId1", "generateFieldId2"...],"nonEditableGenerateFields":[""]},{"generateList":"generateListId1","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}], "import2-externalId" : [...]} 

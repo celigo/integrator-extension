@@ -82,7 +82,7 @@ the hook preSavePage function.
  *  preview - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of
  * the data being exported. In some cases a developer may wish to branch their logic accordingly.
  *
- *  data - an array of objects (or arrays for row based data) which has been exported by the export process.
+ *  data - an array of records representing one page of data.
  *     
  *  errors - an array of objects where each object contains the code and message of the error that occurred during the export process. Format of each object will be {message: 'error message', code: 'error code'}
  *

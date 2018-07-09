@@ -84,13 +84,13 @@ the hook preSavePage function.
  *
  *  data - an array of records representing one page of data.
  *     
- *  errors - an array of objects where each object contains the code and message of the error that occurred during the export process. Format of each object will be {message: 'error message', code: 'error code'}
+ *  errors - an array of errors where each error has the structure {message: 'the error message', code: 'the error code'}.
  *
  *  _exportId - the _exportId of the export for which the hook is defined.
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *  settings - a container obj for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *
- *  configuration - the configuration provided for the preSavePage hook. Can be used to further customize the hook.
+ *  configuration - an optional configuration obj that can be set directly on the export resource (to further customize the hooks behavior).
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
@@ -102,7 +102,7 @@ module.hooks.preSavePageFunction = function (options, callback) {
    * The callback function expects two arguments.
    *	err - Error object to convey that a fatal error has occurred. This will stop the whole export process.
    *
-   *	responseData - Response data is a JSON object which is of the following format: { data: value, errors: [{code: 'error code', message: 'error message'}] }. 'data' needs to be set to the modified data. Its structure is similar to the data parameter that is sent to the preSavePage function. 'errors' needs to be set to the modified errors. Its structure is similar to the errors parameter that is sent to the preSavePage function.
+   *	responseData - Response data is a JSON object that has the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
    *                 
    */
 

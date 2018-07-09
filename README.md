@@ -102,7 +102,7 @@ module.hooks.preSavePageFunction = function (options, callback) {
    * The callback function expects two arguments.
    *	err - Error object to convey that a fatal error has occurred. This will stop the whole export process.
    *
-   *	responseData - Response data is a JSON object that has the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
+   *	responseData - Response data should have the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
    *                 
    */
 

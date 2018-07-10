@@ -88,9 +88,9 @@ the hook preSavePage function.
  *
  *  _exportId - the _exportId of the export for which the hook is defined.
  *
- *  settings - a container obj for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *  settings - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *
- *  configuration - an optional configuration obj that can be set directly on the export resource (to further customize the hooks behavior).
+ *  configuration - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
@@ -100,7 +100,13 @@ module.hooks.preSavePageFunction = function (options, callback) {
 
   /*
    * The callback function expects two arguments.
-   *	err - Error object to convey that a fatal error has occurred. This will stop the whole export process.
+   *	err - Error 
+   
+   
+   
+   
+   
+   ect to convey that a fatal error has occurred. This will stop the whole export process.
    *
    *	responseData - Response data should have the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
    *                 

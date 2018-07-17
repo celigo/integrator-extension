@@ -75,44 +75,29 @@ the hook preSavePage function.
 
 ```js
 /*
- * options object in the preSavePageFunction contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ * preSavePageFunction:
  *
- *  preview - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of
- * the data being exported. In some cases a developer may wish to branch their logic accordingly.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', data: [], errors: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     'preview' - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of the data being exported.
+ *     '_exportId' - the _exportId of the export for which the hook is defined.
+ *     'data' - an array of records representing one page of data.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  *
- *  data - an array of records representing one page of data.
- *     
- *  errors - an array of errors where each error has the structure {message: 'the error message', code: 'the error code'}.
- *
- *  _exportId - the _exportId of the export for which the hook is defined.
- *
- *  settings - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
- *
- *  configuration - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will stop the flow.
+ *     'responseData' - an object that has the following structure: { data: [], errors: [{code: '', message: '', source: ''}] }
+ *         'data' -  your modified data.
+ *         'errors' - your modified errors.
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
-  /*
-   *  preSavePage function code
-   */
-
-  /*
-   * The callback function expects two arguments.
-   *	err - Error 
-   
-   
-   
-   
-   
-   ect to convey that a fatal error has occurred. This will stop the whole export process.
-   *
-   *	responseData - Response data should have the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
-   *                 
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -128,33 +113,33 @@ This hook gets invoked before the fields are mapped to their respective fields i
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  data - an array objects to be imported which will be used for mapping by integrator.io.                     
+ * preMapFunction:
  *
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', data: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'data' - an array of records representing the page of data before it has been mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the preMap hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' -  an array that has the following structure: [ { }, { }, ... ]
+ *          The array length MUST match the options.data array length.
+ *          Each element in the array represents the actions that should be taken on the record at that index.
+ *          Each element in the array should have the following structure: { data: {}/[], errors: [{code: '', message: '', source: ''}] }
+ *              'data' - The modified (or unmodified) record that should be passed along for processing.  An individual record can be an object {} or an array [] depending on the data source.
+ *              'errors' - Used to report one or more errors for the specific record.  Each error must have the following structure: {code: '', message: '', source: '' }
+ *          Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored.
+ *          Returning both 'data' and 'errors' for a specific record will indicate to integrator.io that the record should be processed but errors should also be logged on the job.
+ *          Examples: {}, {data: {}}, {data: []}, {errors: [{code: '', message: '', source: ''}]}, {data: {}, errors: [{code: '', message: '', source: ''}]}
  */
 
 module.hooks.preMapFunction = function (options, callback) {
-  /*
-   * preMap function code
-   */
-
-  /*
-   * The callback function expects takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - Response data is an array of JSON objects where each JSON object can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
-   *                    
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -165,35 +150,34 @@ modify the mapped data.
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  preMapData - an array of values which was used for mapping by the import.
+ * postMapFunction:
  *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
- *     
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the postMap hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' - an array that has the following structure: [ { }, { }, ... ]
+ *         The returned array length MUST match the options.data array length.
+ *         Each element in the array represents the actions that should be taken on the record at that index.
+ *         Each element in the array should have the following structure: { data: {}/[], errors: [{code: '', message: '', source: ''}] }
+ *             'data' - The modified (or unmodified) record that should be passed along for processing.  An individual record can be an object {} or an array [] depending on the data source.
+ *             'errors' - Used to report one or more errors for the specific record.  Each error must have the following structure: {code: '', message: '', source: '' }
+ *         Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored. 
+ *         Returning both 'data' and 'errors' for a specific record will indicate to integrator.io that the record should be processed but errors should also be logged on the job.
+ *         Examples: {}, {data: {}}, {data: []}, {errors: [{code: '', message: '', source: ''}]}, {data: {}, errors: [{code: '', message: '', source: ''}]}
  */
 
 module.hooks.postMapFunction = function (options, callback) {
-  /*
-   *  postMap function code
-   */
-
-  /*
-   * The callback function takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - Response data is an array where each element can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
-   *                    
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -203,37 +187,33 @@ This hook gets invoked after the records are processed by the import. It can be 
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  preMapData - an array of values which was used for mapping by the import.
+ * postSubmitFunction:
  *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
- *     
- *  responseData - an array of objects which corresponds to a canonical response produced to be import process. Each object in responseData has the following structure: {statusCode: 200/422, id: string, errors: [{code, message, source}], _json: obj}.  Note that the '_json' property contains the complete import response from the service this import integrated with.  For HTTP based services, this value will be the HTTP response body from the import operation.  This is a read/write property. Developers can modify this value if needed to support child import operations.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], responseData: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'responseData' - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following structure: { statusCode: 200/422/403, errors: [], ignored: true/false, id: '', _json: {}, dataURI: '' }
+ *         'statusCode' - 200 is a success.  422 is a data error.  403 means the connection went offline (typically due to an authentication or incorrect password issue).
+ *         'errors' - [{code: '', message: '', source: ''}]
+ *         'ignored' - true if the record was filtered/skipped, false otherwise.
+ *         'id' - the id from the import application response.
+ *         '_json' - the complete response data from the import application.
+ *         'dataURI' - if possible, a URI for the data in the import application (populated only for errored records).
+ *         'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *         'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  _importId - the _importId of the import for which the hook is defined.
- *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the postSubmit hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' - the responseData array provided by options.responseData. The length of the responseData array MUST remain unchanged. Elements within the responseData array can be modified to enhance error messages, modify the complete _json response data, etc...
  */
 
 module.hooks.postSubmitFunction = function (options, callback) {
-  /*
-   *  postSubmit function code
-   */
-
-  /*
-   * The callback function takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - returned responseData should have a similar structure and must have same length as the original responseData.
-   *
-   */
-
-  return callback(err, returnResponseData)		
+  return callback(err, returnResponseData)
 }
 ```
 
@@ -242,38 +222,30 @@ module.hooks.postSubmitFunction = function (options, callback) {
 This hook gets invoked after the final aggregated file is uploaded to the destination service. Note that this hook only works when the 'skipAggregation' property is 'false'. This hook is passed a read only object.
 
 ```js
-/*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  postAggregateData - is read only json object.
- *    Sample Data:
- *    postAggregateData = {
- *      success: true, // status of import.
- *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by the file import.
- *    }
+ /*
+ * postAggregrateFunction:
  *
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', postAggregateData: {}, settings: {},  configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined. 
+ *     'postAggregateData' - a container object with the following structure: { success: true/false, _json: {} }
+ *         'success' - true if data aggregation was successful, false otherwise.
+ *         '_json' - information about the aggregated data transfer.  For example, the name of the aggregated file on the FTP site.
+ *         'code' - error code if data aggregation failed. 
+ *         'message' - error message if data aggregation failed. 
+ *         'source' - error source if data aggregation failed. 
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  *
- *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
- *
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
  */
 
 module.hooks.postAggregateFunction = function (options, callback) {
-  /*
-   *  postAggregation function code
-   */
-
-  /*
-   * The callback function takes in one argument.
-   *	err - Error object to convey that a fatal error has occurred. This will fail the whole page.
-   *
-   */
-
-  return callback(err)		
+  return callback(err)
 }
 ```
 ---

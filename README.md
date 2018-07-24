@@ -609,7 +609,7 @@ module.uninstaller.connectorUninstallerFunction = function (options, callback) {
 ---
 
 ### Settings
-Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations or other information. integrator-extension supports three settings functions - persistSettings, refreshMetadata and changeEdition.
+Settings functions are used to create and modify the settings of a connector based integration. Integration contains settings which stores user specific customizations or other information. integrator-extension supports following settings functions - persistSettings, refreshMetadata, changeEdition and getMappingMetadata.
 
 #### persistSettings
 persistSettings function is invoked whenever settings are updated in the UI and they need to be saved to integration document. The changed settings are passed to this function for updation, etc. as required.
@@ -699,6 +699,50 @@ module.settings.changeEdition = function (options, callback) {
    *  err - Error object to convey a fatal error has occurred.
    *       
    *  response - no response expected.
+   */
+
+  return callback(error, response)
+}
+```
+
+#### getMappingMetadata
+getMappingMetadata function is used to add mapping validation for connectors to ensure certain business critical mappings are not removed/edited by a business user. This function is called on page refresh/load to get the mapping metadata for connector stack to make mappings non-editable or required (non-deletable) or both for a front end user.
+
+```js
+/*
+ * options object contains the following properties:
+ *     
+ *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *  
+ *  _integrationId - _id of the integration.
+ *
+ *  version - this field contains the version of the integration installed.
+ *
+ */
+
+module.settings.getMappingMetadata = function (options, callback) {
+  /*
+   *  settings function code
+   */
+
+  /*
+   *  err - Error object to convey a fatal error has occurred. Currently, IO does not handle this.
+   *       
+   *  response - Response data is an array of JSON objects where each object should follow following structure:
+   *  {"import1-externalId":[{"requiredGenerateFields":["generateFieldId1", "generateFieldId2"...],"nonEditableGenerateFields":[""]},{"generateList":"generateListId1","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}], "import2-externalId" : [...]} 
+   * 
+   * externalId - Import adaptor external Id. 
+   * 
+   * requiredGenerateFields - A collection of generate field ids that should be marked as required on UI.
+   * 
+   * nonEditableGenerateFields - A collection of generate field ids that should be marked as non-editable on UI. 
+   * 
+   * generateList - It contains generate list id of sublist and used to make the mapping mandatory of the sublist.
+   * 
+   * To ensure an extract-generate mapping pair cannot be altered, add the generate field id to both requiredGenerateFields and nonEditableGenerateFields. 
+   * 
+   * To ensure that a generate mapping is always present and mapped with any extract/hardcoded value, add the generate field id to requiredGenerateFields.
+   * 
    */
 
   return callback(error, response)

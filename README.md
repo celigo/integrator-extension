@@ -75,44 +75,29 @@ the hook preSavePage function.
 
 ```js
 /*
- * options object in the preSavePageFunction contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ * preSavePageFunction:
  *
- *  preview - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of
- * the data being exported. In some cases a developer may wish to branch their logic accordingly.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', data: [], errors: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     'preview' - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of the data being exported.
+ *     '_exportId' - the _exportId of the export for which the hook is defined.
+ *     'data' - an array of records representing one page of data.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  *
- *  data - an array of records representing one page of data.
- *     
- *  errors - an array of errors where each error has the structure {message: 'the error message', code: 'the error code'}.
- *
- *  _exportId - the _exportId of the export for which the hook is defined.
- *
- *  settings - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
- *
- *  configuration - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will stop the flow.
+ *     'responseData' - an object that has the following structure: { data: [], errors: [{code: '', message: '', source: ''}] }
+ *         'data' -  your modified data.
+ *         'errors' - your modified errors.
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {
-  /*
-   *  preSavePage function code
-   */
-
-  /*
-   * The callback function expects two arguments.
-   *	err - Error 
-   
-   
-   
-   
-   
-   ect to convey that a fatal error has occurred. This will stop the whole export process.
-   *
-   *	responseData - Response data should have the following format: { data: [], errors: [{code: 'error code', message: 'error message'}] }.  'data' is your modified data.  'errors' are your modified errors.
-   *                 
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -128,33 +113,33 @@ This hook gets invoked before the fields are mapped to their respective fields i
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  data - an array objects to be imported which will be used for mapping by integrator.io.                     
+ * preMapFunction:
  *
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', data: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'data' - an array of records representing the page of data before it has been mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the preMap hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' -  an array that has the following structure: [ { }, { }, ... ]
+ *          The array length MUST match the options.data array length.
+ *          Each element in the array represents the actions that should be taken on the record at that index.
+ *          Each element in the array should have the following structure: { data: {}/[], errors: [{code: '', message: '', source: ''}] }
+ *              'data' - The modified (or unmodified) record that should be passed along for processing.  An individual record can be an object {} or an array [] depending on the data source.
+ *              'errors' - Used to report one or more errors for the specific record.  Each error must have the following structure: {code: '', message: '', source: '' }
+ *          Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored.
+ *          Returning both 'data' and 'errors' for a specific record will indicate to integrator.io that the record should be processed but errors should also be logged on the job.
+ *          Examples: {}, {data: {}}, {data: []}, {errors: [{code: '', message: '', source: ''}]}, {data: {}, errors: [{code: '', message: '', source: ''}]}
  */
 
 module.hooks.preMapFunction = function (options, callback) {
-  /*
-   * preMap function code
-   */
-
-  /*
-   * The callback function expects takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - Response data is an array of JSON objects where each JSON object can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
-   *                    
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -165,35 +150,34 @@ modify the mapped data.
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  preMapData - an array of values which was used for mapping by the import.
+ * postMapFunction:
  *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
- *     
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the postMap hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' - an array that has the following structure: [ { }, { }, ... ]
+ *         The returned array length MUST match the options.data array length.
+ *         Each element in the array represents the actions that should be taken on the record at that index.
+ *         Each element in the array should have the following structure: { data: {}/[], errors: [{code: '', message: '', source: ''}] }
+ *             'data' - The modified (or unmodified) record that should be passed along for processing.  An individual record can be an object {} or an array [] depending on the data source.
+ *             'errors' - Used to report one or more errors for the specific record.  Each error must have the following structure: {code: '', message: '', source: '' }
+ *         Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored. 
+ *         Returning both 'data' and 'errors' for a specific record will indicate to integrator.io that the record should be processed but errors should also be logged on the job.
+ *         Examples: {}, {data: {}}, {data: []}, {errors: [{code: '', message: '', source: ''}]}, {data: {}, errors: [{code: '', message: '', source: ''}]}
  */
 
 module.hooks.postMapFunction = function (options, callback) {
-  /*
-   *  postMap function code
-   */
-
-  /*
-   * The callback function takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - Response data is an array where each element can be in the following four formats: {data: value}, {data: value, errors: [{code: 'error code', message: 'error message'}]}, {errors:[{code: 'error code', message: 'error message'}]} and {}. Here empty JSON will convey to integrator.io that the record should be ignored. If both data and errors are provided then the record will be processed and errors will also be logged on the job. The length of responseData must be same as data that was passed as part of options.
-   *                    
-   */
-
-  return callback(err, responseData)		
+  return callback(err, responseData)
 }
 ```
 
@@ -203,37 +187,33 @@ This hook gets invoked after the records are processed by the import. It can be 
 
 ```js
 /*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  preMapData - an array of values which was used for mapping by the import.
+ * postSubmitFunction:
  *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
- *     
- *  responseData - an array of objects which corresponds to a canonical response produced to be import process. Each object in responseData has the following structure: {statusCode: 200/422, id: string, errors: [{code, message, source}], _json: obj}.  Note that the '_json' property contains the complete import response from the service this import integrated with.  For HTTP based services, this value will be the HTTP response body from the import operation.  This is a read/write property. Developers can modify this value if needed to support child import operations.
+ * The name of the function can be changed to anything you like.
+ * 
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], responseData: [], settings: {}, configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
+ *     'responseData' - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following structure: { statusCode: 200/422/403, errors: [], ignored: true/false, id: '', _json: {}, dataURI: '' }
+ *         'statusCode' - 200 is a success.  422 is a data error.  403 means the connection went offline (typically due to an authentication or incorrect password issue).
+ *         'errors' - [{code: '', message: '', source: ''}]
+ *         'ignored' - true if the record was filtered/skipped, false otherwise.
+ *         'id' - the id from the import application response.
+ *         '_json' - the complete response data from the import application.
+ *         'dataURI' - if possible, a URI for the data in the import application (populated only for errored records).
+ *         'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *         'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
  *
- *  _importId - the _importId of the import for which the hook is defined.
- *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the postSubmit hook. Can be used to further customize the hook.
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
+ *     'responseData' - the responseData array provided by options.responseData. The length of the responseData array MUST remain unchanged. Elements within the responseData array can be modified to enhance error messages, modify the complete _json response data, etc...
  */
 
 module.hooks.postSubmitFunction = function (options, callback) {
-  /*
-   *  postSubmit function code
-   */
-
-  /*
-   * The callback function takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole page.
-   *
-   *	responseData - returned responseData should have a similar structure and must have same length as the original responseData.
-   *
-   */
-
-  return callback(err, returnResponseData)		
+  return callback(err, returnResponseData)
 }
 ```
 
@@ -242,38 +222,30 @@ module.hooks.postSubmitFunction = function (options, callback) {
 This hook gets invoked after the final aggregated file is uploaded to the destination service. Note that this hook only works when the 'skipAggregation' property is 'false'. This hook is passed a read only object.
 
 ```js
-/*
- * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  postAggregateData - is read only json object.
- *    Sample Data:
- *    postAggregateData = {
- *      success: true, // status of import.
- *      _json: { name: 'inProgressFileName-2017-07-18T11-45-48.txt' } //Aggregated file name which is created by the file import.
- *    }
+ /*
+ * postAggregrateFunction:
  *
- *  _importId - the _importId of the import for which the hook is defined.
+ * The name of the function can be changed to anything you like.
  *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ * The function will be passed an 'options' argument and a callback argument.
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', postAggregateData: {}, settings: {},  configuration: {} }
+ *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     '_importId' - the _importId of the import for which the hook is defined. 
+ *     'postAggregateData' - a container object with the following structure: { success: true/false, _json: {} }
+ *         'success' - true if data aggregation was successful, false otherwise.
+ *         '_json' - information about the aggregated data transfer.  For example, the name of the aggregated file on the FTP site.
+ *         'code' - error code if data aggregation failed. 
+ *         'message' - error message if data aggregation failed. 
+ *         'source' - error source if data aggregation failed. 
+ *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
+ *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  *
- *  configuration - the configuration provided for the postAggregate hook. Can be used to further customize the hook.
- *
+ * The function needs to call back with the following arguments:
+ *     'err' - an error object to signal a fatal exception and will fail the entire page of records.
  */
 
 module.hooks.postAggregateFunction = function (options, callback) {
-  /*
-   *  postAggregation function code
-   */
-
-  /*
-   * The callback function takes in one argument.
-   *	err - Error object to convey that a fatal error has occurred. This will fail the whole page.
-   *
-   */
-
-  return callback(err)		
+  return callback(err)
 }
 ```
 ---
@@ -287,29 +259,19 @@ Wrappers allow you to write totally custom export and import adaptors. They prov
 This wrapper function is called to verify whether the connection defined for the wrapper adaptor is valid.
 
 ```js
-/* options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     
- *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
+/* 
+ * options object contains the following properties:
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
+ *     _importId/_exportId - _id of the export or import associated with the connection.
  *
- *  _importId/_exportId - _id of the export or import associated with the connection.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred. This will fail the whole call.
+ *     response - Response object provides information about whether the ping was successful or not. It contains two fields statusCode and errors. statusCode should be set to
+ *         401 and errors should be populated if the connection fails. Else, statusCode should be set to 200. { statusCode: 200/401, errors: [{message: 'error message', code: 'error code'}]}
  */
 
 module.wrappers.pingConnectionFunction = function (options, callback) {
-  /*
-   *  ping function code
-   */
-
-  /*
-   * The callback function takes in two arguments.
-   *	err - Error object to convey a fatal error has occurred. This will fail the whole call.
-   *
-   *  response - Response object provides information about whether the ping was successful or not. It contains two fields statusCode and errors. statusCode should be set to
-   401 and errors should be populated if the connection fails. Else, statusCode should be set to 200. { statusCode: 200/401, errors: [{message: 'error message', code: 'error code'}]}
-   */
-
   return callback(error, response)
 }
 ```
@@ -323,43 +285,26 @@ and again until all the records have been returned to integrator.io.
 ```js
 /*
  * options parameter in export functions contains the following fields:
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
+ *     type - the export type and can have the values 'delta', 'type' or 'once'. If its not set then it should be assumed that all records need to be exported.
+ *     delta - this field is set only when export type is delta. It contains a JSON object having two properties {dateField: ..., lastExecutionTime: ...}. 'dateField' is the field to be used to query
+ *         records that need to be exported. lastExecutionTime (in milliseconds) is the date on which the corresponding export job was last run.
+ *     once - this field is set only when export type is once and contains a JSON object having one property {booleanField: ...}. 'booleanField' is the field to be used to query
+ *         records that need to be exported.
+ *     test - this field is set only when export type is test and contains a JSON object having one property {limit: ...}. 'limit' is the maximum number of records that should be fetched.
+ *     state - the allows to pass information between successive export calls. The state returned as part of response for previous call will be passed as is.
+ *     _exportId - _id of the wrapper export.
+ *     settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *     configuration - the configuration provided for the wrapper export. Can be used to further customize the wrapper.
+ *     data - this field is set only when the export is used as a pageProcessor in an orchestrated flow and contains the data that is generated by the previous pageGenerator or pageProcessors before this export is invoked.
  *
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *
- *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
- *
- *  type - the export type and can have the values 'delta', 'type' or 'once'. If its not set then it should be assumed that all records need to be exported.
- *  
- *  delta - this field is set only when export type is delta. It contains a JSON object having two properties {dateField: ..., lastExecutionTime: ...}. 'dateField' is the field to be used to query
- records that need to be exported. lastExecutionTime (in milliseconds) is the date on which the corresponding export job was last run.
- *
- *  once - this field is set only when export type is once and contains a JSON object having one property {booleanField: ...}. 'booleanField' is the field to be used to query
- records that need to be exported.
- *
- *  test - this field is set only when export type is test and contains a JSON object having one property {limit: ...}. 'limit' is the maximum number of records that should be fetched.
- *
- *  state - the allows to pass information between successive export calls. The state returned as part of response for previous call will be passed as is.
- *
- *  _exportId - _id of the wrapper export.
- *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the wrapper export. Can be used to further customize the wrapper.
- *
- *  data - this field is set only when the export is used as a pageProcessor in an orchestrated flow and contains the data that is generated by the previous pageGenerator or pageProcessors before this export is invoked.
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred. This will halt the export process.
+ *     response - the response should contain a JSON object where following properties can be set. connectionOffline: A boolean value to specify if connection went offline during the course of the export. If set to true this will make the wrapper connection offline and stop the export process. data: An array of values where each value is a record that has been exported. errors: An array of JSON objects where each element represents error information in the format {message: 'error message', code: 'error code'} that occurred during the export. lastPage: A boolean to convey integrator.io that this is the last page of the export process. No more calls will be made once lastPage is set to true. state: An object which can be used to specify the current state of the export process that will be passed back in the next call to the wrapper function.
  */
 
 module.wrappers.exportFunction = function (options, callback) {
-  /*
-   *  export function code
-   */
-
-  /*
-   *	err - Error object to convey a fatal error has occurred. This will halt the export process.
-   *       
-   *  response - the response should contain a JSON object where following properties can be set. connectionOffline: A boolean value to specify if connection went offline during the course of the export. If set to true this will make the wrapper connection offline and stop the export process. data: An array of values where each value is a record that has been exported. errors: An array of JSON objects where each element represents error information in the format {message: 'error message', code: 'error code'} that occurred during the export. lastPage: A boolean to convey integrator.io that this is the last page of the export process. No more calls will be made once lastPage is set to true. state: An object which can be used to specify the current state of the export process that will be passed back in the next call to the wrapper function.
-   */
-
   return callback(error, response)
 }
 ```
@@ -372,33 +317,20 @@ implementation of an integrator.io import.
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
+ *     preMapData - an array of values which was used for mapping by the import.
+ *     postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
+ *     _importId - _id of the wrapper import.
+ *     settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
+ *     configuration - the configuration provided for the wrapper import. Can be used to further customize the wrapper.
  *
- *  connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
- *
- *  preMapData - an array of values which was used for mapping by the import.
- *
- *  postMapData - an array of values which was obtained after the mapping was done based on the mapping configuration set for the import.
- *
- *  _importId - _id of the wrapper import.
- *
- *  settings - the container for all integrator.io settings data for an integration (applicable only to connectors).
- *
- *  configuration - the configuration provided for the wrapper import. Can be used to further customize the wrapper.
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred. This will halt the import process.
+ *     response - Response is an array of JSON objects where each object should follow the following structure: {statusCode: 200/401/422, id: string, ignored: boolean, errors: [{code, message}]}. statusCode should be set to 200 when the import was successful, 401 when the operation failed with an authorization or connection error and 422 when some other error occurred during the process. id is the identifier of the record in the target system. ignored should set to true if the record was ignored and not imported. errors is an array of JSON objects representing the list of the errors that occurred while importing the records [{message: 'error message', code: 'error code'}]. errors can be used with statusCode 200 as well to indicate partial success, e.g., import succeeded without a field.
  */
 
 module.wrappers.importFunction = function (options, callback) {
-  /*
-   *  import function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred. This will halt the import process.
-   *       
-   *  response - Response is an array of JSON objects where each object should follow the following structure: {statusCode: 200/401/422, id: string, ignored: boolean, errors: [{code, message}]}. statusCode should be set to 200 when the import was successful, 401 when the operation failed with an authorization or connection error and 422 when some other error occurred during the process. id is the identifier of the record in the target system. ignored should set to true if the record was ignored and not imported. errors is an array of JSON objects representing the list of the errors that occurred while importing the records [{message: 'error message', code: 'error code'}]. errors can be used with statusCode 200 as well to indicate partial success, e.g., import succeeded without a field.
-   */
-
   return callback(error, response)
 }
 ```
@@ -415,29 +347,17 @@ installer function with the required information so that relevant resources requ
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration that is created.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration that is created.
+ *     opts - this field contains the connector license related information.
+ *     _connectorId - _id of the connector being installed.
  *
- *  opts - this field contains the connector license related information.
- *  
- *  _connectorId - _id of the connector being installed.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - No response is expected in this case.
  */
 
 module.installer.connectorInstallerFunction = function (options, callback) {
-  /*
-   *  installer function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - No response is expected in this case.
-   *
-   */
-
   return callback(error, response)
 }
 ```
@@ -448,28 +368,17 @@ Integration installer function is invoked as the installation wizard proceeds th
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration that is created.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration that is created.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *  
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - an object in the below format:
+ *         {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
  */
 
 module.installer.integrationInstallerFunction = function (options, callback) {
-  /*
-   *  installer function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - an object in the below format:
-   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
-   *
-   */
-
   return callback(error, response)
 }
 ```
@@ -480,27 +389,16 @@ Update function is used to do an update for the integrations belonging to a conn
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - no response is expected.
  */
 
 module.installer.updateFunction = function (options, callback) {
-  /*
-   *  installer function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - no response is expected.
-   *
-   */
-
   return callback(error, response)
 }
 ```
@@ -518,28 +416,17 @@ For instance, it can be used to modify the install steps to show them in differe
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration that is created.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration that is created.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *  
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - an object in the below format:
+ *         {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
  */
 
 module.uninstaller.preUninstallFunction = function (options, callback) {
-  /*
-   *  preUninstall function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - an object in the below format:
-   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
-   *
-   */
-
   return callback(error, response)
 }
 ```
@@ -550,28 +437,17 @@ Integration uninstall function is similar to integration install function. This 
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration that is created.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration that is created.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *  
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - an object in the below format:
+ *         {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
  */
 
 module.uninstaller.integrationUninstallerFunction = function (options, callback) {
-  /*
-   *  uninstaller function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - an object in the below format:
-   *  {success: boolean, stepsToUpdate: [<array of install steps present in integration document which need to be updated.>]}
-   *
-   */
-
   return callback(error, response)
 }
 ```
@@ -582,26 +458,16 @@ Connector uninstall function is used to remove all those documents which were no
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration being installed.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration being installed.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - No response expected.
  */
 
 module.uninstaller.connectorUninstallerFunction = function (options, callback) {
-  /*
-   *  uninstaller function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - No response expected.
-   */
-
   return callback(error, response)
 }
 ```
@@ -617,28 +483,17 @@ persistSettings function is invoked whenever settings are updated in the UI and 
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration being installed.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration being installed.
+ *     opts - this field contains the connector license related information.
+ *     pending - a json object containing key value pairs of different fields involved in a setting that is being updated.
  *
- *  opts - this field contains the connector license related information.
- *  
- *  pending - a json object containing key value pairs of different fields involved in a setting that is being updated.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - {success: boolean, pending: {<updated key value pairs of different fields involved in a setting>}}
  */
 
 module.settings.persistSettings = function (options, callback) {
-  /*
-   *  settings function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - {success: boolean, pending: {<updated key value pairs of different fields involved in a setting>}}
-   */
-
   return callback(error, response)
 }
 ```
@@ -649,28 +504,16 @@ refreshMetadata function is invoked when a user tries to refresh the metadata us
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration being installed.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration being installed.
+ *     opts - this field contains the connector license related information. It also contains all the information related to the field whose metadata is being refreshed and new metadata.
  *
- *  opts - this field contains the connector license related information.
- *  
- *  also contains all the information related to the field whose metadata is being refreshed and new metadata.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - json object containing the information related to the field which also contains any changes done to new metadata.
  */
 
 module.settings.refreshMetadata = function (options, callback) {
-  /*
-   *  settings function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - json object containing the information related to the field which also contains any changes done to new metadata.
-   */
-
   return callback(error, response)
 }
 ```
@@ -681,26 +524,16 @@ This function can be used to change license specific features and is invoked whe
 ```js
 /*
  * options object contains the following properties:
- *     
- *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
- *  _integrationId - _id of the integration being installed.
+ *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+ *     _integrationId - _id of the integration being installed.
+ *     opts - this field contains the connector license related information.
  *
- *  opts - this field contains the connector license related information.
- *
+ * The function needs to call back with the following arguments:
+ *     err - Error object to convey a fatal error has occurred.
+ *     response - no response expected.
  */
 
 module.settings.changeEdition = function (options, callback) {
-  /*
-   *  settings function code
-   */
-
-  /*
-   *  err - Error object to convey a fatal error has occurred.
-   *       
-   *  response - no response expected.
-   */
-
   return callback(error, response)
 }
 ```

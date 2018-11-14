@@ -7,17 +7,17 @@ describe('Util functions', function () {
   describe('sizeOf tests', function () {
     it('should handle null in object keys', function (done) {
       var badData = {'1': {'depot_id': null, 'hierarchy_node_id': null}}
-      util.sizeOf(badData).should.equal(52)
+      util.sizeOf(badData).should.equal(48)
       done()
     })
 
     it('null is 0', function (done) {
-      util.sizeOf(null).should.be.equal(0)
+      util.sizeOf(null).should.be.equal(4)
       done()
     })
 
     it('number size shall be 8', function (done) {
-      util.sizeOf(5).should.be.equal(8)
+      util.sizeOf(5).should.be.equal(1)
       done()
     })
 
@@ -26,13 +26,8 @@ describe('Util functions', function () {
       done()
     })
 
-    it('of 3 chars string is 2*3=6', function (done) {
-      util.sizeOf('abc').should.be.equal(6)
-      done()
-    })
-
     it('simple object of 3 chars for key and value', function (done) {
-      util.sizeOf({abc: 'def'}).should.be.equal(2 * 3 * 2)
+      util.sizeOf({abc: 'def'}).should.be.equal(13)
       done()
     })
 
@@ -42,27 +37,38 @@ describe('Util functions', function () {
     })
 
     it('nested objects shall be counted in full', function (done) {
-      // 4 one two-bytes char strings and 3 eighth-bytes numbers
       var param = {a: 1, b: 2, c: {d: 4}}
-      util.sizeOf(param).should.be.equal(4 * 2 + 3 * 8)
-      done()
-    })
-
-    it('object with 100 three-chars keys and values as numbers => 100 * 2 * 3 + 100 * 8', function (done) {
-      var obj = {}
-      var ELEMENTS = 100
-      // start from 1M to have the same keys length
-      for (var i = 100; i < 100 + ELEMENTS; i++) {
-        obj[i] = i
-      }
-
-      util.sizeOf(obj).should.be.equal(ELEMENTS * 2 * (('' + ELEMENTS).length) + ELEMENTS * 8)
+      util.sizeOf(param).should.be.equal(25)
       done()
     })
 
     it('should return -1 when data is not serializable', function (done) {
-      util.sizeOf({a: new Date()}).should.equal(-1)
-      util.sizeOf({a: new Error('errors are not serializable!')}).should.equal(-1)
+      var errorMsg
+      try {
+        util.validateObject({a: new Date()})
+      } catch (ex) {
+        errorMsg = ex.message
+      }
+
+      errorMsg.should.equal('Extension response is not serializable.')
+
+      try {
+        util.validateObject({a: new Error('errors are not serializable!')})
+      } catch (ex) {
+        errorMsg = ex.message
+      }
+
+      errorMsg.should.equal('Extension response is not serializable.')
+
+      try {
+        var a = {}
+        a.b = a
+        util.sizeOf(a)
+      } catch (ex) {
+        errorMsg = ex.message
+      }
+
+      errorMsg.should.equal('Extension response is not serializable.')
       done()
     })
   })

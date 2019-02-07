@@ -78,12 +78,15 @@ the hook preSavePage function.
  * preSavePageFunction:
  *
  * The name of the function can be changed to anything you like.
- * 
+ *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', data: [], errors: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', _connectionId: '', _integrationId: '', _flowId: '', data: [], errors: [], settings: {}, configuration: {} }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     'preview' - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of the data being exported.
  *     '_exportId' - the _exportId of the export for which the hook is defined.
+ *     '_connectionId' - the _id of the connection linked to the export for which the hook is defined.
+ *     '_integrationId' - the _id of the integration linked to the export for which the hook is defined.
+ *     '_flowId' - the _id of the flow linked to the export for which the hook is defined.
  *     'data' - an array of records representing one page of data.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
@@ -116,11 +119,14 @@ This hook gets invoked before the fields are mapped to their respective fields i
  * preMapFunction:
  *
  * The name of the function can be changed to anything you like.
- * 
+ *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', data: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', _connectionId: '', _integrationId: '', _flowId: '', data: [], settings: {}, configuration: {} }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     '_importId' - the _importId of the import for which the hook is defined.
+ *     '_connectionId' - the _id of the connection linked to the import for which the hook is defined.
+ *     '_integrationId' - the _id of the integration linked to the import for which the hook is defined.
+ *     '_flowId' - the _id of the flow linked to the import for which the hook is defined.
  *     'data' - an array of records representing the page of data before it has been mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *     'configuration' - an optional configuration object that can be set directly on the import resource (to further customize the hooks behavior).
@@ -153,11 +159,14 @@ modify the mapped data.
  * postMapFunction:
  *
  * The name of the function can be changed to anything you like.
- * 
+ *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', _connectionId: '', _integrationId: '', _flowId: '', preMapData: [], postMapData: [], settings: {}, configuration: {} }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     '_importId' - the _importId of the import for which the hook is defined.
+ *     '_connectionId' - the _id of the connection linked to the import for which the hook is defined.
+ *     '_integrationId' - the _id of the integration linked to the import for which the hook is defined.
+ *     '_flowId' - the _id of the flow linked to the import for which the hook is defined.
  *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
@@ -171,7 +180,7 @@ modify the mapped data.
  *         Each element in the array should have the following structure: { data: {}/[], errors: [{code: '', message: '', source: ''}] }
  *             'data' - The modified (or unmodified) record that should be passed along for processing.  An individual record can be an object {} or an array [] depending on the data source.
  *             'errors' - Used to report one or more errors for the specific record.  Each error must have the following structure: {code: '', message: '', source: '' }
- *         Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored. 
+ *         Returning an empty object {} for a specific record will indicate to integrator.io that the record should be ignored.
  *         Returning both 'data' and 'errors' for a specific record will indicate to integrator.io that the record should be processed but errors should also be logged on the job.
  *         Examples: {}, {data: {}}, {data: []}, {errors: [{code: '', message: '', source: ''}]}, {data: {}, errors: [{code: '', message: '', source: ''}]}
  */
@@ -190,11 +199,14 @@ This hook gets invoked after the records are processed by the import. It can be 
  * postSubmitFunction:
  *
  * The name of the function can be changed to anything you like.
- * 
+ *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', preMapData: [], postMapData: [], responseData: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', _connectionId: '', _integrationId: '', _flowId: '', preMapData: [], postMapData: [], responseData: [], settings: {}, configuration: {} }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     '_importId' - the _importId of the import for which the hook is defined.
+ *     '_connectionId' - the _id of the connection linked to the import for which the hook is defined.
+ *     '_integrationId' - the _id of the integration linked to the import for which the hook is defined.
+ *     '_flowId' - the _id of the flow linked to the import for which the hook is defined.
  *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'responseData' - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following structure: { statusCode: 200/422/403, errors: [], ignored: true/false, id: '', _json: {}, dataURI: '' }
@@ -228,15 +240,18 @@ This hook gets invoked after the final aggregated file is uploaded to the destin
  * The name of the function can be changed to anything you like.
  *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', postAggregateData: {}, settings: {},  configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', _importId: '', _connectionId: '', _integrationId: '', _flowId: '', postAggregateData: {}, settings: {},  configuration: {} }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *     '_importId' - the _importId of the import for which the hook is defined. 
+ *     '_importId' - the _importId of the import for which the hook is defined.
+ *     '_connectionId' - the _id of the connection linked to the import for which the hook is defined.
+ *     '_integrationId' - the _id of the integration linked to the import for which the hook is defined.
+ *     '_flowId' - the _id of the flow linked to the import for which the hook is defined.
  *     'postAggregateData' - a container object with the following structure: { success: true/false, _json: {} }
  *         'success' - true if data aggregation was successful, false otherwise.
  *         '_json' - information about the aggregated data transfer.  For example, the name of the aggregated file on the FTP site.
- *         'code' - error code if data aggregation failed. 
- *         'message' - error message if data aggregation failed. 
- *         'source' - error source if data aggregation failed. 
+ *         'code' - error code if data aggregation failed.
+ *         'message' - error message if data aggregation failed.
+ *         'source' - error source if data aggregation failed.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
  *
@@ -259,7 +274,7 @@ Wrappers allow you to write totally custom export and import adaptors. They prov
 This wrapper function is called to verify whether the connection defined for the wrapper adaptor is valid.
 
 ```js
-/* 
+/*
  * options object contains the following properties:
  *     bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     connection - the connection object containing the connection configuration {encrypted: {...}, unencrypted: {...}}. 'encrypted' and 'unencrypted' are JSON objects which were saved on the corresponding wrapper connection.
@@ -544,9 +559,9 @@ getMappingMetadata function is used to add mapping validation for connectors to 
 ```js
 /*
  * options object contains the following properties:
- *     
+ *
  *  bearerToken - a one-time bearer token which can be used to invoke selected integrator.io API routes.
- *  
+ *
  *  _integrationId - _id of the integration.
  *
  *  version - this field contains the version of the integration installed.
@@ -560,22 +575,22 @@ module.settings.getMappingMetadata = function (options, callback) {
 
   /*
    *  err - Error object to convey a fatal error has occurred. Currently, IO does not handle this.
-   *       
+   *
    *  response - Response data is an array of JSON objects where each object should follow following structure:
-   *  {"import1-externalId":[{"requiredGenerateFields":["generateFieldId1", "generateFieldId2"...],"nonEditableGenerateFields":[""]},{"generateList":"generateListId1","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}], "import2-externalId" : [...]} 
-   * 
-   * externalId - Import adaptor external Id. 
-   * 
+   *  {"import1-externalId":[{"requiredGenerateFields":["generateFieldId1", "generateFieldId2"...],"nonEditableGenerateFields":[""]},{"generateList":"generateListId1","requiredGenerateFields":[""],"nonEditableGenerateFields":[""]}], "import2-externalId" : [...]}
+   *
+   * externalId - Import adaptor external Id.
+   *
    * requiredGenerateFields - A collection of generate field ids that should be marked as required on UI.
-   * 
-   * nonEditableGenerateFields - A collection of generate field ids that should be marked as non-editable on UI. 
-   * 
+   *
+   * nonEditableGenerateFields - A collection of generate field ids that should be marked as non-editable on UI.
+   *
    * generateList - It contains generate list id of sublist and used to make the mapping mandatory of the sublist.
-   * 
-   * To ensure an extract-generate mapping pair cannot be altered, add the generate field id to both requiredGenerateFields and nonEditableGenerateFields. 
-   * 
+   *
+   * To ensure an extract-generate mapping pair cannot be altered, add the generate field id to both requiredGenerateFields and nonEditableGenerateFields.
+   *
    * To ensure that a generate mapping is always present and mapped with any extract/hardcoded value, add the generate field id to requiredGenerateFields.
-   * 
+   *
    */
 
   return callback(error, response)

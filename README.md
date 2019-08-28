@@ -209,8 +209,8 @@ This hook gets invoked after the records are processed by the import. It can be 
  *     '_flowId' - the _id of the flow linked to the import for which the hook is defined.
  *     'preMapData' - an array of records representing the page of data before it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'postMapData' - an array of records representing the page of data after it was mapped.  An individual record can be an object {}, or an array [] depending on the data source.
- *     'responseData' - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following structure: { statusCode: 200/422/403, errors: [], ignored: true/false, id: '', _json: {}, dataURI: '' }
- *         'statusCode' - 200 is a success.  422 is a data error.  403 means the connection went offline (typically due to an authentication or incorrect password issue).
+ *     'responseData' - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following structure: { statusCode: 200/422/401, errors: [], ignored: true/false, id: '', _json: {}, dataURI: '' }
+ *         'statusCode' - 200 is a success.  422 is a data error.  401 means the connection went offline (typically due to an authentication or incorrect password issue).
  *         'errors' - [{code: '', message: '', source: ''}]
  *         'ignored' - true if the record was filtered/skipped, false otherwise.
  *         'id' - the id from the import application response.

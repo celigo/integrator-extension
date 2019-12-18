@@ -91,6 +91,8 @@ the hook preSavePage function.
  *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
+ *     'lastExportDateTime' - this field is set only when export type is delta.
+ *     'currentExportDateTime' - this field is set only when export type is delta.
  *     'pageIndex' - an index representing current page number starting from one.
  *
  * The function needs to call back with the following arguments:

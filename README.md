@@ -80,7 +80,7 @@ the hook preSavePage function.
  * The name of the function can be changed to anything you like.
  *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', _connectionId: '', _integrationId: '', _flowId: '', data: [], errors: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', _connectionId: '', _integrationId: '', _flowId: '', data: [], errors: [], settings: {}, configuration: {}, lastExportDateTime: '2011-10-05T14:48:00.000Z', currentExportDateTime: '2011-10-05T14:48:00.000Z', pageIndex: 1 }
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     'preview' - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of the data being exported.
  *     '_exportId' - the _exportId of the export for which the hook is defined.
@@ -91,8 +91,8 @@ the hook preSavePage function.
  *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
- *     'lastExportDateTime' - this field is set only when export type is delta.
- *     'currentExportDateTime' - this field is set only when export type is delta.
+ *     'lastExportDateTime' - a string representation of lastExportDateTime formatted using delta.dateFormat if present else ISO format is used. This field is set only when export type is delta.
+ *     'currentExportDateTime' - a string representation of currentExportDateTime formatted using delta.dateFormat if present else ISO format is used. This field is set only when export type is delta.
  *     'pageIndex' - an index representing current page number starting from one.
  *
  * The function needs to call back with the following arguments:

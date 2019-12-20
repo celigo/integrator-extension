@@ -80,28 +80,27 @@ the hook preSavePage function.
  * The name of the function can be changed to anything you like.
  *
  * The function will be passed an 'options' argument and a callback argument.
- * The first argument 'options' has the following structure: { bearerToken: '', preview: true/false, _exportId: '', _connectionId: '', _integrationId: '', _flowId: '', data: [], errors: [], settings: {}, configuration: {} }
+ * The first argument 'options' has the following fields:
  *     'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
  *     'preview' - a boolean flag used to indicate that this export is being used by the integrator.io UI to get a sample of the data being exported.
- *     '_exportId' - the _exportId of the export for which the hook is defined.
- *     '_connectionId' - the _id of the connection linked to the export for which the hook is defined.
- *     '_integrationId' - the _id of the integration linked to the export for which the hook is defined.
- *     '_flowId' - the _id of the flow linked to the export for which the hook is defined.
  *     'data' - an array of records representing one page of data.  An individual record can be an object {}, or an array [] depending on the data source.
  *     'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
+ *     '_exportId' - the _exportId currently running.
+ *     '_connectionId' - the _connectionId currently running.
+ *     '_flowId' - the _flowId currently running.
+ *     '_integrationId' - the _integrationId currently running.
+ *     'pageIndex' - 0 based. context is the batch export currently running.
+ *     'lastExportDateTime' - delta exports only.
+ *     'currentExportDateTime' - delta exports only.
  *     'settings' - a container object for all the SmartConnector settings associated with the integration (applicable to SmartConnectors only).
  *     'configuration' - an optional configuration object that can be set directly on the export resource (to further customize the hooks behavior).
- *     'pageContext' - an object containing following page contextual data.
- *            'lastExportDateTime' - this field is set only when export type is delta.
- *            'currentExportDateTime' - this field is set only when export type is delta.
- *            'pageIndex' - an index representing current page number starting from one.
  *
  * The function needs to call back with the following arguments:
  *     'err' - an error object to signal a fatal exception and will stop the flow.
- *     'responseData' - an object that has the following structure: { data: [], errors: [{code: '', message: '', source: ''}], abort: true }
+ *     'responseData' - an object that has the following structure: { data: [], errors: [{code: '', message: '', source: ''}], abort: true|false }
  *         'data' -  your modified data.
  *         'errors' - your modified errors.
- *         'abort'  - boolean value. When true, export stops processing further pages and the current page will be generated with the data and errors of this preSavePageHook response.
+ *         'abort' - instruct the batch export currently running to stop generating new pages of data.
  */
 
 module.hooks.preSavePageFunction = function (options, callback) {

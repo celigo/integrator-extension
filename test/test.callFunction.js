@@ -222,6 +222,32 @@ describe('Extension callFunction tests', function () {
     })
   })
 
+  it('should parse "lastExportDateTime" and "currentExportDateTime" as dates ' +
+    'while sending request to hooks.', function (done) {
+    var extensionProperties = {
+      diy: true,
+      type: 'hook',
+      function: 'stringifyDateObject',
+      maxResponseSize: 2000
+    }
+
+    let lastExportDateTime = '2019-01-01T00:00:00.000Z'
+    let currentExportDateTime = '2020-01-01T00:00:00.000Z'
+    var options = {
+      key1: ['a'],
+      bearerToken: bearerToken,
+      lastExportDateTime: lastExportDateTime,
+      currentExportDateTime: currentExportDateTime
+    }
+
+    testUtil.callFunction(options, extensionProperties, function (four0xErrors, data) {
+      should.not.exist(four0xErrors)
+      data[0].lastExportDateTime.should.equal(lastExportDateTime)
+      data[0].currentExportDateTime.should.equal(currentExportDateTime)
+      done()
+    })
+  })
+
   it('should invoke a hook which is part of an instance', function (done) {
     var extensionProperties = {
       type: 'hook',

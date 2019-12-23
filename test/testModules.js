@@ -85,6 +85,16 @@ var testModule = {
       return callback(null, [options])
     },
 
+    stringifyDateObject: function (options, callback) {
+      if (options.lastExportDateTime && typeof options.lastExportDateTime === 'object') {
+        options.lastExportDateTime = options.lastExportDateTime.toISOString()
+      }
+      if (options.currentExportDateTime && typeof options.currentExportDateTime === 'object') {
+        options.currentExportDateTime = options.currentExportDateTime.toISOString()
+      }
+      return callback(null, [options])
+    },
+
     echoResponse: function (options, callback) {
       return callback(null, options.resp)
     },

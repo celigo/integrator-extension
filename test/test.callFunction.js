@@ -231,8 +231,8 @@ describe('Extension callFunction tests', function () {
       maxResponseSize: 2000
     }
 
-    let lastExportDateTime = '2019-01-01T00:00:00.000Z'
-    let currentExportDateTime = '2020-01-01T00:00:00.000Z'
+    var lastExportDateTime = '2019-01-01T00:00:00.000Z'
+    var currentExportDateTime = '2020-01-01T00:00:00.000Z'
     var options = {
       key1: ['a'],
       bearerToken: bearerToken,

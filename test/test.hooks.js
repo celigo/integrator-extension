@@ -6,7 +6,7 @@ var should = require('should')
 var _importId = '_importId'
 var bearerToken = 'bearerToken'
 
-var genTests = (flat) => {
+var genTests = function (flat) {
   describe('hook tests', function () {
     before(function (done) {
       testUtil.createMockExtension(true, false, flat, done)

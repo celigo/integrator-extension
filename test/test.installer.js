@@ -6,7 +6,7 @@ var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN'
 var _integrationId = '_integrationId'
 var _connectorId = '9ce44f88a25272b6d9cbb430ebbcfcf1'
 
-var genTests = (flat) => {
+var genTests = function (flat) {
   describe('Connector installer tests', function () {
     before(function (done) {
       testUtil.createMockExtension(false, true, flat, done)

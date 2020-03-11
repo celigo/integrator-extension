@@ -5,8 +5,8 @@ var should = require('should')
 
 var bearerToken = 'ott873f2beed978433997c42b4e5af05d9b'
 
-var genTests = (flat) => {
-  describe(`Extension callFunction tests ${flat ? 'flat' : ''}`, function () {
+var genTests = function (flat) {
+  describe('Extension callFunction tests' + (flat ? ' flat' : ''), function () {
     before(function (done) {
       testUtil.createMockExtension(true, false, flat, done)
     })

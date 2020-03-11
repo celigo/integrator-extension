@@ -5,7 +5,7 @@ var testUtil = require('./util')
 var bearerToken = 'TEST_INTEGRATOR_EXTENSION_BEARER_TOKEN'
 var _importId = '_importId'
 
-var genTests = (flat) => {
+var genTests = function (flat) {
   describe('Wrapper tests', function () {
     before(function (done) {
       testUtil.createMockExtension(true, false, flat, done)

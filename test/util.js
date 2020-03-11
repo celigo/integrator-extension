@@ -7,12 +7,12 @@ exports.callFunction = function (options, extensionProperties, callback) {
   return testExtension.callFunction(options, extensionProperties, callback)
 }
 
-exports.createMockExtension = function (diy, connector, callback) {
+exports.createMockExtension = function (diy, connector, flat, callback) {
   var config = {}
-  config.diy = diy ? testModules.testModule : undefined
+  config.diy = diy ? (flat ? testModules.testModuleFlat : testModules.testModule) : undefined
   var connectors = {
-    '9ce44f88a25272b6d9cbb430ebbcfcf1': testModules.testModule,
-    '6a4b9e817fb9f522dbd012f642855a03': testModules.testInstance
+    '9ce44f88a25272b6d9cbb430ebbcfcf1': flat ? testModules.testModuleFlat : testModules.testModule,
+    '6a4b9e817fb9f522dbd012f642855a03': flat ? testModules.testInstanceFlat : testModules.testInstance
   }
   config.connectors = connector ? connectors : undefined
   testExtension.loadConfiguration(config, function (e) {

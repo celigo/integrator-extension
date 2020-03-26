@@ -337,6 +337,28 @@ exports.stepFunction = function (options, callback) {
 }
 ```
 
+#### initChild
+This function can be used to create child integration.
+
+```js
+/*
+* initChildIntegration stub:
+*
+* The name of the function can be changed to anything you like.
+*
+* The function will be passed one ‘options’ argument that has the following fields: { parentIntegration: {}, parentLicense: {} }
+*   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
+*   `parentIntegration` - the parent of the child integration being initialized.
+*   'parentLicense' - integration apps only. the license provisioned to the parent integration.
+*
+* The function needs to return the child integration to be created.
+* Throwing an exception will signal an error.
+*/  
+exports.initChild = function (options) {
+  return { name: "child integration", installSteps: [...] }
+}
+```
+
 #### update
 Update function is used to do an update for the integrations belonging to a connector. Whenever, new versions of the connector need to be released or there are any new features in a connector, update function can be used to do required changes for integrations installed in user accounts.
 

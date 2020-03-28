@@ -12,6 +12,8 @@ var Extension = function () {
 
 exports.testInstance = new Extension()
 
+exports.testInstanceFlat = new Hooks()
+
 var testModule = {
   installer: {
     connectorInstallerFunction: function (options, callback) {
@@ -121,4 +123,12 @@ var testModule = {
   }
 }
 
+var testModuleFlat = {}
+for (var p of Object.keys(testModule)) {
+  for (var f of Object.keys(testModule[p])) {
+    testModuleFlat[f] = testModule[p][f]
+  }
+}
+
 exports.testModule = testModule
+exports.testModuleFlat = testModuleFlat

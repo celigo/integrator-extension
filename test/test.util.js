@@ -1,7 +1,6 @@
 'use strict'
 
 var util = require('../lib/util')
-var should = require('should')
 
 describe('Util functions', function () {
   describe('sizeOf tests', function () {

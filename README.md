@@ -75,7 +75,7 @@ the hook preSavePage function.
 *   'lastExportDateTime' - delta exports only.
 *   'currentExportDateTime' - delta exports only.
 *   'settings' - all custom settings in scope for the export currently running.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return an object that has the following fields:
 *   'data' - your modified data.
@@ -112,7 +112,7 @@ This function gets invoked before the fields are mapped to their respective fiel
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return an array, and the length MUST match the options.data array length.
 * Each element in the array represents the actions that should be taken on the record at that index.
@@ -149,7 +149,7 @@ modify the mapped data.
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return an array, and the length MUST match the options.data array length.
 * Each element in the array represents the actions that should be taken on the record at that index.
@@ -192,7 +192,7 @@ This function gets invoked after the records are processed by the import. It can
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return the responseData array provided by options.responseData. The length of the responseData array MUST remain unchanged.  Elements within the responseData array can be modified to enhance error messages, modify the complete _json response data, etc...
 * Throwing an exception will fail the entire page of records.
@@ -230,7 +230,7 @@ exports.postSubmitFunction = function (options, callback) {
  *   '_integrationId' - the _integrationId currently running.
  *   '_parentIntegrationId' - the parent of the _integrationId currently running.
  *   'settings' - all custom settings in scope for the export/import currently running.
- * *   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+ * *   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
  *
  * The function needs to return the postResponseMapData array provided by options.postResponseMapData.  The length of postResponseMapData MUST remain unchanged.  Elements within postResponseMapData can be changed however needed.
 ​
@@ -263,7 +263,7 @@ exports.postResponseMapFunction = function (options, callback) {
 *    '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function doesn't need a return value.
 * Throwing an exception will signal a fatal error.
@@ -287,7 +287,7 @@ exports.postAggregateFunction = function (options, callback) {
 *   'parentResource' - the parent of the resource being viewed in the UI.
 *   'license' - integration apps only.  the license provisioned to the integration.
 *   'parentLicense' - integration apps only. the parent of the license provisioned to the integration.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return a form object for the UI to render.
 * Throwing an exception will signal an error.
@@ -309,7 +309,7 @@ exports.formInitFunction = function (options, callback) {
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'newResource' - the resource being saved.
 *   'oldResource' - the resource last saved.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return the newResource object to save.
 * Throwing an exception will signal an error.
@@ -337,7 +337,7 @@ This function represents one step in the installation or uninstallation process.
 *   'license' - integration apps only. the license provisioned to the integration.
 *   'parentLicense' - integration apps only. the parent of the license provisioned to the integration.
 *
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 * The function does not need to return anything.
 * Throwing an exception will signal an error.
 */
@@ -359,7 +359,7 @@ This function can be used to create child integration.
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   `parentIntegration` - the parent of the child integration being initialized.
 *   'parentLicense' - integration apps only. the license provisioned to the parent integration.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function needs to return the child integration to be created.
 * Throwing an exception will signal an error.
@@ -382,7 +382,7 @@ Update function is used to do an update for the integrations belonging to a conn
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'resource' - the resource being updated.
 *   'license' - integration apps only. the license provisioned to the integration.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function does not need to return anything.
 * Throwing an exception will signal an error.
@@ -407,7 +407,7 @@ This function can be used to change license specific features and is invoked whe
 *   `toEdition` - the new edition.
 *   `integration` - the integration being changed.
 *   'license' - the license provisioned to the integration.
-*   'sandbox' - boolean value indicating whether the script is invoked for sandbox.
+*   'sandbox' - boolean value indicating whether the stack is invoked for sandbox.
 *
 * The function does not need to return anything.
 * Throwing an exception will signal an error.

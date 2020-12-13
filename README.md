@@ -65,7 +65,7 @@ the hook preSavePage function.
 * The function will be passed one 'options' argument that has the following fields:
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'data' - an array of records representing one page of data. A record can be an object {} or array [] depending on the data source.
-*   'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
+*   'errors' - an array of errors where each error has the structure {code: '', message: '', source: '', classification: ''}. Here "classification" indicates the category in which error falls into. Sample values of which are "Value", "Missing", "Connection", "Intermittent", "Governance", "Parse", "Duplicate", "None" etc., This field is only sent when the feature "autopilot" is enabled for the account.
 *   '_exportId' - the _exportId currently running.
 *   '_connectionId' - the _connectionId currently running.
 *   '_flowId' - the _flowId currently running.
@@ -178,7 +178,7 @@ This function gets invoked after the records are processed by the import. It can
 *   ‘postMapData’ - an array of records representing the page of data after it was mapped.  A record can be an object {} or array [] depending on the data source.
 *   ‘responseData’ - an array of responses for the page of data that was submitted to the import application.  An individual response will have the following fields:
 *     ‘statusCode’ - 200 is a success.  422 is a data error.  403 means the connection went offline.
-*     ‘errors’ - [{code: '', message: '', source: ‘’}]
+*     ‘errors’ - [{code: '', message: '', source: '', classification: ''}]. Here "classification" indicates the category in which error falls into. Sample values of which are "Value", "Missing", "Connection", "Intermittent", "Governance", "Parse", "Duplicate", "None" etc., This field is only sent when the feature "autopilot" is enabled for the account.
 *     ‘ignored’ - true if the record was filtered/skipped, false otherwise.
 *     ‘id’ - the id from the import application response.
 *     ‘_json’ - the complete response data from the import application.
@@ -211,7 +211,7 @@ exports.postSubmitFunction = function (options, callback) {
  *   'postResponseMapData' - an array of records representing the page of data after response mapping is completed. A record can be an object {} or array [] depending on the data source.
  *   'responseData' - the array of responses for the page of data.  An individual response will have the following fields:
  *      'statusCode' - 200 is a success.  422 is a data error.  403 means the connection went offline.
- *      'errors' - [{code: '', message: '', source: ''}]
+ *      'errors' - [{code: '', message: '', source: '', classification: ''}]. Here "classification" indicates the category in which error falls into. Sample values of which are "Value", "Missing", "Connection", "Intermittent", "Governance", "Parse", "Duplicate", "None" etc., This field is only sent when the feature "autopilot" is enabled for the account.
  *      'ignored' - true if the record was filtered/skipped, false otherwise.
  *      'data' - exports only.  the array of records returned by the export application.
  *      'id' - imports only.  the id from the import application response.

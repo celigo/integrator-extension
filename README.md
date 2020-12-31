@@ -66,7 +66,7 @@ the hook preSavePage function.
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'data' - an array of records representing one page of data. A record can be an object {} or array [] depending on the data source.
 *   'errors' - an array of errors where each error has the structure {code: '', message: '', source: '', retryDataKey: ''}.
-*   'retryData' - an object with structure {<retryDataKey>: { data: <record>, stage: <stage where error occured>, traceKey: <traceKey of record>}, ...} containing errored out records, stage info and and their traceKeys.
+*   'retryData' - an object with structure {<retryDataKey>: { data: <record>, stage: <stage where error occured>, traceKey: <traceKey of record>}, ...} containing errored out records, stage info and their traceKeys.
 *   '_exportId' - the _exportId currently running.
 *   '_connectionId' - the _connectionId currently running.
 *   '_flowId' - the _flowId currently running.

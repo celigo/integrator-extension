@@ -66,7 +66,7 @@ the hook preSavePage function.
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'data' - an array of records representing one page of data. A record can be an object {} or array [] depending on the data source.
 *   'errors' - an array of errors where each error has the structure {code: '', message: '', source: '', retryDataKey: ''}.
-*   'retryData' - an object with structure {<retryDataKey>: { data: <record>, stage: <stage where error occured>, traceKey: <traceKey of record>}, ...} containing errored out records, stage info and their traceKeys.
+*   'retryData' - a dictionary object containing the retry data for all errors: {retryDataKey: { data: <record>, stage: '', traceKey: ''}}.
 *   '_exportId' - the _exportId currently running.
 *   '_connectionId' - the _connectionId currently running.
 *   '_flowId' - the _flowId currently running.
@@ -81,7 +81,7 @@ the hook preSavePage function.
 *   'data' - your modified data.
 *   'errors' - your modified errors.
 *   'abort' - instruct the batch export currently running to stop generating new pages of data.
-*   'newErrorsAndRetryData' - can send new errors and corresponding data in the following format - [{retryData: <>, errors: []}].
+*   'newErrorsAndRetryData' - return brand new errors linked to retry data: [{retryData: <record>, errors: [<error>]}].
 *
 * Throwing an exception will signal a fatal error and stop the flow.
 */

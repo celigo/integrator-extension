@@ -65,7 +65,8 @@ the hook preSavePage function.
 * The function will be passed one 'options' argument that has the following fields:
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'data' - an array of records representing one page of data. A record can be an object {} or array [] depending on the data source.
-*   'errors' - an array of errors where each error has the structure {code: '', message: '', source: ''}.
+*   'errors' - an array of errors where each error has the structure {code: '', message: '', source: '', retryDataKey: ''}.
+*   'retryData' - a dictionary object containing the retry data for all errors: {retryDataKey: { data: <record>, stage: '', traceKey: ''}}.
 *   '_exportId' - the _exportId currently running.
 *   '_connectionId' - the _connectionId currently running.
 *   '_flowId' - the _flowId currently running.
@@ -80,6 +81,8 @@ the hook preSavePage function.
 *   'data' - your modified data.
 *   'errors' - your modified errors.
 *   'abort' - instruct the batch export currently running to stop generating new pages of data.
+*   'newErrorsAndRetryData' - return brand new errors linked to retry data: [{retryData: <record>, errors: [<error>]}].
+*
 * Throwing an exception will signal a fatal error and stop the flow.
 */
 exports.preSavePageFunction = function (options, callback) {
@@ -87,7 +90,8 @@ exports.preSavePageFunction = function (options, callback) {
   return callback(error, {
     data: options.data,
     errors: options.errors,
-    abort: false
+    abort: false,
+    newErrorsAndRetryData: []
   })
 } 
 ```

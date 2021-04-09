@@ -282,7 +282,8 @@ exports.postAggregateFunction = function (options, callback) {
 * The function will be passed one 'options' argument that has the following fields:
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'resource' - the resource being viewed in the UI.
-*   'parentResource' - the parent of the resource being viewed in the UI.
+*   'parentResource' - the parent of the resource being viewed in the UI. eg. the parent integration of the integration being viewed.
+*   'grandparentResource' - the parent of the parentResource, in context of the resource being viewed in the UI. eg. the parent integration of the integration for which flowGrouping is being viewed.
 *   'license' - integration apps only.  the license provisioned to the integration.
 *   'parentLicense' - integration apps only. the parent of the license provisioned to the integration.
 *

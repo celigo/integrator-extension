@@ -283,6 +283,7 @@ exports.postAggregateFunction = function (options, callback) {
 *   'bearerToken' - a one-time bearer token which can be used to invoke selected integrator.io API routes.
 *   'resource' - the resource being viewed in the UI.
 *   'parentResource' - the parent of the resource being viewed in the UI.
+*   'grandparentResource' - the grandparent of the resource being viewed in the UI.
 *   'license' - integration apps only.  the license provisioned to the integration.
 *   'parentLicense' - integration apps only. the parent of the license provisioned to the integration.
 *

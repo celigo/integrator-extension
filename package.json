@@ -6,7 +6,7 @@
   "homepage": "https://integrator.io",
   "author": "Celigo Inc. <developer@celigo.com> (http://www.celigo.com)",
   "engines": {
-    "node": "14.18.1"
+    "node": ">= 14.18.1"
   },
   "license": "MIT",
   "repository": {

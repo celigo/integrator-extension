@@ -6,7 +6,7 @@
   "homepage": "https://integrator.io",
   "author": "Celigo Inc. <developer@celigo.com> (http://www.celigo.com)",
   "engines": {
-    "node": ">= 0.12"
+    "node": ">= 14.18.1"
   },
   "license": "MIT",
   "repository": {
@@ -18,7 +18,7 @@
     "lodash.isempty": "4.4.0"
   },
   "devDependencies": {
-    "mocha": "2.4.5",
+    "mocha": "7.1.2",
     "should": "8.3.0",
     "winston": "2.2.0"
   },

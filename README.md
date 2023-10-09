@@ -77,7 +77,7 @@ the hook preSavePage function.
 *   'lastExportDateTime' - delta exports only.
 *   'currentExportDateTime' - delta exports only.
 *   'settings' - all custom settings in scope for the export currently running.
-*   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+*   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
 *
 * The function needs to return an object that has the following fields:
 *   'data' - your modified data.
@@ -117,7 +117,7 @@ This function gets invoked before the fields are mapped to their respective fiel
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+*   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
 *
 * The function needs to return an array, and the length MUST match the options.data array length.
 * Each element in the array represents the actions that should be taken on the record at that index.
@@ -154,7 +154,7 @@ modify the mapped data.
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+*   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
 *
 * The function needs to return an array, and the length MUST match the options.data array length.
 * Each element in the array represents the actions that should be taken on the record at that index.
@@ -197,7 +197,7 @@ This function gets invoked after the records are processed by the import. It can
 *   '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+*   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
 *
 * The function needs to return the responseData array provided by options.responseData. The length of the responseData array MUST remain unchanged.  Elements within the responseData array can be modified to enhance error messages, modify the complete _json response data, etc...
 * Throwing an exception will fail the entire page of records.
@@ -235,7 +235,7 @@ exports.postSubmitFunction = function (options, callback) {
  *   '_integrationId' - the _integrationId currently running.
  *   '_parentIntegrationId' - the parent of the _integrationId currently running.
  *   'settings' - all custom settings in scope for the export/import currently running.
- *   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+ *   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
  *
  * The function needs to return the postResponseMapData array provided by options.postResponseMapData.  The length of postResponseMapData MUST remain unchanged.  Elements within postResponseMapData can be changed however needed.
 ​
@@ -268,7 +268,7 @@ exports.postResponseMapFunction = function (options, callback) {
 *    '_integrationId' - the _integrationId currently running.
 *   '_parentIntegrationId' - the parent of the _integrationId currently running.
 *   'settings' - all custom settings in scope for the import currently running.
-*   'testMode'- boolean flag that executes script only on test mode, export preview, and import preview/send actions.
+*   'testMode'- boolean flag that executes script only on test mode and preview/send actions.
 *
 * The function doesn't need a return value.
 * Throwing an exception will signal a fatal error.
